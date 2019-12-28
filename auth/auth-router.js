@@ -54,10 +54,10 @@ authRouter.post('/register', async (req, res) => {
           const token = generateToken(user);
           // console.log('token', token);
           res.status(200).json({
-            message: `Welcome ${user.email}!`,
+            email: `${user.email}`,
             firstName:`${user.firstName}`,
             lastName:`${user.lastName}`,
-            id:`${user.userId}`,
+            userId:`${user.userId}`,
             token
           });
         } else {

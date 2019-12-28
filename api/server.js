@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -11,7 +11,7 @@ const entriesRouter = require('../entries/entries-router.js');
 const server = express();
 
 server.use(helmet());
-server.use(cors());
+// server.use(cors());
 server.use(express.json());
 const { getEntries } = require('../database/queries.js');
 
