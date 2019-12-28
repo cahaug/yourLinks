@@ -5,21 +5,36 @@ require('dotenv').config();
 
 // const blankRouter = require('../blank-router.js') go here
 const authRouter = require('../auth/auth-router.js');
+const listsRouter = require('../lists/lists-router.js');
+const entriesRouter = require('../entries/entries-router.js');
 
 const server = express();
 
 server.use(helmet());
 server.use(cors());
 server.use(express.json());
+const { getEntries } = require('../database/queries.js');
+
 
 
 // server.use('/blank/', blankRouter) go here
 server.use('/auth/', authRouter);
+server.use('/l/', listsRouter);
+server.use('/e/', entriesRouter);
 
 
 
 server.get('/', (req, res) => {
     res.status(200).json({message: 'Backend is up and running'});
+});
+
+server.get('/:userId', (req, res) => {
+    const { userId } = req.params;
+    return getEntries(userId)
+    .then(entries => {
+        res.status(200).json(entries)
+    })
+    .catch(err => res.status(500).json(err));
 });
 
 // catch 404 and forward to the error handler

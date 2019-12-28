@@ -34,7 +34,15 @@ exports.up = function(knex, Promise) {
             .inTable('lists')
             .onDelete('RESTRICT')
             .onUpdate('RESTRICT');
-        entry.string('referencingURL', 500).notNullable();
+        entry.integer('userId')
+            .unsigned()
+            .notNullable()
+            .references('userId')
+            .inTable('users')
+            .onDelete('RESTRICT')
+            .onUpdate('RESTRICT');
+        entry.string('creationDate', 128).notNullable();
+        entry.text('referencingURL', 500).notNullable();
         entry.string('description',500);
         entry.string('linkTitle', 500).notNullable();
     });
