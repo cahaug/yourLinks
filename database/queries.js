@@ -18,7 +18,7 @@ module.exports = {
     },
 
     getListByUser(userId){
-        return knex('lists').where("userId", userId);
+        return knex('lists').where("userId", userId).select('listId');
     },
 
     createList(list){

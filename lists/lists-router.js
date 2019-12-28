@@ -18,7 +18,11 @@ listsRouter.post('/new', async (req, res) => {
     const list = { userId, creationDate, backColor, txtColor, fontSelection };
     return createList(list)
     .then(result => {
-        return res.status(200).json({message:"List Created Successfully!"});
+        return getListByUser(userId)
+            .then(list => {
+                res.status(200).json(list[0]);
+
+            })
     })
     .catch(err => res.status(500).json(err));
 })
