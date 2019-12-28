@@ -1,10 +1,12 @@
 {
   "name": "yourLinks",
   "version": "1.0.0",
-  "description": "A website where someone can log in to create their own public pages of lists of hyperlinks for use with social media accounts.",
-  "main": "app.js",
+  "description": "A backend for a site where someone can log in to create their own public pages of lists of hyperlinks for use with social media accounts.",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env DB_ENV=testing jest --verbose --watch",
+    "start": "node index.js",
+    "server": "nodemon index.js"
   },
   "repository": {
     "type": "git",
