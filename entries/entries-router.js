@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { newEntry } = require('../database/queries.js');
+const { newEntry, getAllEntries, modifyEntryURl } = require('../database/queries.js');
 
 entriesRouter.post('/new', async (req, res) => {
     const date = new Date();
