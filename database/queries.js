@@ -34,11 +34,15 @@ module.exports = {
     },
 
     modifyEntryURl(entryId, referencingURL){
-        return knex('entries').where({ entryId }).update({referencingURL})
+        return knex('entries').where({ entryId }).update({ referencingURL })
     },
 
     getAllEntries(){
         return knex('entries')
+    },
+
+    updateDescription(entryId, description){
+        return knex('entries').where({ entryId }).update({ description })
     }
 
 }
