@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { newEntry } = require('../database/queries.js');
+const { newEntry, getAllEntries, modifyEntryURl, updateDescription } = require('../database/queries.js');
 
 entriesRouter.post('/new', async (req, res) => {
     const date = new Date();
@@ -13,5 +13,35 @@ entriesRouter.post('/new', async (req, res) => {
     })
     .catch(err => res.status(500).json(err));
 });
+
+// all entries with id's
+entriesRouter.get('/all', async (req, res) => {
+    const { entryId } = req.body;
+    return getAllEntries(entryId)
+    .then(result => {
+        return res.status(200).json(result)
+    })
+    .catch(err => res.status(500).json(err));
+})
+
+// edit URL
+entriesRouter.put('/editURL', async (req, res) => {
+    const {entryId, referencingURL} = req.body;
+    return modifyEntryURl(entryId, referencingURL)
+    .then(result => {
+        return res.status(200).json(result);
+    })
+    .catch(err => res.status(500).json(err));
+})
+
+// edit description
+entriesRouter.put('/editDescription', async (req, res) => {
+    const {entryId, description} = req.body;
+    return updateDescription(entryId, description)
+    .then(result => {
+        return res.status(200).json(result);
+    })
+    .catch(err => res.status(500).json(err));
+})
 
 module.exports = entriesRouter;
