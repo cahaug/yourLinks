@@ -31,7 +31,14 @@ module.exports = {
 
     getEntries(userId){
         return knex('entries').where("userId", userId);
-    }
+    },
 
+    modifyEntryURl(entryId, referencingURL){
+        return knex('entries').where({ entryId }).update({referencingURL})
+    },
+
+    getAllEntries(){
+        return knex('entries')
+    }
 
 }

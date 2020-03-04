@@ -14,4 +14,23 @@ entriesRouter.post('/new', async (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+// all entries with id's
+entriesRouter.get('/all', async (req, res) => {
+    const { entryId } = req.body;
+    return getAllEntries(entryId)
+    .then(result => {
+        return res.status(200).json(result)
+    })
+    .catch(err => res.status(500).json(err));
+})
+
+entriesRouter.put('/edit', async (req, res) => {
+    const {entryId, referencingURL} = req.body;
+    return modifyEntryURl(entryId, referencingURL)
+    .then(result => {
+        return res.status(200).json(result);
+    })
+    .catch(err => res.status(500).json(err));
+})
+
 module.exports = entriesRouter;

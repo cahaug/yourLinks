@@ -28,6 +28,7 @@ server.get('/', (req, res) => {
     res.status(200).json({message: 'Backend is up and running'});
 });
 
+// entries by userId
 server.get('/:userId', (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
