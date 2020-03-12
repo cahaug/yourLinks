@@ -19,7 +19,10 @@ statsRouter.get('/', async (req, res) => {
     .then(result => {
         return window.location.href = `${refURL}`
     })
-    .catch(err => res.status(500).error(err));
+    .catch(err => {
+        console.log(err)
+        res.status(500).json(err)
+    });
 })
 
 module.exports = statsRouter;
