@@ -14,7 +14,7 @@ statsRouter.get('/', async (req, res) => {
     const mn = date.slice(15, 16)
     const sc = date.slice(18, 19)
     const stat = { entryId, dy, mo, yr, hr, mn, sc }
-    // console.log('stat', stat)
+    console.log('stat', stat)
     return logAClick(stat)
     .then(result => {
         return window.location.href = `${refURL}`
