@@ -6,20 +6,20 @@ const { logAClick } = require('../database/queries.js');
 statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
     const entryId = req.query.eid
-    var date = new Date().toISOString();
-    const dy = date.substr(9, 10)
-    const mo = date.substr(6, 7)
-    const yr = date.substr(0, 4)
-    const hr = date.substr(12, 13)
-    const mn = date.substr(15, 16)
-    const sc = date.substr(18, 19)
+    const date = new Date().toISOString();
+    const dy = date[9, 10]
+    const mo = date[6, 7]
+    const yr = date[0, 4]
+    const hr = date[12, 13]
+    const mn = date[15, 16]
+    const sc = date[18, 19]
     const stat = { entryId, dy, mo, yr, hr, mn, sc }
-    console.log('stat', stat)
+    // console.log('stat', stat)
     return logAClick(stat)
     .then(result => {
         return res.status(200).json(result)
     })
-    .catch(err => res.status(500).error(err))
+    .catch(err => res.status(500).error(err));
 })
 
 module.exports = statsRouter;
