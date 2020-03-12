@@ -7,6 +7,7 @@ require('dotenv').config();
 const authRouter = require('../auth/auth-router.js');
 const listsRouter = require('../lists/lists-router.js');
 const entriesRouter = require('../entries/entries-router.js');
+const statsRouter = require('../stats/stats-router.js');
 
 const server = express();
 
@@ -21,6 +22,7 @@ const { getEntries } = require('../database/queries.js');
 server.use('/auth/', authRouter);
 server.use('/l/', listsRouter);
 server.use('/e/', entriesRouter);
+server.use('/s/', statsRouter);
 
 
 
