@@ -26,7 +26,7 @@ statsRouter.get('/', async (req, res) => {
     });
 });
 
-statsRouter.post('/StatsRecordsCount/', async (req, res) => {
+statsRouter.get('/StatsRecordsCount/', async (req, res) => {
     return statsRecordsCount()
     .then(result => {
         res.status(200).json(result)
