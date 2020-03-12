@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick } = require('../database/queries.js');
+const { logAClick, statsRecordsCount } = require('../database/queries.js');
 
 // YYYY-MM-DDTHH:mm:ss
 
@@ -18,12 +18,20 @@ statsRouter.get('/', async (req, res) => {
     return logAClick(stat)
     .then(result => {
         // return this.props.history.push(`${refURL}`)
-        location.href = `${refURl}`
+        window.location.href = `${refURL}`
     })
     .catch(err => {
         console.log(err)
         res.status(500).json(err)
     });
+});
+
+statsRouter.post('/StatsRecordsCount/', async (req, res) => {
+    return statsRecordsCount()
+    .then(result => {
+        res.status(200).json(result)
+    })
+    .catch(err => res.status(500).json(err))
 })
 
 module.exports = statsRouter;

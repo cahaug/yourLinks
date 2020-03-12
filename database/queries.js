@@ -47,6 +47,10 @@ module.exports = {
 
     logAClick(stat){
         return knex('stats').insert(stat)
+    },
+
+    statsRecordsCount(){
+        return knex('stats').count('statId as statId')
     }
 
 }
