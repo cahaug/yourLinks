@@ -14,10 +14,10 @@ statsRouter.get('/', async (req, res) => {
     const mn = date[15, 16]
     const sc = date[18, 19]
     const stat = { entryId, dy, mo, yr, hr, mn, sc }
-    // console.log('stat', stat)
+    console.log('stat', stat)
     return logAClick(stat)
     .then(result => {
-        return res.status(200).json(result)
+        return window.location.href = `${refURL}`
     })
     .catch(err => res.status(500).error(err));
 })
