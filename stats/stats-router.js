@@ -18,7 +18,7 @@ statsRouter.get('/', async (req, res) => {
     return logAClick(stat)
     .then(result => {
         // return this.props.history.push(`${refURL}`)
-        window.location.href = `${refURl}`
+        location.href = `${refURl}`
     })
     .catch(err => {
         console.log(err)
