@@ -47,7 +47,20 @@ statsRouter.get('/u/:userId', (req, res) => {
     const { userId } = req.params;
     return getEntries2(userId)
     .then(entries => {
-        res.status(200).json(entries)
+        entryArray = entries
+        console.log('entryArray', entryArray)
+        return getEntries2(userId)
+        .then(numbers => {
+            console.log(numbers)
+            let merged = {}
+            for(i=0; i<=numbers.length;i++){
+                merged.append({...entryArray[i], ...numbers[i]})
+            }
+            console.log(merged)
+
+            res.status(200).json(merged)
+        })
+        
     })
     .catch(err => res.status(500).json(err));
 });
