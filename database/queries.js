@@ -35,13 +35,14 @@ module.exports = {
 
     
     getEntries2(userId){
-        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc')
+        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc').select('entries.description')
     },
 
     // getEntries3(userId){
     //     return knex('entries').where("userId", userId) 
     //     'entries.description', 'entries.referencingURL', 'entries.creationDate', 'entries.linkTitle'
     //     .select('entries.entryId', 'entries.description', 'entries.referencingURL', 'entries.creationDate', 'entries.linkTitle')
+    // .join({e: 'entries'}, 'stats.entryId', 'e.entryId').select('e.description', 'e.referencingURL', 'e.creationDate', 'e.linkTitle')
     // },
 
     modifyEntryURl(entryId, referencingURL){
