@@ -45,11 +45,21 @@ statsRouter.post('/statForEntry', async (req, res) => {
 
 statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
-    return await getEntries(userId)
+    return getEntries(userId)
     .then(entries => {
         res.status(200).json(entries)
     })
     .catch(err => res.status(500).json(err));
 });
+
+
+statsRouter.get('/st/:userId', async (req, res) => {
+    const { userId } = req.params;
+    return getEntries2(userId)
+    .then(numbers => {
+        res.status(200).json(numbers)
+    }) 
+    .catch(err => res.status(500).json(err))
+})
 
 module.exports = statsRouter;
