@@ -30,6 +30,10 @@ module.exports = {
     },
 
     getEntries(userId){
+        return knex('entries').where("userId", userId)
+    },
+
+    getEntries2(userId){
         return knex('entries').where("userId", userId).join('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count()
     },
 

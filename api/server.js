@@ -40,6 +40,7 @@ server.get('/:userId', (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+
 // catch 404 and forward to the error handler
 server.use(function(req, res, next) {
     var err = new Error('Not Found');
