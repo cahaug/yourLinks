@@ -43,7 +43,7 @@ statsRouter.post('/statForEntry', async (req, res) => {
     .catch(err => res.status(500).json(err))
 })
 
-statsRouter.get('/u/:userId', (req, res) => {
+statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
     .then(entries => {
