@@ -51,6 +51,10 @@ module.exports = {
 
     statsRecordsCount(){
         return knex('stats').count('statId as statId')
+    },
+
+    statsForEntry(entryId){
+        return knex('stats').where({ entryId }).count('statId as statId')
     }
 
 }

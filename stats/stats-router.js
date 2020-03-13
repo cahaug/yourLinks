@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry } = require('../database/queries.js');
 
 // YYYY-MM-DDTHH:mm:ss
 
@@ -28,6 +28,15 @@ statsRouter.get('/', async (req, res) => {
 
 statsRouter.get('/StatsRecordsCount/', async (req, res) => {
     return statsRecordsCount()
+    .then(result => {
+        res.status(200).json(result)
+    })
+    .catch(err => res.status(500).json(err))
+});
+
+statsRouter.post('/statForEntry', async (req, res) => {
+    const { entryId } = req.body
+    return statsForEntry(entryId)
     .then(result => {
         res.status(200).json(result)
     })
