@@ -34,7 +34,7 @@ module.exports = {
     },
 
     getEntries2(userId){
-        return knex('entries').where("userId", userId).join('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count()
+        return knex('entries').where("userId", userId).join('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId')
     },
 
     modifyEntryURl(entryId, referencingURL){
