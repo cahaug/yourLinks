@@ -45,11 +45,11 @@ statsRouter.post('/statForEntry', async (req, res) => {
 
 statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
-    return getEntries(userId)
+    return await getEntries(userId)
     .then(entries => {
         entryArray = entries
         console.log('entryArray', entryArray)
-        return getEntries2(userId)
+        return await getEntries2(userId)
         .then(numbers => {
             console.log(numbers)
             let merged = {}
