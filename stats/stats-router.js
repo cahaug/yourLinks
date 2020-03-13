@@ -45,7 +45,7 @@ statsRouter.post('/statForEntry', async (req, res) => {
 
 statsRouter.get('/u/:userId', (req, res) => {
     const { userId } = req.params;
-    return getEntries2(userId)
+    return getEntries(userId)
     .then(entries => {
         entryArray = entries
         console.log('entryArray', entryArray)
@@ -54,7 +54,9 @@ statsRouter.get('/u/:userId', (req, res) => {
             console.log(numbers)
             let merged = {}
             for(i=0; i<=numbers.length;i++){
-                merged.append({...entryArray[i], ...numbers[i]})
+                let value = {...entryArray[i], ...numbers[i]}
+                console.log(value)
+                merged.append(value)
             }
             console.log(merged)
 
