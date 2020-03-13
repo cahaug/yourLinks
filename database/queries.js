@@ -35,13 +35,14 @@ module.exports = {
 
     
     getEntries2(userId){
-        return knex('entries').where("userId", userId).select('entries.entryId', 'entries.description', 'entries.referencingURL', 'entries.creationDate', 'entries.linkTitle').leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc')
+        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc')
     },
 
-    getEntries3(userId){
-        return knex('entries').where("userId", userId) 
-        'entries.description', 'entries.referencingURL', 'entries.creationDate', 'entries.linkTitle'
-    },
+    // getEntries3(userId){
+    //     return knex('entries').where("userId", userId) 
+    //     'entries.description', 'entries.referencingURL', 'entries.creationDate', 'entries.linkTitle'
+    //     .select('entries.entryId', 'entries.description', 'entries.referencingURL', 'entries.creationDate', 'entries.linkTitle')
+    // },
 
     modifyEntryURl(entryId, referencingURL){
         return knex('entries').where({ entryId }).update({ referencingURL })
