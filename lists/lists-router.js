@@ -29,6 +29,7 @@ listsRouter.post('/new', async (req, res) => {
 
 // display customURL facsimile
 listsRouter.get('/c/:customURL', async (req, res) => {
+    console.log(req.params.customURL)
     return listByCustomURL(req.params.customURL)
     .then(res => {
         res.status(200).json(res)
