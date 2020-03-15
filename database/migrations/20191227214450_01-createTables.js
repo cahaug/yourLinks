@@ -25,6 +25,7 @@ exports.up = function(knex, Promise) {
         list.string('txtColor', 128).notNullable().defaultTo('#000000');
         list.string('fontSelection', 128).notNullable().defaultTo('Roboto');
         list.integer('listViews', 128).notNullable().defaultTo(0);
+        list.string('customURL', 128).unique();
     })
     .createTable('entries', entry => {
         entry.increments('entryId');

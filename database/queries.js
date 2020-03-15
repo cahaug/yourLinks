@@ -30,12 +30,20 @@ module.exports = {
     },
 
     getEntries(userId){
-        return knex('entries').where("userId", userId)
+        return knex('entries').where("userId", userId);
     },
 
     
     getEntries2(userId){
-        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc')
+        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
+    },
+
+    listByCustomURL(customURL){
+        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId');
+    },
+
+    checkIfCustomURLAvailable(customURL){
+        return knex('lists').where("customURL", customURL);
     },
 
     // getEntries3(userId){
