@@ -14,8 +14,8 @@ listsRouter.get('/:userId', async (req, res) => {
 listsRouter.post('/new', async (req, res) => {
     const date = new Date();
     const creationDate = date;
-    const { userId, backColor, txtColor, fontSelection } = req.body;
-    const list = { userId, creationDate, backColor, txtColor, fontSelection };
+    const { userId, backColor, txtColor, fontSelection, customURL } = req.body;
+    const list = { userId, creationDate, backColor, txtColor, fontSelection, customURL };
     return createList(list)
     .then(result => {
         return getListByUser(userId)
