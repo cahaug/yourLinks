@@ -30,7 +30,7 @@ listsRouter.post('/new', async (req, res) => {
 // display customURL facsimile
 listsRouter.get('/c/:customURL', async (req, res) => {
     console.log(req.params.customURL)
-    return listByCustomURL(req.params.customURL)
+    return listByCustomURL({customURL: req.params.customURL})
     .then(res => {
         res.status(200).json(res)
     })
@@ -39,7 +39,7 @@ listsRouter.get('/c/:customURL', async (req, res) => {
 
 // return bool for whether a certain customURL is taken or not
 listsRouter.post('/checkCustom/:customURL', async (req, res) => {
-    return checkIfCustomURLAvailable(req.params.customURL)
+    return checkIfCustomURLAvailable({customURL: req.params.customURL})
     .then(res => {
         console.log(res)
         res.status(200).json(res)
