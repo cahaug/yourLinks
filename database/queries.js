@@ -39,7 +39,7 @@ module.exports = {
     },
 
     listByCustomURL(customURL){
-        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId');
+        return knex('lists').where("customURL", customURL);
     },
 
     checkIfCustomURLAvailable(customURL){
