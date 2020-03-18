@@ -20,13 +20,16 @@ server.use(cors(corsOptions));
 server.use(express.json());
 const { getEntries } = require('../database/queries.js');
 
-server.use(function (req, res, next) {
-    //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
-    next()
-})
+var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
 
 // server.use('/blank/', blankRouter) go here
