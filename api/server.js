@@ -20,6 +20,15 @@ server.use(cors(corsOptions));
 server.use(express.json());
 const { getEntries } = require('../database/queries.js');
 
+server.use(function (req, res, next) {
+    if (req.headers.origin.endsWith('link-in-bio.netlify.com')) {
+      res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
+      res.setHeader('Access-Control-Allow-Origin', 'https://' + req.headers.origin)
+      res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+    }
+    next()
+})
 
 
 // server.use('/blank/', blankRouter) go here
