@@ -3,6 +3,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
 
+const corsOptions = {
+    origin: 'https://link-in-bio.netlify.com'
+}
+
 // const blankRouter = require('../blank-router.js') go here
 const authRouter = require('../auth/auth-router.js');
 const listsRouter = require('../lists/lists-router.js');
@@ -12,7 +16,7 @@ const statsRouter = require('../stats/stats-router.js');
 const server = express();
 
 server.use(helmet());
-server.use(cors());
+server.use(cors(corsOptions));
 server.use(express.json());
 const { getEntries } = require('../database/queries.js');
 

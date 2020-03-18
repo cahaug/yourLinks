@@ -3,11 +3,11 @@ const { logAClick, statsRecordsCount, statsForEntry, getEntries2 } = require('..
 
 // YYYY-MM-DDTHH:mm:ss
 
-statsRouter.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+// statsRouter.use(function(req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 
 statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
@@ -60,7 +60,7 @@ statsRouter.get('/u/:userId', async (req, res) => {
 });
 
 
-statsRouter.get('/st/:userId', cors(), (req, res, next) => {
+statsRouter.get('/st/:userId', (req, res, next) => {
     const { userId } = req.params;
     return getEntries2(userId)
     .then(numbers => {
