@@ -9,13 +9,7 @@ const { logAClick, statsRecordsCount, statsForEntry, getEntries2 } = require('..
 //     next();
 // });
 
-statsRouter.use(function (req, res, next) {
-    //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
-    next()
-})
+
 
 statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref

@@ -40,7 +40,15 @@ var corsOptions = {
         callback(new Error('Not allowed by CORS'))
       }
     }
-  }
+}
+
+server.use(function (req, res, next) {
+    //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+    next()
+})
 
 // server.use('/blank/', blankRouter) go here
 server.use('/auth/', authRouter);
