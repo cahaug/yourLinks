@@ -60,7 +60,7 @@ statsRouter.get('/u/:userId', async (req, res) => {
 });
 
 
-statsRouter.get('/st/:userId', async (req, res) => {
+statsRouter.get('/st/:userId', cors(), (req, res, next) => {
     const { userId } = req.params;
     return getEntries2(userId)
     .then(numbers => {
