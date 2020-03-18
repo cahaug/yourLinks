@@ -2,10 +2,10 @@ const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable } = require('../database/queries.js');
 
 listsRouter.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "link-in-bio.netlify.com"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+});
 
 // displays user's list
 listsRouter.get('/:userId', async (req, res) => {

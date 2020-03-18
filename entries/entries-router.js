@@ -2,10 +2,10 @@ const entriesRouter = require('express').Router();
 const { newEntry, getAllEntries, modifyEntryURl, updateDescription } = require('../database/queries.js');
 
 entriesRouter.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "link-in-bio.netlify.com"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+});
 
 entriesRouter.post('/new', async (req, res) => {
     const date = new Date();
