@@ -4,7 +4,7 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const corsOptions = {
-    origin: 'https://link-in-bio.netlify.com/'
+    origin: 'https://link-in-bio.netlify.com'
 }
 
 // const blankRouter = require('../blank-router.js') go here
