@@ -21,16 +21,26 @@ server.use(express.json());
 const { getEntries } = require('../database/queries.js');
 
 var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
+// Test1
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+// Test2
 var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
     }
   }
-}
-
 
 // server.use('/blank/', blankRouter) go here
 server.use('/auth/', authRouter);
