@@ -1,6 +1,12 @@
 const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable } = require('../database/queries.js');
 
+listsRouter.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "https://link-in-bio.netify.com"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
 // displays user's list
 listsRouter.get('/:userId', async (req, res) => {
     return getListByUser(req.params.userId)
@@ -32,6 +38,7 @@ listsRouter.get('/c/:customURL', async (req, res) => {
     console.log(req.params.customURL)
     return listByCustomURL({customURL: req.params.customURL})
     .then(res => {
+        response.headers.add('Access-Control-Allow-Origin', '*')
         res.status(200).json(res)
     })
     .catch(err => {res.status(500).json(err)})

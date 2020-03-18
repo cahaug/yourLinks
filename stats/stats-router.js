@@ -3,6 +3,12 @@ const { logAClick, statsRecordsCount, statsForEntry, getEntries2 } = require('..
 
 // YYYY-MM-DDTHH:mm:ss
 
+statsRouter.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "https://link-in-bio.netify.com"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
 statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
     const entryId = req.query.eid
@@ -47,6 +53,7 @@ statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
     .then(entries => {
+        res.headers.add('Access-Control-Allow-Origin', '*')
         res.status(200).json(entries)
     })
     .catch(err => res.status(500).json(err));
