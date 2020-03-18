@@ -4,7 +4,7 @@ const { logAClick, statsRecordsCount, statsForEntry, getEntries2 } = require('..
 // YYYY-MM-DDTHH:mm:ss
 
 statsRouter.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "link-in-bio.netify.com"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "link-in-bio.netlify.com"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
