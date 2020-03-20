@@ -56,9 +56,9 @@ statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
     .then(entries => {
-        res.headers.set('Access-Control-Allow-Origin', '*')
-        res.headers.set('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.headers.set('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         console.log(res.headers)
         res.status(200).json(entries)
     })
@@ -70,9 +70,9 @@ statsRouter.get('/st/:userId', (req, res, next) => {
     const { userId } = req.params;
     return getEntries2(userId)
     .then(numbers => {
-        res.headers.set('Access-Control-Allow-Origin', '*')
-        res.headers.set('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.headers.set('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(numbers)
     }) 
     .catch(err => res.status(500).json(err))
