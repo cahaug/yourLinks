@@ -17,7 +17,7 @@ listsRouter.get('/:userId', async (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-listsRouter.get('list4user/:userId', async (req, res) => {
+listsRouter.get('/list4user/:userId', async (req, res) => {
     return getListId(req.params.userId)
     .then(id => {
         res.header('Access-Control-Allow-Origin', '*')
