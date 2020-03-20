@@ -25,9 +25,9 @@ authRouter.post('/register', async (req, res) => {
             const token = generateToken(saved);
             return singleUserForLogin(email)
             .then(user => {
-              // res.header('Access-Control-Allow-Origin', '*')
-              // res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-              // res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
+              res.header('Access-Control-Allow-Origin', '*')
+              res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+              res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
               res.status(201).json({
                     message:'user saved successfully',
                     userId: `${user[0].userId}`,
