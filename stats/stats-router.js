@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, getEntries2 } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2 } = require('../database/queries.js');
 
 // YYYY-MM-DDTHH:mm:ss
 
