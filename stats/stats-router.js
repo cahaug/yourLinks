@@ -55,9 +55,10 @@ statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
     .then(entries => {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.headers.add('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.headers.add('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        console.log(res.headers)
         res.status(200).json(entries)
     })
     .catch(err => res.status(500).json(err));
