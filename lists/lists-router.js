@@ -19,6 +19,9 @@ listsRouter.get('/:userId', async (req, res) => {
 listsRouter.get('list4user/:userId', async (req, res) => {
     return getListId(req.params.userId)
     .then(id => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         return res.status(200).json(id);
     })
     .catch(err => res.status(500).json(err));
@@ -46,7 +49,6 @@ listsRouter.get('/c/:customURL', async (req, res) => {
     console.log(req.params.customURL)
     return listByCustomURL({customURL: req.params.customURL})
     .then(res => {
-        response.headers.add('Access-Control-Allow-Origin', '*')
         res.status(200).json(res)
     })
     .catch(err => {res.status(500).json(err)})
