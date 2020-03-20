@@ -87,7 +87,10 @@ server.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.json({ 
         message: err.message,
-        error: req.server.get('env') === 'development' ? err : {}
+        error: err
+        // change this back before final deployment!!!
+        // error: req.server.get('env') === 'development' ? err : {}
+        
     });
 });
 
