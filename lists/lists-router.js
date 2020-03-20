@@ -7,6 +7,7 @@ const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, g
 //     next();
 // });
 
+
 // displays user's list
 listsRouter.get('/:userId', async (req, res) => {
     return getListByUser(req.params.userId)
