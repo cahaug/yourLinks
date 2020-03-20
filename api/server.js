@@ -69,6 +69,9 @@ server.get('/:userId', (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
     .then(entries => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(entries)
     })
     .catch(err => res.status(500).json(err));
