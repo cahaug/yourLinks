@@ -55,7 +55,9 @@ statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
     .then(entries => {
-        res.headers.add('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(entries)
     })
     .catch(err => res.status(500).json(err));
@@ -66,6 +68,9 @@ statsRouter.get('/st/:userId', (req, res, next) => {
     const { userId } = req.params;
     return getEntries2(userId)
     .then(numbers => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(numbers)
     }) 
     .catch(err => res.status(500).json(err))

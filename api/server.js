@@ -3,24 +3,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
 
-const corsOptions = {
-    origin: 'https://link-in-bio.netlify.com'
-}
+// const corsOptions = {
+//     origin: 'https://link-in-bio.netlify.com'
+// }
 
-// const blankRouter = require('../blank-router.js') go here
-const authRouter = require('../auth/auth-router.js');
-const listsRouter = require('../lists/lists-router.js');
-const entriesRouter = require('../entries/entries-router.js');
-const statsRouter = require('../stats/stats-router.js');
-
-const server = express();
-
-server.use(helmet());
-server.use(cors(corsOptions));
-server.use(express.json());
-const { getEntries } = require('../database/queries.js');
-
-var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
 // Test1
 // var corsOptions = {
 //   origin: function (origin, callback) {
@@ -42,11 +28,27 @@ var corsOptions = {
     }
 }
 
+// const blankRouter = require('../blank-router.js') go here
+const authRouter = require('../auth/auth-router.js');
+const listsRouter = require('../lists/lists-router.js');
+const entriesRouter = require('../entries/entries-router.js');
+const statsRouter = require('../stats/stats-router.js');
+
+const server = express();
+
+server.use(helmet());
+server.use(cors(corsOptions));
+server.use(express.json());
+const { getEntries } = require('../database/queries.js');
+
+var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
+
+
 server.use(function (req, res, next) {
     //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
     next()
 })
 
