@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId } = require('../database/queries.js');
 
 // listsRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -15,6 +15,14 @@ listsRouter.get('/:userId', async (req, res) => {
     })
     .catch(err => res.status(500).json(err));
 });
+
+listsRouter.get('list4user/:userId', async (req, res) => {
+    return getListId(req.params.userId)
+    .then(id => {
+        return res.status(200).json(id);
+    })
+    .catch(err => res.status(500).json(err));
+})
 
 // create new list
 listsRouter.post('/new', async (req, res) => {

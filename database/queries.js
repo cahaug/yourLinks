@@ -79,6 +79,10 @@ module.exports = {
 
     statsRecords(){
         return knex('stats')
+    },
+
+    getListId(userId){
+        return knex('lists').where({ userId }).select('userId', 'listId', 'customURL')
     }
 
 }
