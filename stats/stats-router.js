@@ -51,6 +51,7 @@ statsRouter.post('/statForEntry', async (req, res) => {
     .catch(err => res.status(500).json(err))
 })
 
+// entries where userid
 statsRouter.get('/u/:userId', async (req, res) => {
     const { userId } = req.params;
     return getEntries(userId)
@@ -64,7 +65,7 @@ statsRouter.get('/u/:userId', async (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-
+// entryid and count of datetime records (recorded clicks)
 statsRouter.get('/st/:userId', (req, res, next) => {
     const { userId } = req.params;
     return getEntries2(userId)
