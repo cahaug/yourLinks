@@ -61,6 +61,9 @@ server.use('/s/', statsRouter);
 
 
 server.get('/', (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+    res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
     res.status(200).json({message: 'Backend is up and running'});
 });
 
@@ -90,9 +93,9 @@ server.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.json({ 
         message: err.message,
-        error: err
-        // change this back before final deployment!!!
-        // error: req.server.get('env') === 'development' ? err : {}
+        // error: err
+        // change this back before final deployment!!! -changed-
+        error: req.server.get('env') === 'development' ? err : {}
         
     });
 });

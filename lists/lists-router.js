@@ -38,8 +38,10 @@ listsRouter.post('/new', async (req, res) => {
     .then(result => {
         return getListByUser(userId)
             .then(list => {
+                res.header('Access-Control-Allow-Origin', '*')
+                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
                 res.status(200).json(list[0]);
-
             })
     })
     .catch(err => res.status(500).json(err));
@@ -50,6 +52,9 @@ listsRouter.get('/c/:customURL', async (req, res) => {
     console.log(req.params.customURL)
     return listByCustomURL({customURL: req.params.customURL})
     .then(res => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(res)
     })
     .catch(err => {res.status(500).json(err)})
@@ -60,6 +65,9 @@ listsRouter.post('/checkCustom/:customURL', async (req, res) => {
     return checkIfCustomURLAvailable({customURL: req.params.customURL})
     .then(res => {
         console.log(res)
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(res)
     })
     .catch(err => {res.status(500).json(err)})
