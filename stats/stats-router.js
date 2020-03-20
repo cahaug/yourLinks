@@ -78,4 +78,28 @@ statsRouter.get('/st/:userId', (req, res, next) => {
     .catch(err => res.status(500).json(err))
 })
 
+// aio stats and links
+statsRouter.get('/aio/:userId', (req, res, next) => {
+    const { userId } = req.params;
+    return getEntries(userId)
+    .then(links => {
+        return getEntries2(userId)
+        .then(nums => {
+            let mergedLinks = []
+            for(let i=0; i<=res.data.length;i++){
+                let value = {...links[i], ...nums[i]}
+                links['clickCount'] = nums[i]
+                console.log('value', value)
+                mergedLinks.push(value)
+            }
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            res.status(200).json(mergedLinks)
+        })
+        .catch(err => res.status(500).json(err))
+    }) 
+    .catch(err => res.status(500).json(err))
+})
+
 module.exports = statsRouter;
