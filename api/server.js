@@ -37,20 +37,20 @@ const statsRouter = require('../stats/stats-router.js');
 const server = express();
 
 server.use(helmet());
-server.use(cors(corsOptions));
+// server.use(cors(corsOptions));
 server.use(express.json());
 const { getEntries } = require('../database/queries.js');
 
 var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
 
 
-server.use(function (req, res, next) {
-    //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-    next()
-})
+// server.use(function (req, res, next) {
+//     //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
+//     res.setHeader('Access-Control-Allow-Origin', '*')
+//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//     next()
+// })
 
 // server.use('/blank/', blankRouter) go here
 server.use('/auth/', authRouter);
