@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViews } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet } = require('../database/queries.js');
 
 // YYYY-MM-DDTHH:mm:ss
 
@@ -122,8 +122,10 @@ statsRouter.get('/aio/:userId', (req, res, next) => {
 // increment listviews
 statsRouter.get('/ili/:listId', (req, res) => {
     const { listId } = req.params
-    return incrementListViews(listId)
+    return listViewsGet(listId)
     .then(result => {
+        const listViews = result.listViews + 1
+        return incrementListViews(listId, listViews)
         res.status(200).json(result)
     })
     .catch(err => res.status(500).json(err))
@@ -133,7 +135,7 @@ statsRouter.get('/ili/:listId', (req, res) => {
 statsRouter.get('/listViews/:listId', (req, res) => {
     const { listId } = req.params
     console.log(listId)
-    return listViews(listId)
+    return listViewsGet(listId)
     .then(result => {
 
         res.status(200).json(result[0])

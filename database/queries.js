@@ -85,11 +85,11 @@ module.exports = {
         return knex('lists').where({ userId }).select('userId', 'listId', 'customURL')
     },
     
-    incrementListViews(listId){
-        return knex('lists').where('listId', listId).update({'listViews': knex.raw('lists.listViews + 1')})
+    incrementListViews(listId, listViews){
+        return knex('lists').where('listId', listId).update({'listViews': listViews})
     },
 
-    listViews(listId){
+    listViewsGet(listId){
         return knex('lists').where('listId', listId).select('listViews')
     }
 }
