@@ -137,7 +137,7 @@ statsRouter.get('/listViews/:listId', (req, res) => {
     .then(res => {
         res.status(200).json(res)
     })
-    .catch(err => res.status(500).json(err))
+    .catch(err => {console.log(err); res.status(500).json(err)})
 
 })
 
