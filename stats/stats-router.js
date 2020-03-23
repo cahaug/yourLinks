@@ -124,6 +124,7 @@ statsRouter.get('/ili/:listId', (req, res) => {
     const { listId } = req.params
     return listViewsGet(listId)
     .then(result => {
+        console.log('result', result)
         const listViews = parseInt(result.listViews + 1)
         return incrementListViews(listId, listViews)
         .then(result2 => {
