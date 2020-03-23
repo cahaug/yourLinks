@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViews } = require('../database/queries.js');
 
 // YYYY-MM-DDTHH:mm:ss
 
@@ -117,6 +117,27 @@ statsRouter.get('/aio/:userId', (req, res, next) => {
         .catch(err => res.status(500).json(err))
     }) 
     .catch(err => res.status(500).json(err))
+})
+
+// increment listviews
+statsRouter.get('/ili/:listId', (req, res) => {
+    const { listId } = req.params
+    return incrementListViews(listId)
+    .then(res => {
+        res.status(200).json({message: `listViews of ${listId} incremented successfully`})
+    })
+    .catch(err => res.status(500).json(err))
+})
+
+// return listviews for given list
+statsRouter.get('/listViews/:listId', (req, res) => {
+    const { listId } = req.params
+    return listViews(listId)
+    .then(res => {
+        res.status(200).json(res)
+    })
+    .catch(err => res.status(500).json(err))
+
 })
 
 module.exports = statsRouter;
