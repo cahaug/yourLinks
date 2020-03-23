@@ -123,8 +123,8 @@ statsRouter.get('/aio/:userId', (req, res, next) => {
 statsRouter.get('/ili/:listId', (req, res) => {
     const { listId } = req.params
     return incrementListViews(listId)
-    .then(res => {
-        res.status(200).json({message: `listViews of ${listId} incremented successfully`})
+    .then(result => {
+        res.status(200).json(result)
     })
     .catch(err => res.status(500).json(err))
 })
