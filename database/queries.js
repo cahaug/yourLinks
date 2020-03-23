@@ -90,6 +90,6 @@ module.exports = {
     },
 
     listViews(listId){
-        return knex('lists').where('listId', listId).select('listViews')
+        return knex('lists').where('listId', listId)
     }
 }
