@@ -132,7 +132,7 @@ statsRouter.get('/ili/:listId', (req, res) => {
 // return listviews for given list
 statsRouter.get('/listViews/:listId', (req, res) => {
     const { listId } = req.params
-    // console.log(listId)
+    console.log(listId)
     return listViews(listId)
     .then(res => {
         res.status(200).json(res)
