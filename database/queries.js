@@ -35,7 +35,7 @@ module.exports = {
 
     
     getEntries2(userId){
-        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
+        return knex('entries').where("userId", userId).innerJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
     },
 
     listByCustomURL(customURL){
