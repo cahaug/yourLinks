@@ -129,6 +129,9 @@ statsRouter.get('/ili/:listId', (req, res) => {
         const listViews = parseInt(result[0].listViews + 1)
         return incrementListViews(listId, listViews)
         .then(result2 => {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(200).json(result2)
         })
         .catch(err => res.status(500).json(err))
@@ -142,7 +145,9 @@ statsRouter.get('/listViews/:listId', (req, res) => {
     console.log(listId)
     return listViewsGet(listId)
     .then(result => {
-
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(result[0])
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
