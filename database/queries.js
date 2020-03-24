@@ -30,7 +30,7 @@ module.exports = {
     },
 
     getEntries(userId){
-        return knex('entries').where("userId", userId);
+        return knex('entries').where("userId", userId).orderBy('entryId', 'asc');
     },
 
     
