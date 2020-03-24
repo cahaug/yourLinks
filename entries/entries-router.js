@@ -6,6 +6,7 @@ const { newEntry, getAllEntries, modifyEntryURl, updateDescription } = require('
 //     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 //     next();
 // });
+//way to go cale. have abeer. ya doin good
 
 entriesRouter.post('/new', async (req, res) => {
     const date = new Date();
