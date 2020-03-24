@@ -58,7 +58,7 @@ module.exports = {
     },
 
     getAllEntries(){
-        return knex('entries')
+        return knex('entries').orderBy('entryId', 'asc')
     },
 
     updateDescription(entryId, description){
