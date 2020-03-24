@@ -25,7 +25,10 @@ authRouter.post('/register', async (req, res) => {
             const token = generateToken(saved);
             return singleUserForLogin(email)
             .then(user => {
-                return res.status(201).json({
+              res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+              res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
+              res.header('Access-Control-Allow-Origin', '*')
+              res.status(201).json({
                     message:'user saved successfully',
                     userId: `${user[0].userId}`,
                     email: `${user[0].email}`,
@@ -53,6 +56,9 @@ authRouter.post('/register', async (req, res) => {
           // a jwt should be generated
           const token = generateToken(user);
           // console.log('token', token);
+          res.header('Access-Control-Allow-Origin', '*')
+          res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+          res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
           res.status(200).json({
             email: `${user.email}`,
             firstName:`${user.firstName}`,
