@@ -70,6 +70,7 @@ server.get('/', (req, res) => {
 // entries by userId
 server.get('/:userId', (req, res) => {
     const { userId } = req.params;
+    console.log('typeof userId', typeof userId)
     return getEntries(userId)
     .then(entries => {
         res.header('Access-Control-Allow-Origin', '*')
