@@ -74,7 +74,8 @@ server.get('/:userId', (req, res) => {
     console.log('typeof userId', typeof userId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
-    if (typeof parsed === 'number'){
+    if (typeof parsed === number){
+        console.log('parsed is number, acting')
         return getEntries(userId)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')
@@ -86,6 +87,7 @@ server.get('/:userId', (req, res) => {
     }
     // if (typeof parsed === 'NaN'){
     else {
+        console.log('parsed is string, acting')
         console.log('yo', userId)
         const customURL = userId
         return listByCustomURL(customURL)
