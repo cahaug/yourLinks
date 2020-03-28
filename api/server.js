@@ -74,7 +74,7 @@ server.get('/:userId', (req, res) => {
     console.log('typeof userId', typeof userId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
-    if (typeof parsed === number){
+    if (parsed === 'number'){
         console.log('parsed is number, acting')
         return getEntries(userId)
         .then(entries => {
