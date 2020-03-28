@@ -74,7 +74,7 @@ server.get('/:userId', (req, res) => {
     console.log('typeof userId', typeof userId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
-    if (typeof parsed == 'number' && parsed !=='NaN'){
+    if (typeof parsed == 'number' && parsed !='NaN'){
         console.log('parsed is number, acting')
         return getEntries(userId)
         .then(entries => {
