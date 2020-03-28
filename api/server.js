@@ -85,7 +85,9 @@ server.get('/:userId', (req, res) => {
         .catch(err => res.status(500).json(err));
     }
     if (typeof parsed === 'NaN'){
-        return listByCustomURL(userId)
+        console.log('yo', userId)
+        const customURL = userId
+        return listByCustomURL(customURL)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
