@@ -84,7 +84,7 @@ server.get('/:userId', (req, res) => {
         })
         .catch(err => res.status(500).json(err));
     }
-    if (typeof parsed === 'string'){
+    if (typeof parsed === 'NaN'){
         return listByCustomURL(userId)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')
