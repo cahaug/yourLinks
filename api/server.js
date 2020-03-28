@@ -39,7 +39,7 @@ const server = express();
 server.use(helmet());
 // server.use(cors(corsOptions));
 server.use(express.json());
-const { getEntries } = require('../database/queries.js');
+const { getEntries, listByCustomURL } = require('../database/queries.js');
 
 var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
 
@@ -67,21 +67,39 @@ server.get('/', (req, res) => {
     res.status(200).json({message: 'Backend is up and running'});
 });
 
-// entries by userId
+// entries by userId (displayUserEntries on displayUserEntries /:id)
 server.get('/:userId', (req, res) => {
     const { userId } = req.params;
     const parsed = parseInt(userId,10);
     console.log('typeof userId', typeof userId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
-    return getEntries(userId)
-    .then(entries => {
+    if (typeof parsed === 'number'){
+        return getEntries(userId)
+        .then(entries => {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            res.status(200).json(entries)
+        })
+        .catch(err => res.status(500).json(err));
+    }
+    if (typeof parsed === 'string'){
+        return listByCustomURL(userId)
+        .then(entries => {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            res.status(200).json(entries)
+        })
+        .catch(err => res.status(500).json(err));
+    }
+    else {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(entries)
-    })
-    .catch(err => res.status(500).json(err));
+        res.status(500).json({message: 'Invalid request'})
+    }
 });
 
 
