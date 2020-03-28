@@ -70,7 +70,9 @@ server.get('/', (req, res) => {
 // entries by userId
 server.get('/:userId', (req, res) => {
     const { userId } = req.params;
+    const parsed = parseInt(userId,10);
     console.log('typeof userId', typeof userId)
+    console.log('parsed', parsed)
     return getEntries(userId)
     .then(entries => {
         res.header('Access-Control-Allow-Origin', '*')
