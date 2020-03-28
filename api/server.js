@@ -97,6 +97,7 @@ server.get('/:userId', (req, res) => {
         .catch(err => res.status(500).json(err));
     }
     else {
+        console.log('yo, error')
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
