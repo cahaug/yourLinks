@@ -89,7 +89,7 @@ server.get('/:userId', (req, res) => {
     else {
         console.log('parsed is string, acting')
         console.log('yo', userId)
-        const customURL = userId
+        const customURL = {customURL: userId}
         return listByCustomURL(customURL)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')
