@@ -90,7 +90,7 @@ server.get('/:userId', (req, res) => {
     else {
         console.log('parsed is string, acting')
         console.log('yo', userId)
-        const customURL = {customURL: userId}
+        const customURL = userId
         console.log('yo custom', customURL)
         return listByCustomURL(customURL)
         .then(entries => {
