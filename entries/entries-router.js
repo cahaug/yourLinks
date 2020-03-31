@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { newEntry, getAllEntries, modifyEntryURl, updateDescription } = require('../database/queries.js');
+const { newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry } = require('../database/queries.js');
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -36,6 +36,19 @@ entriesRouter.get('/all', async (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
+// get single entry by entryId
+entriesRouter.get('/:entryId', (req, res) => {
+    const entryId = req.params.entryId
+    return getSingleEntry(entryId)
+    .then(result => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        return res.status(200).json(result);
+    })
+    .catch(err => res.status(500).json(err));
+})
+
 // edit URL
 entriesRouter.put('/editURL', async (req, res) => {
     const {entryId, referencingURL} = req.body;
@@ -60,6 +73,10 @@ entriesRouter.put('/editDescription', async (req, res) => {
         return res.status(200).json(result);
     })
     .catch(err => res.status(500).json(err));
+})
+
+entriesRouter.put('/editEntry', async (req, res) => {
+    const { userId, listId, referencingURL, description, linkTitle } = req.body;
 })
 
 

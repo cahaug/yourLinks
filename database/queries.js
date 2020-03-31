@@ -61,6 +61,10 @@ module.exports = {
         return knex('entries').orderBy('entryId', 'asc')
     },
 
+    getSingleEntry(entryId){
+        return knex('entries').where({ entryId })
+    },
+
     updateDescription(entryId, description){
         return knex('entries').where({ entryId }).update({ description })
     },
