@@ -41,7 +41,7 @@ server.use(helmet());
 //     origin: 'https://link-in.bio/'
 // }));
 var allowedOrigins = ['http://localhost:3000',
-                      'https://link-in.bio/',
+                      'https://link-in.bio',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register'];
 server.use(cors({
