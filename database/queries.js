@@ -30,7 +30,7 @@ module.exports = {
     },
 
     getEntries(userId){
-        return knex('entries').where("userId", userId).orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description').orderBy('entries.entryId', 'asc');
+        return knex('entries').where("entries.userId", userId).orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description').orderBy('entries.entryId', 'asc');
     },
 
     
