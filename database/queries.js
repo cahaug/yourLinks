@@ -69,6 +69,10 @@ module.exports = {
         return knex('entries').where({ entryId }).update({ description })
     },
 
+    updateEntry(entryId, referencingURL, description, linkTitle ){
+        return knex('entries').where({ entryId }).update({  referencingURL, description, linkTitle })
+    },
+
     logAClick(stat){
         return knex('stats').insert(stat)
     },

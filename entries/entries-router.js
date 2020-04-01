@@ -75,8 +75,17 @@ entriesRouter.put('/editDescription', async (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
-entriesRouter.put('/editEntry/:entryId', async (req, res) => {
-    const { userId, listId, referencingURL, description, linkTitle } = req.body;
+// edit referencingUrl, description and title
+entriesRouter.put('/replaceEntry', async (req, res) => {
+    const { entryId, referencingURL, description, linkTitle } = req.body;
+    return updateEntry(entryId, referencingURL, description, linkTitle)
+    .then(result => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        return res.status(200).json(result);
+    })
+    .catch(err => res.status(500).json(err))
 })
 
 
