@@ -85,7 +85,7 @@ entriesRouter.put('/replaceEntry', async (req, res) => {
         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         return res.status(200).json(result);
     })
-    .catch(err => res.status(500).json(err))
+    .catch(err => {console.log(err); res.status(500).json(err)})
 })
 
 
