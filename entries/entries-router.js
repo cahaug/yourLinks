@@ -37,7 +37,7 @@ entriesRouter.get('/all', async (req, res) => {
 })
 
 // get single entry by entryId
-entriesRouter.get('/:entryId', (req, res) => {
+entriesRouter.get('/editEntry/:entryId', (req, res) => {
     const entryId = req.params.entryId
     return getSingleEntry(entryId)
     .then(result => {
@@ -75,7 +75,7 @@ entriesRouter.put('/editDescription', async (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
-entriesRouter.put('/editEntry', async (req, res) => {
+entriesRouter.put('/editEntry/:entryId', async (req, res) => {
     const { userId, listId, referencingURL, description, linkTitle } = req.body;
 })
 
