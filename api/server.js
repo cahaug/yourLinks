@@ -1,5 +1,5 @@
 const express = require('express');
-// const cors = require('cors');
+const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -8,15 +8,15 @@ require('dotenv').config();
 // }
 
 // Test1
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
 // Test2
 // var corsOptions = {
 //     origin: function (origin, callback) {
@@ -37,11 +37,13 @@ const statsRouter = require('../stats/stats-router.js');
 const server = express();
 
 server.use(helmet());
-// server.use(cors(corsOptions));
+server.use(cors({
+    origin: 'https://link-in.bio/'
+}));
 server.use(express.json());
 const { getEntries, listByCustomURL } = require('../database/queries.js');
 
-var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
+// var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
 
 
 // server.use(function (req, res, next) {
