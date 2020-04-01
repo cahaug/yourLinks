@@ -59,11 +59,13 @@ authRouter.post('/register', async (req, res) => {
           res.header('Access-Control-Allow-Origin', '*')
           res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
           res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+          console.log('user', user)
           res.status(200).json({
             email: `${user.email}`,
             firstName:`${user.firstName}`,
             lastName:`${user.lastName}`,
             userId:`${user.userId}`,
+            listId:`${user.listId}`,
             token
           });
         } else {
