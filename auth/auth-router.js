@@ -19,11 +19,11 @@ authRouter.post('/register', async (req, res) => {
     const hash = bcrypt.hashSync(user.password, 12); // 2 ^ n
     user.password = hash;
     user = { ...user, creationDate };
-    return await insertUser(user)
+    return insertUser(user)
         .then(saved => {
             // a jwt should be generated
             const token = generateToken(saved);
-            return await singleUserForLogin(email)
+            return singleUserForLogin(email)
             .then(user => {
               res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
               res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
