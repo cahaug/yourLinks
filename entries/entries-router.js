@@ -77,6 +77,7 @@ entriesRouter.put('/editDescription', async (req, res) => {
 
 // edit referencingUrl, description and title
 entriesRouter.put('/replaceEntry', async (req, res) => {
+    console.log('req.body', req.body)
     const { entryId, referencingURL, description, linkTitle } = req.body;
     return updateEntry(entryId, referencingURL, description, linkTitle)
     .then(result => {
