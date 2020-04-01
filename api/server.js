@@ -37,22 +37,30 @@ const statsRouter = require('../stats/stats-router.js');
 const server = express();
 
 server.use(helmet());
+// server.use(cors({
+//     origin: 'https://link-in.bio/'
+// }));
+var allowedOrigins = ['http://localhost:3000',
+                      'https://link-in.bio/',
+                      'https://link-in-bio.herokuapp.com/auth/login',
+                      'https://link-in-bio.herokuapp.com/auth/register'];
 server.use(cors({
-    origin: 'https://link-in.bio/'
+  origin: function(origin, callback){
+    // allow requests with no origin 
+    // (like mobile apps or curl requests)
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      var msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
 }));
 server.use(express.json());
 const { getEntries, listByCustomURL } = require('../database/queries.js');
 
-// var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
 
-
-// server.use(function (req, res, next) {
-//     //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
-//     res.setHeader('Access-Control-Allow-Origin', '*')
-//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-//     next()
-// })
 
 // server.use('/blank/', blankRouter) go here
 server.use('/auth/', authRouter);
