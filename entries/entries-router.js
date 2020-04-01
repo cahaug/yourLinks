@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry } = require('../database/queries.js');
+const { newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry } = require('../database/queries.js');
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -80,6 +80,19 @@ entriesRouter.put('/replaceEntry', async (req, res) => {
     console.log('req.body', req.body)
     const { entryId, referencingURL, description, linkTitle } = req.body;
     return updateEntry(entryId, referencingURL, description, linkTitle)
+    .then(result => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        return res.status(200).json(result);
+    })
+    .catch(err => {console.log(err); res.status(500).json(err)})
+})
+
+entriesRouter.post('/deleteEntry', (req, res) => {
+    // console.log(req.body)
+    const { entryId } = req.body
+    return deleteEntry(entryId)
     .then(result => {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')

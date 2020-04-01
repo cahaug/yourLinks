@@ -77,6 +77,10 @@ module.exports = {
             })
     },
 
+    deleteEntry(entryId){
+        return knex('entries').where({ entryId }).del()
+    },
+
     logAClick(stat){
         return knex('stats').insert(stat)
     },
