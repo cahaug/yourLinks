@@ -84,7 +84,7 @@ server.get('/:userId', (req, res) => {
             res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(200).json(entries)
         })
-        .catch(err => res.status(500).json(err));
+        .catch(err => {console.log(err); res.status(500).json(err)})
     }
     // if (typeof parsed === 'NaN'){
     else {
