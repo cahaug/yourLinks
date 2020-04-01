@@ -19,11 +19,11 @@ authRouter.post('/register', async (req, res) => {
     const hash = bcrypt.hashSync(user.password, 12); // 2 ^ n
     user.password = hash;
     user = { ...user, creationDate };
-    return insertUser(user)
+    return await insertUser(user)
         .then(saved => {
             // a jwt should be generated
             const token = generateToken(saved);
-            return singleUserForLogin(email)
+            return await singleUserForLogin(email)
             .then(user => {
               res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
               res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
@@ -34,7 +34,7 @@ authRouter.post('/register', async (req, res) => {
                     email: `${user[0].email}`,
                     firstName: `${user[0].firstName}`,
                     token
-                });
+                })
             })
         })
       .catch(error => {
