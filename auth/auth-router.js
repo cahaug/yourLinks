@@ -13,6 +13,7 @@ const { insertUser, singleUserForLogin } = require('../database/queries.js')
 
 authRouter.post('/register', async (req, res) => {
     let user = req.body;
+    console.log('incoming user', user)
     const email = user.email;
     const date = new Date();
     const creationDate = date
@@ -25,6 +26,7 @@ authRouter.post('/register', async (req, res) => {
             const token = generateToken(saved);
             return singleUserForLogin(email)
             .then(user => {
+              console.log(user)
               res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
               res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
               res.header('Access-Control-Allow-Origin', '*')
