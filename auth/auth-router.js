@@ -13,18 +13,22 @@ const { insertUser, singleUserForLogin } = require('../database/queries.js')
 
 authRouter.post('/register', async (req, res) => {
     let user = req.body;
+    console.log('incoming user', user)
     const email = user.email;
     const date = new Date();
     const creationDate = date
     const hash = bcrypt.hashSync(user.password, 12); // 2 ^ n
     user.password = hash;
     user = { ...user, creationDate };
-    return insertUser(user)
+    console.log('user w date',user)
+    return await insertUser(user)
         .then(saved => {
             // a jwt should be generated
+            console.log('1.saved', saved)
             const token = generateToken(saved);
             return singleUserForLogin(email)
             .then(user => {
+              console.log('2.user',user)
               res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
               res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
               res.header('Access-Control-Allow-Origin', '*')
@@ -34,7 +38,7 @@ authRouter.post('/register', async (req, res) => {
                     email: `${user[0].email}`,
                     firstName: `${user[0].firstName}`,
                     token
-                });
+                })
             })
         })
       .catch(error => {
@@ -59,11 +63,13 @@ authRouter.post('/register', async (req, res) => {
           res.header('Access-Control-Allow-Origin', '*')
           res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
           res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+          console.log('user', user)
           res.status(200).json({
             email: `${user.email}`,
             firstName:`${user.firstName}`,
             lastName:`${user.lastName}`,
             userId:`${user.userId}`,
+            listId:`${user.listId}`,
             token
           });
         } else {

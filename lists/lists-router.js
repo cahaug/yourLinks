@@ -12,6 +12,9 @@ const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, g
 listsRouter.get('/:userId', async (req, res) => {
     return getListByUser(req.params.userId)
     .then(list => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         return res.status(200).json(list);
     })
     .catch(err => res.status(500).json(err));
@@ -72,6 +75,7 @@ listsRouter.post('/checkCustom/:customURL', async (req, res) => {
     })
     .catch(err => {res.status(500).json(err)})
 })
+
 
 
 module.exports = listsRouter;

@@ -1,5 +1,5 @@
 const express = require('express');
-// const cors = require('cors');
+const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -8,15 +8,15 @@ require('dotenv').config();
 // }
 
 // Test1
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
 // Test2
 // var corsOptions = {
 //     origin: function (origin, callback) {
@@ -37,20 +37,30 @@ const statsRouter = require('../stats/stats-router.js');
 const server = express();
 
 server.use(helmet());
-// server.use(cors(corsOptions));
+// server.use(cors({
+//     origin: 'https://link-in.bio/'
+// }));
+var allowedOrigins = ['http://localhost:3000',
+                      'https://link-in.bio',
+                      'https://link-in-bio.herokuapp.com/auth/login',
+                      'https://link-in-bio.herokuapp.com/auth/register'];
+server.use(cors({
+  origin: function(origin, callback){
+    // allow requests with no origin 
+    // (like mobile apps or curl requests)
+    if(!origin) {return callback(null, true)};
+    if(allowedOrigins.indexOf(origin) === -1){
+      var msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
 server.use(express.json());
-const { getEntries } = require('../database/queries.js');
-
-var whitelist = ['http://link-in-bio.netlify.com', 'https://link-in-bio.netlify.com']
+const { getEntries, listByCustomURL } = require('../database/queries.js');
 
 
-// server.use(function (req, res, next) {
-//     //   res.setHeader('Access-Control-Allow-Origin', 'http://' + req.headers.origin)
-//     res.setHeader('Access-Control-Allow-Origin', '*')
-//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-//     next()
-// })
 
 // server.use('/blank/', blankRouter) go here
 server.use('/auth/', authRouter);
@@ -67,17 +77,47 @@ server.get('/', (req, res) => {
     res.status(200).json({message: 'Backend is up and running'});
 });
 
-// entries by userId
+// entries by userId (displayUserEntries on displayUserEntries /:id)
 server.get('/:userId', (req, res) => {
     const { userId } = req.params;
-    return getEntries(userId)
-    .then(entries => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(entries)
-    })
-    .catch(err => res.status(500).json(err));
+    const parsed = parseInt(userId,10);
+    console.log('typeof userId', typeof userId)
+    console.log('parsed', parsed)
+    console.log('typeof parsed', typeof parsed)
+    if (typeof parsed == 'number' && parsed.toString() !='NaN'){
+        console.log('userid', userId)
+        console.log('parsed is number, acting')
+        return getEntries(userId)
+        .then(entries => {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            res.status(200).json(entries)
+        })
+        .catch(err => {console.log(err); res.status(500).json(err)})
+    }
+    // if (typeof parsed === 'NaN'){
+    else {
+        console.log('parsed is string, acting')
+        console.log('yo', userId)
+        const customURL = userId
+        console.log('yo custom', customURL)
+        return listByCustomURL(customURL)
+        .then(entries => {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            res.status(200).json(entries)
+        })
+        .catch(err => {console.log(err); res.status(500).json(err)});
+    }
+    // else {
+    //     console.log('yo, error')
+    //     res.header('Access-Control-Allow-Origin', '*')
+    //     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+    //     res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+    //     res.status(500).json({message: 'Invalid request'})
+    // }
 });
 
 
