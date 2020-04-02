@@ -20,13 +20,15 @@ authRouter.post('/register', async (req, res) => {
     const hash = bcrypt.hashSync(user.password, 12); // 2 ^ n
     user.password = hash;
     user = { ...user, creationDate };
+    console.log('user w date',user)
     return await insertUser(user)
         .then(saved => {
             // a jwt should be generated
+            console.log('1.saved', saved)
             const token = generateToken(saved);
             return singleUserForLogin(email)
             .then(user => {
-              console.log(user)
+              console.log('2.user',user)
               res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
               res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
               res.header('Access-Control-Allow-Origin', '*')
