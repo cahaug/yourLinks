@@ -14,7 +14,7 @@ module.exports = {
     },
 
     singleUserForLogin(email){
-        return knex('users').where("email", email).leftJoin('lists', 'users.userId', 'lists.userId');
+        return knex('users').where("email", email);
     },
 
     getListByUser(userId){
