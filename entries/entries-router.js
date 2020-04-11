@@ -10,8 +10,8 @@ const { newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEnt
 entriesRouter.post('/new', async (req, res) => {
     const date = new Date();
     const creationDate = date;
-    const { userId, listId, referencingURL, description, linkTitle } = req.body;
-    const entry = { userId, listId, referencingURL, description, linkTitle, creationDate };
+    const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
+    const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
     // console.log(entry)
     return newEntry(entry)
     .then(result => {
@@ -78,8 +78,8 @@ entriesRouter.put('/editDescription', async (req, res) => {
 // edit referencingUrl, description and title
 entriesRouter.put('/replaceEntry', async (req, res) => {
     console.log('req.body', req.body)
-    const { entryId, referencingURL, description, linkTitle } = req.body;
-    return updateEntry(entryId, referencingURL, description, linkTitle)
+    const { entryId, referencingURL, description, linkTitle, imgURL } = req.body;
+    return updateEntry(entryId, referencingURL, description, linkTitle, imgURL)
     .then(result => {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')

@@ -10,6 +10,7 @@ exports.up = function(knex, Promise) {
         user.string('firstName', 128).notNullable();
         user.string('lastName', 128).notNullable();
         user.string('creationDate', 128).notNullable();
+        user.string('referredBy', 128);
     })
     .createTable('lists', list => {
         list.increments('listId');
@@ -46,7 +47,8 @@ exports.up = function(knex, Promise) {
         entry.string('creationDate', 128).notNullable();
         entry.text('referencingURL', 500).notNullable();
         entry.string('description',500);
-        entry.string('linkTitle', 500).notNullable()
+        entry.string('linkTitle', 500).notNullable();
+        entry.string('imgURL', 500);
     })
     .createTable('stats', entry => {
         entry.increments('statId')
