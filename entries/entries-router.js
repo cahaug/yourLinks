@@ -12,7 +12,7 @@ entriesRouter.post('/new', async (req, res) => {
     const creationDate = date;
     const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
     const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
-    // console.log(entry)
+    console.log(entry)
     return newEntry(entry)
     .then(result => {
         res.header('Access-Control-Allow-Origin', '*')
