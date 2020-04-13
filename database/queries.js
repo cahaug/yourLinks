@@ -26,7 +26,7 @@ module.exports = {
     },
 
     newEntry(entry){
-        return knex('entries').insert(entry).returning('entryId');
+        return knex('entries').returning('entryId').insert(entry);
     },
 
     getEntries(userId){
