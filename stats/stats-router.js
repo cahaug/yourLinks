@@ -26,6 +26,7 @@ statsRouter.get('/', async (req, res) => {
     console.log('stat', stat)
     return logAClick(stat)
     .then(result => {
+        console.log('redirect', redirect)
         // return this.props.history.push(`${refURL}`)
         if (redirect === 'f'){
             res.header('Access-Control-Allow-Origin', '*')
