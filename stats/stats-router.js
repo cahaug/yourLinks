@@ -28,6 +28,9 @@ statsRouter.get('/', async (req, res) => {
     .then(result => {
         // return this.props.history.push(`${refURL}`)
         if (redirect === 'f'){
+            res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(201).json(result)
         } else {
             return res.redirect(`${refURL}`)
