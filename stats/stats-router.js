@@ -14,7 +14,7 @@ const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, st
 statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
     const entryId = req.query.eid
-    const redirect = req.query.redirect
+    const redirect = req.query.red
     const date = new Date().toISOString();
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
