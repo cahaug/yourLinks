@@ -14,6 +14,7 @@ const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, st
 statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
     const entryId = req.query.eid
+    const redirect = req.query.redirect
     const date = new Date().toISOString();
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
@@ -26,7 +27,11 @@ statsRouter.get('/', async (req, res) => {
     return logAClick(stat)
     .then(result => {
         // return this.props.history.push(`${refURL}`)
-        return res.redirect(`${refURL}`)
+        if (redirect === 'f'){
+            res.status(201).json(result)
+        } else {
+            return res.redirect(`${refURL}`)
+        }
     })
     .catch(err => {
         console.log(err)
