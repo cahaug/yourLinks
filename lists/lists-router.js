@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom } = require('../database/queries.js');
 
 // listsRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -76,6 +76,18 @@ listsRouter.post('/checkCustom/:customURL', async (req, res) => {
     .catch(err => {res.status(500).json(err)})
 })
 
+// assign a user a customURL
+listsRouter.put('/putCustom', (req, res) => {
+    const { customURL, listId } = req.body
+    return putCustom( customURL, listId)
+    .then(res => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        res.status(200).json(res)
+    })
+    .catch(err => {console.log(err); res.status(500).json(err)})
+})
 
 
 module.exports = listsRouter;
