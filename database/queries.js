@@ -30,7 +30,7 @@ module.exports = {
     },
 
     getEntries(userId){
-        return knex('entries').where("entries.userId", userId).orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
+        return knex('entries').where("entries.userId", userId).orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
     },
 
     
@@ -39,7 +39,7 @@ module.exports = {
     },
 
     listByCustomURL(customURL){
-        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
+        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
     },
     // join('entries', 'lists.listId', 'entries.listId')
     checkIfCustomURLAvailable(customURL){

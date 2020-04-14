@@ -37,7 +37,9 @@ authRouter.post('/register', async (req, res) => {
                     userId: `${user[0].userId}`,
                     email: `${user[0].email}`,
                     firstName: `${user[0].firstName}`,
-                    token
+                    profilePictureURL:`${user[0].profilePictureURL}`,
+                    token,
+                    user
                 })
             })
         })
