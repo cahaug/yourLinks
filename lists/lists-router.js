@@ -81,7 +81,7 @@ listsRouter.put('/putCustom', (req, res) => {
     const { customURL, listId } = req.body
     console.log('customURL', customURL);
     console.log('listId', listId)
-    return putCustom(customURL, listId)
+    return putCustom(listId, customURL)
     .then(res => {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
