@@ -77,17 +77,17 @@ listsRouter.post('/checkCustom/:customURL', async (req, res) => {
 })
 
 // assign a user a customURL
-listsRouter.put('/putCustom', (req, res) => {
+listsRouter.put('/putCustom', async (req, res) => {
     const { customURL, listId } = req.body
     console.log('customURL', customURL);
     console.log('listId', listId)
     return putCustom(listId, customURL)
-    .then((res) => {
-        console.log(res)
+    .then((resultant) => {
+        console.log(resultant)
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(res)
+        res.status(200).json(resultant)
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
 })
