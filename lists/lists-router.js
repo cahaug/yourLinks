@@ -79,7 +79,9 @@ listsRouter.post('/checkCustom/:customURL', async (req, res) => {
 // assign a user a customURL
 listsRouter.put('/putCustom', (req, res) => {
     const { customURL, listId } = req.body
-    return putCustom( customURL, listId)
+    console.log('customURL', customURL);
+    console.log('listId', listId)
+    return putCustom(customURL, listId)
     .then(res => {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
