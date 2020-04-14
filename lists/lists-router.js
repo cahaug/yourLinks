@@ -84,9 +84,9 @@ listsRouter.put('/putCustom', (req, res) => {
     return putCustom(listId, customURL)
     .then(res => {
         console.log(res)
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        // res.header('Access-Control-Allow-Origin', '*')
+        // res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        // res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(res)
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
