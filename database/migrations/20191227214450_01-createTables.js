@@ -11,6 +11,7 @@ exports.up = function(knex, Promise) {
         user.string('lastName', 128).notNullable();
         user.string('creationDate', 128).notNullable();
         user.string('referredBy', 128);
+        user.string('profilePictureURL',500);
     })
     .createTable('lists', list => {
         list.increments('listId');
