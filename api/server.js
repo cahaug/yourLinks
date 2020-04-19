@@ -58,7 +58,7 @@ server.use(cors({
   }
 }));
 server.use(express.json());
-const { getEntries, listByCustomURL } = require('../database/queries.js');
+const { getEntries1, listByCustomURL } = require('../database/queries.js');
 
 
 
@@ -87,7 +87,7 @@ server.get('/:listId', (req, res) => {
     if (typeof parsed == 'number' && parsed.toString() !='NaN'){
         console.log('listId', listId)
         console.log('parsed is number, acting')
-        return getEntries(listId)
+        return getEntries1(listId)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')

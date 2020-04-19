@@ -29,10 +29,13 @@ module.exports = {
         return knex('entries').returning('*').insert(entry);
     },
 
-    getEntries(listId){
-        return knex('entries').where("entries.listId", listId).orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
+    getEntries(userId){
+        return knex('entries').where("entries.userId", userId).orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
     },
 
+    getEntries1(listId){
+        return knex('entries').where("entries.listId", listId).orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
+    },
     
     getEntries2(userId){
         return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').orderBy('stats.entryId', 'asc').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
