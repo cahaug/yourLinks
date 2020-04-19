@@ -39,8 +39,10 @@ listsRouter.post('/new', async (req, res) => {
     const list = { userId, creationDate, backColor, txtColor, fontSelection, customURL };
     return createList(list)
     .then(result => {
+        console.log('new list result ', result)
         return getListByUser(userId)
             .then(list => {
+                console.log('list return', list)
                 res.header('Access-Control-Allow-Origin', '*')
                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
