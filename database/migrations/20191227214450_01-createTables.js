@@ -12,6 +12,7 @@ exports.up = function(knex, Promise) {
         user.string('creationDate', 128).notNullable();
         user.string('referredBy', 128);
         user.string('profilePictureURL',500);
+        user.string('stripeCustomerId',128);
     })
     .createTable('lists', list => {
         list.increments('listId');
@@ -28,6 +29,7 @@ exports.up = function(knex, Promise) {
         list.string('fontSelection', 128).notNullable().defaultTo('Roboto');
         list.integer('listViews', 128).notNullable().defaultTo(0);
         list.string('customURL', 128).unique();
+        list.boolean('displayUserInfo').defaultTo(true);
     })
     .createTable('entries', entry => {
         entry.increments('entryId');

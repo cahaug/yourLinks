@@ -106,7 +106,7 @@ module.exports = {
     },
 
     getListId(userId){
-        return knex('lists').where({ userId }).select('userId', 'listId', 'customURL')
+        return knex('lists').where({ userId }).select('userId', 'listId', 'customURL').orderBy('listId','asc')
     },
     
     incrementListViews(listId, listViews){
