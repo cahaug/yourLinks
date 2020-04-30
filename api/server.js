@@ -74,8 +74,10 @@ server.get('/', (req, res) => {
     // console.log('req', req)
     const host = req.get('host');
     const origin = req.get('origin');
+    const userIP = req.socket.remoteAddress;
     console.log('req.origin', origin)
     console.log('req.host', host)
+    console.log('req.userIP', userIP)
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
     res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
