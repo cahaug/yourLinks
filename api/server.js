@@ -72,13 +72,13 @@ server.use('/s/', statsRouter);
 
 server.get('/', (req, res) => {
     // console.log('req', req)
-    console.log('req.headers', req.headers)
+    // console.log('req.headers', req.headers)
     const host = req.headers.host;
     const userAgent = req.headers['user-agent'];
     // const origin = req.headers.origin;
     const userIP = req.headers['x-forwarded-for'];
     const dntBool = !!req.headers.dnt
-    console.log('req.origin', origin)
+    // console.log('req.origin', origin)
     console.log('req.host', host)
     console.log('userAgent', userAgent)
     console.log('req.userIP', userIP)
