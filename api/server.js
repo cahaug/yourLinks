@@ -82,7 +82,7 @@ server.get('/', (req, res) => {
     console.log('req.host', host)
     console.log('userAgent', userAgent)
     console.log('req.userIP', userIP)
-    console.log('track this user? ', dntBool)
+    console.log('do not track this user? ', dntBool)
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
     res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
