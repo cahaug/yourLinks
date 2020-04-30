@@ -72,6 +72,7 @@ server.use('/s/', statsRouter);
 
 server.get('/', (req, res) => {
     // console.log('req', req)
+    console.log('req.headers', req.headers)
     const host = req.headers.host;
     const origin = req.headers.origin;
     const userIP = req.socket.remoteAddress;
