@@ -77,8 +77,10 @@ server.get('/', (req, res) => {
     const userAgent = req.headers['user-agent'];
     // const origin = req.headers.origin;
     const userIP = req.headers['x-forwarded-for'];
+    const reefer = req.headers.referer
     const dntBool = !!req.headers.dnt
     // console.log('req.origin', origin)
+    console.log('reefer', reefer)
     console.log('req.host', host)
     console.log('userAgent', userAgent)
     console.log('req.userIP', userIP)
