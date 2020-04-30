@@ -71,6 +71,8 @@ server.use('/s/', statsRouter);
 
 
 server.get('/', (req, res) => {
+    console.log('req', req)
+    console.log('req.origin', req.origin)
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
     res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
