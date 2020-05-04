@@ -15,6 +15,7 @@ statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
     const entryId = req.query.eid
     const redirect = req.query.red
+    const countryOfOrigin, province = null
     const date = new Date().toISOString();
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
@@ -22,7 +23,10 @@ statsRouter.get('/', async (req, res) => {
     const hr = date.slice(11, 13)
     const mn = date.slice(14, 16)
     const sc = date.slice(17, 19)
-    const stat = { entryId, dy, mo, yr, hr, mn, sc }
+    const doNotTrack = !!req.headers.dnt
+    const userIP = req.headers['x-forwarded-for'];
+    const userAgent = req.headers['user-agent'];
+    const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province }
     console.log('stat', stat)
     return logAClick(stat)
     .then(result => {

@@ -68,7 +68,11 @@ exports.up = function(knex, Promise) {
         entry.integer('hr', 2).notNullable();
         entry.integer('mn', 2).notNullable();
         entry.integer('sc', 2).notNullable();
-        
+        entry.string('userAgent', 230);
+        entry.string('userIP',16);
+        entry.string('countryOfOrigin', 55);
+        entry.string('province', 128);
+        entry.boolean('doNotTrack').defaultTo(false);
     });
 };
 
