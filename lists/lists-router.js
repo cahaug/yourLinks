@@ -1,5 +1,6 @@
 const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom } = require('../database/queries.js');
+const { restricted } = require('../middleware/restricted.js')
 
 // listsRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -66,7 +67,7 @@ listsRouter.get('/c/:customURL', async (req, res) => {
 })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCustom/:customURL', restricted, async (req, res) => {
+listsRouter.get('/checkCustom/:customURL', async (req, res) => {
     return checkIfCustomURLAvailable({customURL: req.params.customURL})
     .then(res => {
         console.log(res)
