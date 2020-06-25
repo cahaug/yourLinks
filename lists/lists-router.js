@@ -66,7 +66,7 @@ listsRouter.get('/c/:customURL', async (req, res) => {
 })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCustom/:customURL', async (req, res) => {
+listsRouter.post('/checkCustom/:customURL', restricted, async (req, res) => {
     return checkIfCustomURLAvailable({customURL: req.params.customURL})
     .then(res => {
         console.log(res)
@@ -75,7 +75,7 @@ listsRouter.post('/checkCustom/:customURL', async (req, res) => {
         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(res)
     })
-    .catch(err => {res.status(500).json(err)})
+    .catch(err => {console.log(err); res.status(500).json(err)})
 })
 
 // assign a user a customURL
