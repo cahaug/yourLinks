@@ -11,6 +11,8 @@ const restricted = require('../middleware/restricted.js');
 entriesRouter.post('/new', restricted, async (req, res) => {
     const date = new Date();
     const creationDate = date;
+    console.log('req.decodedToken', req.decodedToken)
+    console.log('req', req)
     const { sub } = req.decodedToken
     const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
     const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
@@ -23,7 +25,7 @@ entriesRouter.post('/new', restricted, async (req, res) => {
             res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             return res.status(200).json({message:"Entry Added Successfully", result});
         })
-        .catch(err => res.status(500).json(err));
+        .catch(err => {console.log('failed in catch', err); res.status(500).json(err)});
     }  else {
         res.status(500).json({message:'userId inequals sub'})
     }
