@@ -1,6 +1,6 @@
 const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom } = require('../database/queries.js');
-const { restricted } = require('../middleware/restricted.js')
+const restricted = require('../middleware/restricted.js')
 
 // listsRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from

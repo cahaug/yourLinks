@@ -57,7 +57,7 @@ entriesRouter.get('/editEntry/:entryId', (req, res) => {
         return res.status(200).json(result);
     })
     .catch(err => res.status(500).json(err));
-})
+});
 
 // edit URL
 // entriesRouter.put('/editURL', async (req, res) => {
@@ -97,7 +97,7 @@ entriesRouter.put('/replaceEntry', async (req, res) => {
         return res.status(200).json(result);
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
-})
+});
 
 // delete entry production
 entriesRouter.post('/deleteEntry', (req, res) => {
@@ -111,7 +111,7 @@ entriesRouter.post('/deleteEntry', (req, res) => {
         return res.status(200).json(result);
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
-})
+});
 
 
 module.exports = entriesRouter;
