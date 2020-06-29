@@ -1,5 +1,6 @@
 const entriesRouter = require('express').Router();
 const { newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry } = require('../database/queries.js');
+const restricted = require('../middleware/restricted.js');
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -7,20 +8,25 @@ const { newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEnt
 //     next();
 // });
 
-entriesRouter.post('/new', async (req, res) => {
+entriesRouter.post('/new', restricted, async (req, res) => {
     const date = new Date();
     const creationDate = date;
+    const { sub } = req.decodedToken
     const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
     const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
     console.log(entry)
-    return newEntry(entry)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        return res.status(200).json({message:"Entry Added Successfully", result});
-    })
-    .catch(err => res.status(500).json(err));
+    if(sub === userId){
+        return newEntry(entry)
+        .then(result => {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            return res.status(200).json({message:"Entry Added Successfully", result});
+        })
+        .catch(err => res.status(500).json(err));
+    }  else {
+        res.status(500).json({message:'userId inequals sub'})
+    }
 });
 
 // all entries with id's
