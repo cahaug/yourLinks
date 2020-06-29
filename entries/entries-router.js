@@ -14,7 +14,9 @@ entriesRouter.post('/new', restricted, async (req, res) => {
     console.log('req.decodedToken', req.decodedToken)
     console.log('req', req)
     const { sub } = req.decodedToken
+    console.log('sub', sub)
     const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
+    console.log('userId', userId)
     const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
     console.log(entry)
     if(sub === userId){
