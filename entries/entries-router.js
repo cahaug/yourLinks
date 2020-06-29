@@ -12,14 +12,14 @@ entriesRouter.post('/new', restricted, async (req, res) => {
     const date = new Date();
     const creationDate = date;
     console.log('req.decodedToken', req.decodedToken)
-    console.log('req', req)
     const { sub } = req.decodedToken
     console.log('sub', sub)
     const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
     console.log('userId', userId)
     const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
     console.log(entry)
-    if(sub === userId){
+    const parsedUserId = parseInt(userId, 10)
+    if(sub === parsedUserId){
         return newEntry(entry)
         .then(result => {
             res.header('Access-Control-Allow-Origin', '*')
