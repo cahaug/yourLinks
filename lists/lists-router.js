@@ -33,7 +33,7 @@ listsRouter.get('/list4user/:userId', async (req, res) => {
 })
 
 // create new list
-listsRouter.post('/new', async (req, res) => {
+listsRouter.post('/new', restricted, async (req, res) => {
     const date = new Date();
     const creationDate = date;
     const { userId, backColor, txtColor, fontSelection, customURL } = req.body;
@@ -80,7 +80,7 @@ listsRouter.get('/checkCustom/:customURL', async (req, res) => {
 })
 
 // assign a user a customURL
-listsRouter.put('/putCustom', async (req, res) => {
+listsRouter.put('/putCustom', restricted, async (req, res) => {
     const { customURL, listId } = req.body
     console.log('customURL', customURL);
     console.log('listId', listId)

@@ -17,7 +17,7 @@ entriesRouter.post('/new', restricted, async (req, res) => {
     const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
     console.log('userId', userId)
     const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
-    console.log(entry)
+    // console.log(entry)
     const parsedUserId = parseInt(userId, 10)
     if(sub === parsedUserId){
         return newEntry(entry)
@@ -33,18 +33,18 @@ entriesRouter.post('/new', restricted, async (req, res) => {
     }
 });
 
-// all entries with id's
-entriesRouter.get('/all', async (req, res) => {
-    const { entryId } = req.body;
-    return getAllEntries(entryId)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        return res.status(200).json(result)
-    })
-    .catch(err => res.status(500).json(err));
-})
+// all entries with id's - commented out bc security
+// entriesRouter.get('/all', async (req, res) => {
+//     const { entryId } = req.body;
+//     return getAllEntries(entryId)
+//     .then(result => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         return res.status(200).json(result)
+//     })
+//     .catch(err => res.status(500).json(err));
+// })
 
 // get single entry by entryId
 entriesRouter.get('/editEntry/:entryId', (req, res) => {
@@ -60,32 +60,32 @@ entriesRouter.get('/editEntry/:entryId', (req, res) => {
 })
 
 // edit URL
-entriesRouter.put('/editURL', async (req, res) => {
-    const {entryId, referencingURL} = req.body;
-    return modifyEntryURl(entryId, referencingURL)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        return res.status(200).json(result);
-    })
-    .catch(err => res.status(500).json(err));
-})
+// entriesRouter.put('/editURL', async (req, res) => {
+//     const {entryId, referencingURL} = req.body;
+//     return modifyEntryURl(entryId, referencingURL)
+//     .then(result => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         return res.status(200).json(result);
+//     })
+//     .catch(err => res.status(500).json(err));
+// })
 
 // edit description
-entriesRouter.put('/editDescription', async (req, res) => {
-    const {entryId, description} = req.body;
-    return updateDescription(entryId, description)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        return res.status(200).json(result);
-    })
-    .catch(err => res.status(500).json(err));
-})
+// entriesRouter.put('/editDescription', async (req, res) => {
+//     const {entryId, description} = req.body;
+//     return updateDescription(entryId, description)
+//     .then(result => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         return res.status(200).json(result);
+//     })
+//     .catch(err => res.status(500).json(err));
+// })
 
-// edit referencingUrl, description and title
+// edit referencingUrl, description and title aka edit entry production
 entriesRouter.put('/replaceEntry', async (req, res) => {
     console.log('req.body', req.body)
     const { entryId, referencingURL, description, linkTitle, imgURL } = req.body;
@@ -99,6 +99,7 @@ entriesRouter.put('/replaceEntry', async (req, res) => {
     .catch(err => {console.log(err); res.status(500).json(err)})
 })
 
+// delete entry production
 entriesRouter.post('/deleteEntry', (req, res) => {
     // console.log(req.body)
     const { entryId } = req.body
