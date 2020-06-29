@@ -6,9 +6,9 @@ function generateToken(user) {
     // verify signature -> a secret
     // console.log(user);
     const payload = {
-      sub: user.id,
-      username: user.username,
-      accountType: user.accountType,
+      sub: user[0].userid,
+      email: user[0].email,
+      successFoo: true,
     };
     
     const options = {

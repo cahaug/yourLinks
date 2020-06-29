@@ -25,10 +25,10 @@ authRouter.post('/register', async (req, res) => {
         .then(saved => {
             // a jwt should be generated
             console.log('1.saved', saved)
-            const token = generateToken(saved);
             return singleUserForLogin(email)
             .then(user => {
               console.log('2.user',user)
+              const token = generateToken(user);
               res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
               res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
               res.header('Access-Control-Allow-Origin', '*')
