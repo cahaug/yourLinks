@@ -1,5 +1,6 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom } = require('../database/queries.js');
+const restricted = require('../middleware/restricted.js')
 
 // listsRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -32,19 +33,21 @@ listsRouter.get('/list4user/:userId', async (req, res) => {
 })
 
 // create new list
-listsRouter.post('/new', async (req, res) => {
+listsRouter.post('/new', restricted, async (req, res) => {
     const date = new Date();
     const creationDate = date;
     const { userId, backColor, txtColor, fontSelection, customURL } = req.body;
     const list = { userId, creationDate, backColor, txtColor, fontSelection, customURL };
     return createList(list)
     .then(result => {
+        console.log('new list result ', result)
         return getListByUser(userId)
             .then(list => {
+                console.log('list return', list)
                 res.header('Access-Control-Allow-Origin', '*')
                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-                res.status(200).json(list[0]);
+                res.status(200).json(list);
             })
     })
     .catch(err => res.status(500).json(err));
@@ -64,7 +67,7 @@ listsRouter.get('/c/:customURL', async (req, res) => {
 })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCustom/:customURL', async (req, res) => {
+listsRouter.get('/checkCustom/:customURL', async (req, res) => {
     return checkIfCustomURLAvailable({customURL: req.params.customURL})
     .then(res => {
         console.log(res)
@@ -73,9 +76,24 @@ listsRouter.post('/checkCustom/:customURL', async (req, res) => {
         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
         res.status(200).json(res)
     })
-    .catch(err => {res.status(500).json(err)})
+    .catch(err => {console.log(err); res.status(500).json(err)})
 })
 
+// assign a user a customURL
+listsRouter.put('/putCustom', restricted, async (req, res) => {
+    const { customURL, listId } = req.body
+    console.log('customURL', customURL);
+    console.log('listId', listId)
+    return putCustom(listId, customURL)
+    .then((resultant) => {
+        console.log(resultant)
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        res.status(200).json(resultant)
+    })
+    .catch(err => {console.log(err); res.status(500).json(err)})
+})
 
 
 module.exports = listsRouter;

@@ -8,6 +8,7 @@ module.exports = (req, res, next) => {
   //    rehash the header + payload + secret and see if it matches our verify signature
 
   if (token){
+    // console.log('token', token)
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
       if(err){
         console.log('failed verify', err);

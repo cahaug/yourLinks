@@ -58,7 +58,7 @@ server.use(cors({
   }
 }));
 server.use(express.json());
-const { getEntries, listByCustomURL } = require('../database/queries.js');
+const { getEntries1, listByCustomURL } = require('../database/queries.js');
 
 
 
@@ -78,16 +78,16 @@ server.get('/', (req, res) => {
 });
 
 // entries by userId (displayUserEntries on displayUserEntries /:id)
-server.get('/:userId', (req, res) => {
-    const { userId } = req.params;
-    const parsed = parseInt(userId,10);
-    console.log('typeof userId', typeof userId)
+server.get('/:listId', (req, res) => {
+    const { listId } = req.params;
+    const parsed = parseInt(listId,10);
+    console.log('typeof listId', typeof listId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
     if (typeof parsed == 'number' && parsed.toString() !='NaN'){
-        console.log('userid', userId)
+        console.log('listId', listId)
         console.log('parsed is number, acting')
-        return getEntries(userId)
+        return getEntries1(listId)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
@@ -99,8 +99,8 @@ server.get('/:userId', (req, res) => {
     // if (typeof parsed === 'NaN'){
     else {
         console.log('parsed is string, acting')
-        console.log('yo', userId)
-        const customURL = userId
+        console.log('yo', listId)
+        const customURL = listId
         console.log('yo custom', customURL)
         return listByCustomURL(customURL)
         .then(entries => {
