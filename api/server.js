@@ -3,32 +3,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
 
-// const corsOptions = {
-//     origin: 'https://link-in-bio.netlify.com'
-// }
-
-// Test1
-// var corsOptions = {
-//   origin: function (origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1) {
-//       callback(null, true)
-//     } else {
-//       callback(new Error('Not allowed by CORS'))
-//     }
-//   }
-// }
-// Test2
-// var corsOptions = {
-//     origin: function (origin, callback) {
-//       if (whitelist.indexOf(origin) !== -1 || !origin) {
-//         callback(null, true)
-//       } else {
-//         callback(new Error('Not allowed by CORS'))
-//       }
-//     }
-// }
-
-// const blankRouter = require('../blank-router.js') go here
 const authRouter = require('../auth/auth-router.js');
 const listsRouter = require('../lists/lists-router.js');
 const entriesRouter = require('../entries/entries-router.js');
@@ -37,9 +11,7 @@ const statsRouter = require('../stats/stats-router.js');
 const server = express();
 
 server.use(helmet());
-// server.use(cors({
-//     origin: 'https://link-in.bio/'
-// }));
+
 var allowedOrigins = ['http://localhost:3000',
                       'https://link-in.bio',
                       'https://link-in-bio.herokuapp.com/auth/login',
@@ -111,13 +83,6 @@ server.get('/:listId', (req, res) => {
         })
         .catch(err => {console.log(err); res.status(500).json(err)});
     }
-    // else {
-    //     console.log('yo, error')
-    //     res.header('Access-Control-Allow-Origin', '*')
-    //     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-    //     res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-    //     res.status(500).json({message: 'Invalid request'})
-    // }
 });
 
 
