@@ -115,5 +115,13 @@ module.exports = {
 
     listViewsGet(listId){
         return knex('lists').where('listId', listId).select('listViews')
+    },
+
+    checkRecentlyAttempted(email){
+        return knex('pwReset').where('email', email).select()
+    },
+
+    insertPWReset(reset){
+        return knex('pwReset').insert(reset)
     }
 }

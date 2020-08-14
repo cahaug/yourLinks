@@ -7,6 +7,7 @@ const authRouter = require('../auth/auth-router.js');
 const listsRouter = require('../lists/lists-router.js');
 const entriesRouter = require('../entries/entries-router.js');
 const statsRouter = require('../stats/stats-router.js');
+const mailerRouter = require('../mail/mailer-router.js')
 
 const server = express();
 
@@ -39,6 +40,7 @@ server.use('/auth/', authRouter);
 server.use('/l/', listsRouter);
 server.use('/e/', entriesRouter);
 server.use('/s/', statsRouter);
+server.use('/mailer/', mailerRouter)
 
 
 
