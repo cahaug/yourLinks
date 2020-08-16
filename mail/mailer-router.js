@@ -7,6 +7,7 @@ require('dotenv').config();
 
 
 
+
 mailerRouter.post('/resetPW', async (req, res) => {
     var transporter = nodemailer.createTransport({
         service:process.env.TRANSPORTERSERVICE,
@@ -132,20 +133,6 @@ mailerRouter.post('/resetPW', async (req, res) => {
         // send error
         res.status(500).json({message:'conventional error'})
     }
-        // if recently attempted, return on the way / resend if db & say on the way / delete from recently attempted / readd if in db
-            // RA Valid Email
-                // Resend, say new email is on the way, keep in 
-            // RA Invalid Email
-                // 
-
-    // 
-    // var mailOptions = {
-    //     from: process.env.CONTACTEMAIL,
-    //     to: email,
-    //     subject: 'Link-in.Bio Password Reset Code Requested',
-    //     html:`<h1>Link-in.Bio/</h1><h2>Hello, ${email}!</h2><h2>Here is your Password Reset Code</h2><p>Code: <br /> <span>${resetCode}</span></p><p>It's only valid for ten minutes so click here to return and use it fast!</p>`
-    // }
-
 })
 
 mailerRouter.post('/checkCode', async (req, res) => {
@@ -194,5 +181,12 @@ mailerRouter.post('/checkCode', async (req, res) => {
         res.status(500).json({message:'code failure. attempt logged. after three unsuccessful reset attempts this account will be locked out.'})
     }
 })
+
+// var mailOptions = {
+//     from: process.env.CONTACTEMAIL,
+//     to: email,
+//     subject: 'Link-in.Bio Password Reset Code Requested',
+//     html:`<h1>Link-in.Bio/</h1><h2>Hello, ${email}!</h2><h2>Here is your Password Reset Code</h2><p>Code: <br /> <span>${resetCode}</span></p><p>It's only valid for ten minutes so click here to return and use it fast!</p>`
+// }
 
 module.exports = mailerRouter
