@@ -118,10 +118,36 @@ module.exports = {
     },
 
     checkRecentlyAttempted(email){
-        return knex('pwReset').where('email', email).select()
+        return knex('pwReset').where('email', email)
     },
 
     insertPWReset(reset){
         return knex('pwReset').insert(reset)
+    },
+
+    updatePassword(email, password){
+        return knex('users').where('email', email).update({
+            password:password
+        })
+    },
+
+    deleteFromResetDb(pwResetId){
+        return knex('pwReset').where({ pwResetId }).del()
+    },
+
+    incrementResetCodeAttempts(email, codeAttempts){
+        return knex('pwReset').where('email', email).update({'codeAttempts': codeAttempts})
+    },
+
+    incrementResetSendAttempts(email, sendAttempts){
+        return knex('pwReset').where('email', email).update({'sendAttempts': sendAttempts})
+    },
+
+    lockoutAccount(email){
+        return knex('users').where('email', email).update({lockedOut:true})
+    },
+
+    putNewCode(email, resetCode, expirationGetTime){
+        return knex('pwReset').where('email',email).update({'resetCode':resetCode, 'expirationGetTime':expirationGetTime})
     }
 }
