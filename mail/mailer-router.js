@@ -45,12 +45,8 @@ mailerRouter.post('/resetPW', async (req, res) => {
         // combine into object & insert
         const reset = {email, resetCode, creationGetTime, expirationGetTime, sendAttempts, codeAttempts }
         const resultant = await insertPWReset(reset)
-        console.log('reset, resultant', reset, resultant)
-        console.log('resultant.command', resultant.command)
-        console.log('resultant.command', resultant.rowCount)
-        console.log('resultant[0].rowCount', resultant[0].rowCount)
         // send email with resetCode if successfully inserted into db
-        if (resultant[0].rowCount>0){
+        if (resultant.rowCount>0){
             var mailOptions = {
                 from: process.env.CONTACTEMAIL,
                 to: email,
