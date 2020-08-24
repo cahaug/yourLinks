@@ -69,6 +69,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
             })
         } else {
             // error adding to pwReset db
+            console.log('error in adding to pwReset db', resultant)
             res.status(500).json({message:'erikoinen error'})
         }
     } // one send attempt
