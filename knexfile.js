@@ -32,7 +32,7 @@ module.exports = {
       client: 'pg',
       useNullAsDefault: true,
       // connection: process.env.DATABASE_URL,
-      connection: process.env.HEROKU_POSTGRESQL_RED_URL,
+      connection: process.env.HEROKU_POSTGRESQL_RED_URL_SSL,
       migrations: {
         directory: './database/migrations',
       },
