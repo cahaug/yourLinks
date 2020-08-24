@@ -45,6 +45,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
         // combine into object & insert
         const reset = {email, resetCode, creationGetTime, expirationGetTime, sendAttempts, codeAttempts }
         const resultant = await insertPWReset(reset)
+        console.log('reset, resultant', reset, resultant)
         // send email with resetCode if successfully inserted into db
         if (resultant[0]>0){
             var mailOptions = {
@@ -69,7 +70,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
             })
         } else {
             // error adding to pwReset db
-            console.log('error in adding to pwReset db', resultant)
+            console.log('error in adding to pwReset db', reset, resultant)
             res.status(500).json({message:'erikoinen error'})
         }
     } // one send attempt
@@ -78,7 +79,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
         // if has current time object
         if (resetPWobj[0].expirationGetTime > currentDatetime && currentDatetime > resetPWobj[0].creationGetTime){
             // respond that it's on the way, check junk mail folders 
-            res.status(200).json({message:'The Email Has Already Been Sent. Check your Junk Mail and Spam folders if it did not reach your inbox.'})
+            res.status(200).json({message:'The Email Has Already Been Sent. Check your Junk Mail and Spam folders if it did not reach your inbox.  If you still cannot find it, you can wait ten minutes and try again.'})
         } else {
             // if has old time object, and codeAttempts=0
             if(resetPWobj[0].codeAttempts === 0){
@@ -95,7 +96,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
                     console.log('incrSendAttempt', incrSendAttempt)
                     const didPutNewCode = await putNewCode(email, resetCode, expirationGetTime)
                     console.log('didPutNewCode', didPutNewCode)
-                    if (didPutNewCode.length > 0){
+                    if (didPutNewCode > 0){
                         // successfully did put new code
                         // send new reset email
                         var mailOptions = {
