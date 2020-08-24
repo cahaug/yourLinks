@@ -149,6 +149,7 @@ mailerRouter.post('/checkCode', async (req, res) => {
     }
 
     const dbValue = await checkRecentlyAttempted(email)
+    console.log('dbValue', dbValue)
     // if user entered valid reset code information
     if (dbValue[0].resetCode === resetCode){
         console.log('beep boop code accepted, swapping passwords')
