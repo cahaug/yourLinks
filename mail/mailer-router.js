@@ -29,7 +29,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
     const currentDatetime = new Date().getTime()
     // check if in recently attempted database
     const resetPWobj = await checkRecentlyAttempted(email) 
-    console.log('resetPWobj', resetPWobj)
+    // console.log('resetPWobj', resetPWobj)
 
     // if resetPWobj object empty:
     if (resetPWobj.length < 1 ) {
@@ -69,12 +69,12 @@ mailerRouter.post('/resetPW', async (req, res) => {
             })
         } else {
             // error adding to pwReset db
-            console.log('error in adding to pwReset db', reset, resultant)
+            // console.log('error in adding to pwReset db', reset, resultant)
             res.status(500).json({message:'erikoinen error'})
         }
     } // one send attempt
     else if (resetPWobj.length === 1) {
-        console.log('one send attempt')
+        // console.log('one send attempt')
         // if has current time object
         if (resetPWobj[0].expirationGetTime > currentDatetime && currentDatetime > resetPWobj[0].creationGetTime){
             // respond that it's on the way, check junk mail folders 
@@ -84,7 +84,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
             if(resetPWobj[0].codeAttempts === 0){
                 try 
                 {
-                    console.log('previous send attempts', resetPWobj[0].sendAttempts)
+                    // console.log('previous send attempts', resetPWobj[0].sendAttempts)
                     // generate new random 6 digit resetCode
                     const resetCode = Math.random().toString().slice(3,9)
                     // new expiration
@@ -92,9 +92,9 @@ mailerRouter.post('/resetPW', async (req, res) => {
                     // sendattempts +`1`
                     const sendAttempts = parseInt(resetPWobj[0].sendAttempts)+1
                     const incrSendAttempt = await incrementResetSendAttempts(email, sendAttempts)
-                    console.log('incrSendAttempt', incrSendAttempt)
+                    // console.log('incrSendAttempt', incrSendAttempt)
                     const didPutNewCode = await putNewCode(email, resetCode, expirationGetTime)
-                    console.log('didPutNewCode', didPutNewCode)
+                    // console.log('didPutNewCode', didPutNewCode)
                     if (didPutNewCode > 0){
                         // successfully did put new code
                         // send new reset email
@@ -127,7 +127,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
             }             
         }
     } else if (resetPWobj[0].sendAttempts > 1){
-        console.log('more than one send attempt')
+        // console.log('more than one send attempt')
         res.status(500).json({message:'more than 1 haha'})
 
     } else {
@@ -148,15 +148,15 @@ mailerRouter.post('/checkCode', async (req, res) => {
     }
 
     const dbValue = await checkRecentlyAttempted(email)
-    console.log('dbValue', dbValue)
+    // console.log('dbValue', dbValue)
     // if user entered valid reset code information
     if (dbValue[0].resetCode === resetCode){
-        console.log('beep boop code accepted, swapping passwords')
+        // console.log('beep boop code accepted, swapping passwords')
         const hash = bcrypt.hashSync(newPassword, 12); // 2 ^ n
         const password = hash;
         try {
             const pwUdpateResponse = await updatePassword(email, password)
-            console.log('pwUpdateResponse', pwUdpateResponse, pwUdpateResponse.length)
+            // console.log('pwUpdateResponse', pwUdpateResponse, pwUdpateResponse.length)
             if (pwUdpateResponse>0){
                 const successfulDeletion = await deleteFromResetDb(dbValue[0].pwResetId)
                 res.status(201).json({message:'password successfully reset', successfulDeletion})
@@ -178,7 +178,7 @@ mailerRouter.post('/checkCode', async (req, res) => {
         }
         const codeAttempts = parseInt(dbValue[0].codeAttempts, 10) +1
         const incrementCodeAttempts = await incrementResetCodeAttempts(email, codeAttempts)
-        console.log('incrementCodeAttempts', incrementCodeAttempts)
+        // console.log('incrementCodeAttempts', incrementCodeAttempts)
         // display a scary message
         res.status(500).json({message:'code failure. attempt logged. after three unsuccessful reset attempts this account will be locked out.'})
     }
