@@ -48,7 +48,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
         // send email with resetCode if successfully inserted into db
         if (resultant.rowCount>0){
             var mailOptions = {
-                from: process.env.CONTACTEMAIL,
+                from: process.env.CONTACTEMAILFROM,
                 to: email,
                 subject: 'Link-in.Bio Password Reset Code Requested',
                 text:`Here is your code: ${resetCode}`,
@@ -99,7 +99,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
                         // successfully did put new code
                         // send new reset email
                         var mailOptions = {
-                            from: process.env.CONTACTEMAIL,
+                            from: process.env.CONTACTEMAILFROM,
                             to: email,
                             subject: 'Link-in.Bio Second Password Reset Code Requested',
                             html:`<h1>Link-in.Bio/</h1>
@@ -137,6 +137,14 @@ mailerRouter.post('/resetPW', async (req, res) => {
 })
 
 mailerRouter.post('/checkCode', async (req, res) => {
+    var transporter = nodemailer.createTransport({
+        service:process.env.TRANSPORTERSERVICE,
+        auth: {
+            user: process.env.CONTACTEMAIL,
+            pass: process.env.CONTACTPASSWORD
+        }
+    })
+    
     const { email, resetCode, newPassword } = req.body
 
     // check if email corresponds to a valid email account
@@ -159,7 +167,26 @@ mailerRouter.post('/checkCode', async (req, res) => {
             // console.log('pwUpdateResponse', pwUdpateResponse, pwUdpateResponse.length)
             if (pwUdpateResponse>0){
                 const successfulDeletion = await deleteFromResetDb(dbValue[0].pwResetId)
-                res.status(201).json({message:'password successfully reset', successfulDeletion})
+                var mailOptions = {
+                    from: process.env.CONTACTEMAILFROM,
+                    to: email,
+                    subject: 'Link-in.Bio Password Changed',
+                    text:`Your Link-in.Bio Account Password was Changed`,
+                    html:`<h1>Link-in.Bio/</h1>
+                        <h2>Hello, ${email}!</h2>
+                        <h2>We are Sending you this email to notify you that your account password was changed today.</h2>
+                        <p>If this was you, you have nothing to worry about.</p>
+                        <p>If this happened without your knowledge or approval please as soon as possible email Customer Support at <a href:"mailto:contact@yhy.fi">contact@yhy.fi</a> with more information on your situation.</p>`
+                }
+                transporter.sendMail(mailOptions, function(error, info){
+                    if(error){
+                        console.log(error)
+                    } else {
+                        const infoResponse = info.response
+                        console.log('Email Sent Successfully: '+ info.response)
+                        res.status(201).json({message:'password successfully reset', successfulDeletion, infoResponse})
+                    }
+                })
             } else {
                 res.status(500).json({message:'hopefully no one ever sees this message, unconventional pwReset Fault'})
             }
