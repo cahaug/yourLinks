@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 
 // listsRouter.use(function(req, res, next) {
@@ -51,6 +51,15 @@ listsRouter.post('/new', restricted, async (req, res) => {
             })
     })
     .catch(err => res.status(500).json(err));
+})
+
+listsRouter.delete('/deleteList', async (req, res) => {
+    const {listId} = req.body
+    return deleteList(listId)
+    .then(result => {
+        console.log("result",result)
+        res.status(200).json(result)
+    })
 })
 
 // display customURL facsimile
