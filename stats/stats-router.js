@@ -120,11 +120,11 @@ statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
         return getEntries2(userId)
         .then(nums => {
             let mergedLinks = []
-            console.log('nums', nums)
+            // console.log('nums', nums)
             for(let i=0; i <= links.length ;i++){
                 let value = {...links[i], ...nums[i]}
                 links['clickCount'] = nums[i]
-                console.log('value', value)
+                // console.log('value', value)
                 mergedLinks.push(value)
             }
             res.header('Access-Control-Allow-Origin', '*')
