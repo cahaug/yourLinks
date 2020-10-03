@@ -1,5 +1,6 @@
 const statsRouter = require('express').Router();
 const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet } = require('../database/queries.js');
+const restricted = require('../middleware/restricted.js')
 
 // YYYY-MM-DDTHH:mm:ss
 
@@ -49,7 +50,8 @@ statsRouter.get('/', async (req, res) => {
     });
 });
 
-statsRouter.get('/StatsRecords/', async (req, res) => {
+statsRouter.get('/StatsRecords/', restricted, async (req, res) => {
+    console.log('statsrecords endpoint hit')
     return statsRecords()
     .then(result => {
         res.header('Access-Control-Allow-Origin', '*')
@@ -60,7 +62,7 @@ statsRouter.get('/StatsRecords/', async (req, res) => {
     .catch(err => res.status(500).json(err))
 });
 
-statsRouter.get('/StatsRecordsCount/', async (req, res) => {
+statsRouter.get('/StatsRecordsCount/', restricted, async (req, res) => {
     return statsRecordsCount()
     .then(result => {
         res.header('Access-Control-Allow-Origin', '*')
@@ -111,7 +113,7 @@ statsRouter.get('/st/:userId', (req, res, next) => {
 })
 
 // aio stats and links
-statsRouter.get('/aio/:userId', (req, res, next) => {
+statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
     const { userId } = req.params;
     return getEntries(userId)
     .then(links => {
@@ -155,7 +157,7 @@ statsRouter.get('/ili/:listId', (req, res) => {
 })
 
 // return listviews for given list
-statsRouter.get('/listViews/:listId', (req, res) => {
+statsRouter.get('/listViews/:listId', restricted, (req, res) => {
     const { listId } = req.params
     console.log(listId)
     return listViewsGet(listId)

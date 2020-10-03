@@ -22,6 +22,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
     // if valid, continue, if not, break/send decoy sentmail response
     const doesUserExist = await singleUserForLogin(email)
     if(doesUserExist.length < 1){
+        console.log('ingress attempt pwReset email:', email)
         res.status(420).json({message:'email sent ahaha'})
         return
     }
@@ -42,6 +43,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
         const creationGetTime = new Date().getTime()
         // generate timeCode expiry (add ten minutes to previous time)
         const expirationGetTime = creationGetTime + 600000 
+        console.log('reset email sent for ', email)
         // combine into object & insert
         const reset = {email, resetCode, creationGetTime, expirationGetTime, sendAttempts, codeAttempts }
         const resultant = await insertPWReset(reset)
@@ -151,6 +153,7 @@ mailerRouter.post('/checkCode', async (req, res) => {
     // if valid, continue, if not, wrong code response
     const doesUserExist = await singleUserForLogin(email)
     if(doesUserExist.length < 1){
+        console.log('ingress protection wrong code attempted for ', email)
         res.status(500).json({message:'code faildne hahaa'})
         return
     }
