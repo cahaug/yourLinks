@@ -17,9 +17,9 @@ var allowedOrigins = ['http://localhost:3000',
                       'https://link-in.bio',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register'];
-var allowedOrigins = ['https://link-in.bio',
-                      'https://link-in-bio.herokuapp.com/auth/login',
-                      'https://link-in-bio.herokuapp.com/auth/register'];
+// var allowedOrigins = ['https://link-in.bio',
+//                       'https://link-in-bio.herokuapp.com/auth/login',
+//                       'https://link-in-bio.herokuapp.com/auth/register'];
 server.use(cors({
   origin: function(origin, callback){
     // allow requests with no origin 

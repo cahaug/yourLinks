@@ -120,7 +120,8 @@ statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
         return getEntries2(userId)
         .then(nums => {
             let mergedLinks = []
-            // console.log('nums', nums)
+            console.log('nums[0]', nums[0])
+            console.log('links[0]', links[0])
             for(let i=0; i <= links.length ;i++){
                 let value = {...links[i], ...nums[i]}
                 links['clickCount'] = nums[i]

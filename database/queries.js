@@ -46,7 +46,7 @@ module.exports = {
     },
 
     listByCustomURL(customURL){
-        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL').orderBy('entries.entryId', 'asc');
+        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
     },
     // join('entries', 'lists.listId', 'entries.listId')
     checkIfCustomURLAvailable(customURL){

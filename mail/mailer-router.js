@@ -65,7 +65,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
                     console.log(error)
                 } else {
                     const infoResponse = info.response
-                    console.log('Email Sent Successfully: '+ info.response)
+                    console.log('Email Sent Successfully: ', info.response, resetCode, email)
                     res.status(200).json({infoResponse, email, message:'email successfully sent!' })
                 }
             })
