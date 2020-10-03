@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 
 // listsRouter.use(function(req, res, next) {
@@ -53,7 +53,8 @@ listsRouter.post('/new', restricted, async (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
-listsRouter.delete('/deleteList', async (req, res) => {
+// delete list
+listsRouter.delete('/deleteList', restricted, async (req, res) => {
     const {listId} = req.body
     return deleteList(listId)
     .then(result => {
@@ -102,6 +103,54 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
         res.status(200).json(resultant)
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
+})
+
+// change background color
+listsRouter.put('/setBg', restricted, async (req,res) => {
+    const {sub} = req.decodedToken
+    const {listId, userId, backColor} = req.body
+    if (sub === userId){
+        try{
+            const resultant = await putBackground(listId, backColor)
+            res.status(200).json({resultant, message:'background set successfully'})
+        } catch(err){
+            res.status(500).json({message:'set background inner failure'})
+        }
+    } else {
+        res.status(500).json({message:'set background failed'})
+    }
+})
+
+// change text color - lightmode
+listsRouter.put('/setText', restricted, async (req,res) => {
+    const {sub} = req.decodedToken
+    const {listId, userId, fontSelection} = req.body
+    if (sub === userId){
+        try{
+            const resultant = await putFont(listId, fontSelection)
+            res.status(200).json({resultant, message:'font set successfully'})
+        } catch(err){
+            res.status(500).json({message:'set font inner failure'})
+        }
+    } else {
+        res.status(500).json({message:'set font failed'})
+    }
+})
+
+// change font selection - lightmode
+listsRouter.put('/setTcolor', restricted, async (req,res) => {
+    const {sub} = req.decodedToken
+    const {listId, userId, txtColor} = req.body
+    if (sub === userId){
+        try{
+            const resultant = await putTColor(listId, txtColor)
+            res.status(200).json({resultant, message:'textColor set successfully'})
+        } catch(err){
+            res.status(500).json({message:'set textColor inner failure'})
+        }
+    } else {
+        res.status(500).json({message:'set textColor failed'})
+    }
 })
 
 
