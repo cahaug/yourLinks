@@ -109,7 +109,7 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
 listsRouter.put('/setBg', restricted, async (req,res) => {
     const {sub} = req.decodedToken
     const {listId, userId, backColor} = req.body
-    console.log('background change reqbody', req.body)
+    console.log('background change reqbody', req.body, 'sub', sub)
     if (sub === userId){
         try{
             const resultant = await putBackground(listId, backColor)
