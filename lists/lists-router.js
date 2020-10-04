@@ -149,16 +149,17 @@ listsRouter.put('/setTcolor', restricted, async (req,res) => {
     // console.log('req', req)
     console.log('req.body textcolor', req.body)
     const {listId, userId, txtColor} = req.body
-    if (sub === userId){
-        try{
+    try{
+        console.log('we tryin')
+        if (sub === userId){
+            console.log('try')
             const resultant = await putTColor(listId, txtColor)
+            console.log('resultant', resultant)
             res.status(200).json({resultant, message:'textColor set successfully'})
-        } catch(err){
-            console.log('textColorChange error', err)
-            res.status(500).json({message:'set textColor inner failure'})
         }
-    } else {
-        res.status(500).json({message:'set textColor failed'})
+    }catch(err){
+        console.log('textColorChange error', err)
+        res.status(500).json({message:'set textColor inner failure'})
     }
 })
 
