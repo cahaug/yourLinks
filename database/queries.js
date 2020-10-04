@@ -156,14 +156,14 @@ module.exports = {
     },
 
     putBackground(listId, backColor){
-        return knex('lists').where("listId", listId).update({backColor:backColor})
+        return knex('lists').where('listId', listId).update({'backColor':backColor})
     },
 
     putFont(listId, fontSelection){
-        return knex('lists').where("listId", listId).update({fontSelection:fontSelection})
+        return knex('lists').where('listId', listId).update({'fontSelection':fontSelection})
     },
 
     putTColor(listId, txtColor){
-        return knex('lists').where("listId", listId).update({txtColor:txtColor})
+        return knex('lists').where('listId', listId).update({'txtColor':txtColor})
     },
 }

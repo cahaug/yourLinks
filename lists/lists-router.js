@@ -144,12 +144,12 @@ listsRouter.put('/setText', restricted, async (req,res) => {
 
 // change font selection - lightmode
 listsRouter.put('/setTcolor', restricted, async (req,res) => {
-    // const {sub} = req.decodedToken
-    console.log('sub',req.decodedToken.sub)
+    const {sub} = req.decodedToken
+    console.log('sub',req.decodedToken.sub, sub)
     // console.log('req', req)
+    console.log('req.body textcolor', req.body)
     const {listId, userId, txtColor} = req.body
-    // console.log('req.body textcolor', req.body)
-    if (req.decodedToken.sub === userId){
+    if (sub === userId){
         try{
             const resultant = await putTColor(listId, txtColor)
             res.status(200).json({resultant, message:'textColor set successfully'})
