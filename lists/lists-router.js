@@ -151,7 +151,7 @@ listsRouter.put('/setTcolor', restricted, async (req,res) => {
     const {listId, userId, txtColor} = req.body
     try{
         console.log('we tryin')
-        if (sub === userId){
+        if(sub == userId){
             console.log('try')
             const resultant = await putTColor(listId, txtColor)
             console.log('resultant', resultant)
