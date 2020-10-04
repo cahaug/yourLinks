@@ -108,6 +108,7 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
 // change background color
 listsRouter.put('/setBg', restricted, async (req,res) => {
     const {sub} = req.decodedToken
+    console.log('sub',sub)
     const {listId, userId, backColor} = req.body
     console.log('background change reqbody', req.body, 'sub', sub)
     if (sub === userId){
@@ -144,6 +145,8 @@ listsRouter.put('/setText', restricted, async (req,res) => {
 // change font selection - lightmode
 listsRouter.put('/setTcolor', restricted, async (req,res) => {
     const {sub} = req.decodedToken
+    console.log('sub',sub)
+    console.log('req', req)
     const {listId, userId, txtColor} = req.body
     console.log('req.body textcolor', req.body)
     if (sub === userId){
