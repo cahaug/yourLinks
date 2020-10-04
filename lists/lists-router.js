@@ -109,11 +109,13 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
 listsRouter.put('/setBg', restricted, async (req,res) => {
     const {sub} = req.decodedToken
     const {listId, userId, backColor} = req.body
+    console.log('background change reqbody', req.body)
     if (sub === userId){
         try{
             const resultant = await putBackground(listId, backColor)
             res.status(200).json({resultant, message:'background set successfully'})
         } catch(err){
+            console.log('background set error', err)
             res.status(500).json({message:'set background inner failure'})
         }
     } else {
@@ -125,11 +127,13 @@ listsRouter.put('/setBg', restricted, async (req,res) => {
 listsRouter.put('/setText', restricted, async (req,res) => {
     const {sub} = req.decodedToken
     const {listId, userId, fontSelection} = req.body
+    console.log('req.body setFont', req.body)
     if (sub === userId){
         try{
             const resultant = await putFont(listId, fontSelection)
             res.status(200).json({resultant, message:'font set successfully'})
         } catch(err){
+            console.log('set font error', err)
             res.status(500).json({message:'set font inner failure'})
         }
     } else {
@@ -141,11 +145,13 @@ listsRouter.put('/setText', restricted, async (req,res) => {
 listsRouter.put('/setTcolor', restricted, async (req,res) => {
     const {sub} = req.decodedToken
     const {listId, userId, txtColor} = req.body
+    console.log('req.body textcolor', req.body)
     if (sub === userId){
         try{
             const resultant = await putTColor(listId, txtColor)
             res.status(200).json({resultant, message:'textColor set successfully'})
         } catch(err){
+            console.log('textColorChange error', err)
             res.status(500).json({message:'set textColor inner failure'})
         }
     } else {
