@@ -112,7 +112,7 @@ listsRouter.put('/setBg', restricted, async (req,res) => {
     const {listId, userId, backColor} = req.body
     console.log('background change reqbody', req.body, 'sub', sub)
     try{
-        if (sub === userId){
+        if (sub == userId){
             const resultant = await putBackground(listId, backColor)
             res.status(200).json({resultant, message:'background set successfully'})
         }
@@ -129,7 +129,7 @@ listsRouter.put('/setText', restricted, async (req,res) => {
     const {listId, userId, fontSelection} = req.body
     console.log('req.body setFont', req.body)
     try{
-        if (sub === userId){
+        if (sub == userId){
             const resultant = await putFont(listId, fontSelection)
             res.status(200).json({resultant, message:'font set successfully'})
         }
