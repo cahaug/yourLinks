@@ -111,17 +111,16 @@ listsRouter.put('/setBg', restricted, async (req,res) => {
     console.log('sub',sub)
     const {listId, userId, backColor} = req.body
     console.log('background change reqbody', req.body, 'sub', sub)
-    if (sub === userId){
-        try{
+    try{
+        if (sub === userId){
             const resultant = await putBackground(listId, backColor)
             res.status(200).json({resultant, message:'background set successfully'})
-        } catch(err){
-            console.log('background set error', err)
-            res.status(500).json({message:'set background inner failure'})
         }
-    } else {
-        res.status(500).json({message:'set background failed'})
+    } catch(err){
+        console.log('background set error', err)
+        res.status(500).json({message:'set background inner failure'})
     }
+
 })
 
 // change text color - lightmode
@@ -129,16 +128,14 @@ listsRouter.put('/setText', restricted, async (req,res) => {
     const {sub} = req.decodedToken
     const {listId, userId, fontSelection} = req.body
     console.log('req.body setFont', req.body)
-    if (sub === userId){
-        try{
+    try{
+        if (sub === userId){
             const resultant = await putFont(listId, fontSelection)
             res.status(200).json({resultant, message:'font set successfully'})
-        } catch(err){
-            console.log('set font error', err)
-            res.status(500).json({message:'set font inner failure'})
         }
-    } else {
-        res.status(500).json({message:'set font failed'})
+    } catch(err){
+        console.log('set font error', err)
+        res.status(500).json({message:'set font inner failure'})
     }
 })
 
