@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
 
 const queries = require('../database/queries.js');
-const { insertUser, singleUserForLogin } = require('../database/queries.js')
+const { insertUser, singleUserForLogin, customByListId } = require('../database/queries.js')
 
 // authRouter.get('/', (req, res) => {
 //     queries.getAllUsers().then((users) => {
@@ -53,7 +53,7 @@ authRouter.post('/register', async (req, res) => {
 
 
 
-  authRouter.post('/login', (req, res) => {
+  authRouter.post('/login', async (req, res) => {
     let { password } = req.body;
     // console.log('username', username, 'password', password)
     // console.log('req.body', req.body)
@@ -68,12 +68,15 @@ authRouter.post('/register', async (req, res) => {
           res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
           res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
           console.log('user', user)
+          const customURL = await customByListId(user.listId)
+          console.log('customURL', customURL)
           res.status(200).json({
             email: `${user.email}`,
             firstName:`${user.firstName}`,
             lastName:`${user.lastName}`,
             userId:`${user.userId}`,
             listId:`${user.listId}`,
+            customURL:`${customURL[0].customURL}`,
             token
           });
         } else {
