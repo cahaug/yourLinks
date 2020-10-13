@@ -59,7 +59,7 @@ authRouter.post('/register', async (req, res) => {
     // console.log('req.body', req.body)
     return singleUserForLogin(req.body.email)
       .first()
-      .then(user => {
+      .then(async user => {
         if (user && bcrypt.compareSync(password, user.password)) {
           // a jwt should be generated
           const token = generateToken(user);
