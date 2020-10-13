@@ -166,4 +166,9 @@ module.exports = {
     putTColor(listId, txtColor){
         return knex('lists').where('listId', listId).update({'txtColor':txtColor})
     },
+
+    customByListId(listId){
+        return knex('lists').where('listId', listId)
+    },
+    
 }

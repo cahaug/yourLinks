@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 
 // listsRouter.use(function(req, res, next) {
@@ -157,6 +157,20 @@ listsRouter.put('/setTcolor', restricted, async (req,res) => {
     }catch(err){
         console.log('textColorChange error', err)
         res.status(500).json({message:'set textColor inner failure'})
+    }
+})
+
+// return customURL for listId (if present)
+listsRouter.post('/resolveCustom', restricted, async (req,res) => {
+    const {listId} = req.body
+    console.log('resolveCustom listId', listId)
+    try {
+        const valueForCustom = await customByListId(listId)
+        console.log('valueforcustom', valueForCustom)
+        res.status(200).json({valueForCustom})
+    } catch (err){
+        console.log('resolveCustom err', err)
+        res.status(500).json({message:'failure resolving customURL from ListID'})
     }
 })
 
