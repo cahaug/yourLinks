@@ -167,7 +167,7 @@ listsRouter.post('/resolveCustom', restricted, async (req,res) => {
     try {
         const valueForCustom = await customByListId(listId)
         console.log('valueforcustom', valueForCustom)
-        res.status(200).json({valueForCustom})
+        res.status(200).json(valueForCustom)
     } catch (err){
         console.log('resolveCustom err', err)
         res.status(500).json({message:'failure resolving customURL from ListID'})
