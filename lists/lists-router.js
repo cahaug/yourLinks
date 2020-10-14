@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePicture } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 
 // listsRouter.use(function(req, res, next) {
@@ -174,5 +174,21 @@ listsRouter.post('/resolveCustom', restricted, async (req,res) => {
     }
 })
 
+// change user profilepictureURL
+listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
+    const {userId, profilePictureURL} = req.body
+    const {sub} = req.decodedToken
+    try {
+        if(sub == userId){
+            const didChangeProfilePicture = await changeProfilePicture(userId, profilePictureURL)
+            res.status(200).json(didChangeProfilePicture)
+        } else {
+            res.status(500).json({message:'chi imbalance'})
+        }
+    } catch (err){
+        console.log('changeProfPicErr', err)
+        res.status(500).json({message:'failed changing profile picture'})
+    }
+})
 
 module.exports = listsRouter;

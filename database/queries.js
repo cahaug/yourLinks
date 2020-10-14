@@ -175,4 +175,8 @@ module.exports = {
         return knex('lists').where('listId', listId)
     },
 
+    changeProfilePicture(userId, profilePictureURL){
+        return knex('users').where('userId', userId).update({'profilePictureURL':profilePictureURL})
+    },
+
 }
