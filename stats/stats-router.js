@@ -115,6 +115,10 @@ statsRouter.get('/st/:userId', (req, res, next) => {
 // aio stats and links
 statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
     const { userId } = req.params;
+    const { sub } = req.decodedToken
+    if(userId !== sub){
+        res.status(500).json('your chi is misaligned')
+    }
     return getEntries(userId)
     .then(links => {
         return getEntries2(userId)
