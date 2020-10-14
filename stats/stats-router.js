@@ -116,11 +116,12 @@ statsRouter.get('/st/:userId', (req, res, next) => {
 statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
     const { userId } = req.params;
     const { sub } = req.decodedToken
-    console.log('userId == sub', userId==sub)
-    console.log('not equals', userId !== sub)
+    // console.log('userId == sub', userId==sub)
+    // console.log('not equals', userId !== sub)
     if(userId == sub){
         return getEntries(userId)
         .then(links => {
+            console.log('links', links)
             return getEntries2(userId)
             .then(nums => {
                 let mergedLinks = []

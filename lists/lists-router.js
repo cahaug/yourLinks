@@ -163,13 +163,13 @@ listsRouter.put('/setTcolor', restricted, async (req,res) => {
 // return customURL for listId (if present)
 listsRouter.post('/resolveCustom', restricted, async (req,res) => {
     const {listId} = req.body
-    console.log('resolveCustom listId', listId)
+    // console.log('resolveCustom listId', listId)
     try {
         const valueForCustom = await customByListId(listId)
-        console.log('valueforcustom', valueForCustom)
+        // console.log('valueforcustom', valueForCustom)
         res.status(200).json(valueForCustom)
     } catch (err){
-        console.log('resolveCustom err', err)
+        // console.log('resolveCustom err', err)
         res.status(500).json({message:'failure resolving customURL from ListID'})
     }
 })
