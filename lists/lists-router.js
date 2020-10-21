@@ -91,17 +91,19 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
     console.log('customURL', customURL);
     console.log('listId', listId)
     try{
-        if(sub == userId){
+        const checkedListId = await getListByUser(sub)
+        console.log('checkedListId', checkedListId)
+        if(sub == userId && checkedListId == listId){
             console.log('sub equals user')
             const resultant = await putCustom(listId, customURL)
             res.status(200).json({message:'Put Custom Successfully', resultant})
-        } else if(sub !==userId && req.body.administrating == true) {
+        } else if(sub !==userId && checkedListId !==listId && req.body.administrating == true) {
             console.log('special condition')
             const resultantA = await putCustom(listId, customURL)
             res.status(200).json({message:'admin changed customURL', resultantA})
         } else {
-            console.log('putcustom token verification error')
-            res.status(401).json({message:'Error Verifying Token'})
+            console.log('putcustom security verification error')
+            res.status(401).json({message:'Error Verifying User Security Permissions'})
         }
     } catch (err) {
         console.log('putcustom err', err)
