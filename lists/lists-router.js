@@ -91,13 +91,13 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
     console.log('customURL', customURL);
     console.log('listId', listId)
     try{
-        const checkedListId = await getListByUser(sub)
+        const checkedListId = await getListId(sub)
         console.log('checkedListId', checkedListId)
-        if(sub == userId && checkedListId == listId){
+        if(sub == userId && checkedListId[0].listId == listId){
             console.log('sub equals user')
             const resultant = await putCustom(listId, customURL)
             res.status(200).json({message:'Put Custom Successfully', resultant})
-        } else if(sub !==userId && checkedListId !==listId && req.body.administrating == true) {
+        } else if(sub !==userId && checkedListId[0].listId !==listId && req.body.administrating == true) {
             console.log('special condition')
             const resultantA = await putCustom(listId, customURL)
             res.status(200).json({message:'admin changed customURL', resultantA})
