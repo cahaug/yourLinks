@@ -67,11 +67,8 @@ listsRouter.delete('/deleteList', restricted, async (req, res) => {
 listsRouter.get('/c/:customURL', async (req, res) => {
     console.log(req.params.customURL)
     return listByCustomURL({customURL: req.params.customURL})
-    .then(res => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(res)
+    .then(result => {
+        res.status(200).json(result)
     })
     .catch(err => {res.status(500).json(err)})
 })
@@ -80,9 +77,9 @@ listsRouter.get('/c/:customURL', async (req, res) => {
 listsRouter.post('/checkCustom/', async (req, res) => {
     const { customURL } = req.body
     return checkIfCustomURLAvailable(customURL)
-    .then(res => {
+    .then(result => {
         // console.log(res)
-        res.status(200).json(res)
+        res.status(200).json(result)
     })
     .catch(err => {console.log('checkcustom err',err); res.status(500).json(err)})
 })
