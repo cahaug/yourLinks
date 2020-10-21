@@ -1,6 +1,7 @@
 const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePicture } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
+const axios = require('axios')
 
 // listsRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -87,13 +88,17 @@ listsRouter.post('/checkCustom/', async (req, res) => {
 // return bool for whether a certain customURL is taken or not
 listsRouter.post('/checkCHomepage/', async (req, res) => {
     const { customURL, token } = req.body
-    const secret = process.env.RECAPTCHA_SECRET
     // verify recaptcha
-    const googleResponse = await fetch(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`, {method:"POST",})
-    const googleResData = await googleResponse.json()
-    console.log('recaptcha data', googleResData)
+    const checkToken = async (token) => {
+        const secret = process.env.RECAPTCHA_SECRET
+        const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
+        console.log('gr', googleResponse)
+        console.log('recaptcha data', googleResponse.data)
+        return googleResponse.data.success
+    }
+    const isNotBot = await checkToken(token)
 
-    if(googleResData.success===true){
+    if(isNotBot===true){
         return checkIfCustomURLAvailable(customURL)
         .then(result => {
             // console.log(res)
