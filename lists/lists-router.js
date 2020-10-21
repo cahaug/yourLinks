@@ -86,18 +86,27 @@ listsRouter.post('/checkCustom/', async (req, res) => {
 
 // assign a user a customURL
 listsRouter.put('/putCustom', restricted, async (req, res) => {
-    const { customURL, listId } = req.body
+    const { customURL, listId, userId } = req.body
+    const {sub} = req.decodedToken
     console.log('customURL', customURL);
     console.log('listId', listId)
-    return putCustom(listId, customURL)
-    .then((resultant) => {
-        console.log(resultant)
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(resultant)
-    })
-    .catch(err => {console.log(err); res.status(500).json(err)})
+    try{
+        if(sub == userId){
+            console.log('sub equals user')
+            const resultant = await putCustom(listId, customURL)
+            res.status(200).json({message:'Put Custom Successfully'}, resultant)
+        } else if(sub !==userId && req.body.administrating == true) {
+            console.log('special condition')
+            const resultantA = await putCustom(listId, customURL)
+            res.status(200).json({message:'admin changed customURL', resultantA})
+        } else {
+            console.log('putcustom token verification error')
+            res.status(401).json({message:'Error Verifying Token'})
+        }
+    } catch (err) {
+        console.log('putcustom err', err)
+        res.status(500).json(err)
+    }
 })
 
 // change background color
