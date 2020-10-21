@@ -94,7 +94,7 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
         if(sub == userId){
             console.log('sub equals user')
             const resultant = await putCustom(listId, customURL)
-            res.status(200).json({message:'Put Custom Successfully'}, resultant)
+            res.status(200).json({message:'Put Custom Successfully', resultant})
         } else if(sub !==userId && req.body.administrating == true) {
             console.log('special condition')
             const resultantA = await putCustom(listId, customURL)
