@@ -84,6 +84,28 @@ listsRouter.post('/checkCustom/', async (req, res) => {
     .catch(err => {console.log('checkcustom err',err); res.status(500).json(err)})
 })
 
+// return bool for whether a certain customURL is taken or not
+listsRouter.post('/checkCHomepage/', async (req, res) => {
+    const { customURL, token } = req.body
+    const secret = process.env.RECAPTCHA_SECRET
+    // verify recaptcha
+    const googleResponse = await fetch(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`, {method:"POST",})
+    const googleResData = await googleResponse.json()
+    console.log('recaptcha data', googleResData)
+
+    if(googleResData.success===true){
+        return checkIfCustomURLAvailable(customURL)
+        .then(result => {
+            // console.log(res)
+            res.status(200).json(result)
+        })
+        .catch(err => {console.log('checkcustom err',err); res.status(500).json(err)})
+    } else {
+        res.status(500).json({message:'You sound like a robot'})
+        return
+    }
+})
+
 // assign a user a customURL
 listsRouter.put('/putCustom', restricted, async (req, res) => {
     const { customURL, listId, userId } = req.body
