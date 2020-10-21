@@ -115,27 +115,35 @@ statsRouter.get('/st/:userId', (req, res, next) => {
 // aio stats and links
 statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
     const { userId } = req.params;
-    return getEntries(userId)
-    .then(links => {
-        return getEntries2(userId)
-        .then(nums => {
-            let mergedLinks = []
-            console.log('nums[0]', nums[0])
-            console.log('links[0]', links[0])
-            for(let i=0; i <= links.length ;i++){
-                let value = {...links[i], ...nums[i]}
-                links['clickCount'] = nums[i]
-                // console.log('value', value)
-                mergedLinks.push(value)
-            }
-            res.header('Access-Control-Allow-Origin', '*')
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-            res.status(200).json(mergedLinks)
-        })
+    const { sub } = req.decodedToken
+    // console.log('userId == sub', userId==sub)
+    // console.log('not equals', userId !== sub)
+    if(userId == sub){
+        return getEntries(userId)
+        .then(links => {
+            console.log('links', links)
+            return getEntries2(userId)
+            .then(nums => {
+                let mergedLinks = []
+                console.log('nums[0]', nums[0])
+                console.log('links[0]', links[0])
+                for(let i=0; i <= links.length ;i++){
+                    let value = {...links[i], ...nums[i]}
+                    links['clickCount'] = nums[i]
+                    // console.log('value', value)
+                    mergedLinks.push(value)
+                }
+                res.header('Access-Control-Allow-Origin', '*')
+                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+                res.status(200).json(mergedLinks)
+            })
+            .catch(err => res.status(500).json(err))
+        }) 
         .catch(err => res.status(500).json(err))
-    }) 
-    .catch(err => res.status(500).json(err))
+    } else{
+        return res.status(500).json({message:'your chi is misaligned'})
+    }
 })
 
 // increment listviews
