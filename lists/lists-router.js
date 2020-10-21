@@ -92,8 +92,8 @@ listsRouter.post('/checkCHomepage/', async (req, res) => {
     const checkToken = async (token) => {
         const secret = process.env.RECAPTCHA_SECRET
         const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
-        console.log('gr', googleResponse)
-        console.log('recaptcha data', googleResponse.data)
+        // console.log('gr', googleResponse)
+        // console.log('recaptcha data', googleResponse.data)
         return googleResponse.data.success
     }
     const isNotBot = await checkToken(token)
@@ -115,21 +115,21 @@ listsRouter.post('/checkCHomepage/', async (req, res) => {
 listsRouter.put('/putCustom', restricted, async (req, res) => {
     const { customURL, listId, userId } = req.body
     const {sub} = req.decodedToken
-    console.log('customURL', customURL);
-    console.log('listId', listId)
+    // console.log('customURL', customURL);
+    // console.log('listId', listId)
     try{
         const checkedListId = await getListId(sub)
-        console.log('checkedListId', checkedListId)
+        // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
-            console.log('sub equals user')
+            // console.log('sub equals user')
             const resultant = await putCustom(listId, customURL)
             res.status(200).json({message:'Put Custom Successfully', resultant})
         } else if(sub !==userId && checkedListId[0].listId !==listId && req.body.administrating == true) {
-            console.log('special condition')
+            // console.log('special condition')
             const resultantA = await putCustom(listId, customURL)
             res.status(200).json({message:'admin changed customURL', resultantA})
         } else {
-            console.log('putcustom security verification error')
+            // console.log('putcustom security verification error')
             res.status(401).json({message:'Error Verifying User Security Permissions'})
         }
     } catch (err) {
@@ -141,9 +141,9 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
 // change background color
 listsRouter.put('/setBg', restricted, async (req,res) => {
     const {sub} = req.decodedToken
-    console.log('sub',sub)
+    // console.log('sub',sub)
     const {listId, userId, backColor} = req.body
-    console.log('background change reqbody', req.body, 'sub', sub)
+    // console.log('background change reqbody', req.body, 'sub', sub)
     try{
         if (sub == userId){
             const resultant = await putBackground(listId, backColor)
@@ -160,7 +160,7 @@ listsRouter.put('/setBg', restricted, async (req,res) => {
 listsRouter.put('/setText', restricted, async (req,res) => {
     const {sub} = req.decodedToken
     const {listId, userId, fontSelection} = req.body
-    console.log('req.body setFont', req.body)
+    // console.log('req.body setFont', req.body)
     try{
         if (sub == userId){
             const resultant = await putFont(listId, fontSelection)
@@ -175,16 +175,16 @@ listsRouter.put('/setText', restricted, async (req,res) => {
 // change font selection - lightmode
 listsRouter.put('/setTcolor', restricted, async (req,res) => {
     const {sub} = req.decodedToken
-    console.log('sub',req.decodedToken.sub, sub)
+    // console.log('sub',req.decodedToken.sub, sub)
     // console.log('req', req)
-    console.log('req.body textcolor', req.body)
+    // console.log('req.body textcolor', req.body)
     const {listId, userId, txtColor} = req.body
     try{
-        console.log('we tryin')
+        // console.log('we tryin')
         if(sub == userId){
-            console.log('try')
+            // console.log('try')
             const resultant = await putTColor(listId, txtColor)
-            console.log('resultant', resultant)
+            // console.log('resultant', resultant)
             res.status(200).json({resultant, message:'textColor set successfully'})
         }
     }catch(err){
