@@ -30,7 +30,7 @@ module.exports = {
     },
 
     getEntries(userId){
-        return knex('entries').where("entries.userId", userId).orderBy('listId', 'asc').orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').leftJoin('lists', 'entries.listId', 'lists.listId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL','lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
+        return knex('entries').where("entries.userId", userId).orderBy('listId', 'asc').orderBy('entryId', 'asc').join('users', 'entries.userId', 'users.userId').leftJoin('lists', 'entries.listId', 'lists.listId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL','lists.displayName', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
     },
 
     getEntries1(listId){
@@ -46,11 +46,11 @@ module.exports = {
     },
 
     listByCustomURL(customURL){
-        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
+        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.displayName', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
     },
 
     listByNumber(listId){
-        return knex('lists').where("lists.listId", listId).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
+        return knex('lists').where("lists.listId", listId).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.displayName', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
     },
     // join('entries', 'lists.listId', 'entries.listId')
     checkIfCustomURLAvailable(customURL){
