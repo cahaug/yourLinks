@@ -171,6 +171,10 @@ module.exports = {
         return knex('lists').where('listId', listId).update({'txtColor':txtColor})
     },
 
+    setDisplayName(listId, displayName){
+        return knex('lists').where('listId', listId).update({'displayName':displayName})
+    },
+
     customByListId(listId){
         return knex('lists').where('listId', listId)
     },

@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePicture } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePicture, setDisplayName } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
 
@@ -221,6 +221,27 @@ listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
     } catch (err){
         console.log('changeProfPicErr', err)
         res.status(500).json({message:'failed changing profile picture'})
+    }
+})
+
+listsRouter.put('/setDisplayName', restricted, async (req, res) => {
+    const { displayName, listId, userId } = req.body
+    const {sub} = req.decodedToken
+
+    try{
+        const checkedListId = await getListId(sub)
+        // console.log('checkedListId', checkedListId)
+        if(sub == userId && checkedListId[0].listId == listId){
+            // console.log('sub equals user')
+            const resultant = await setDisplayName(listId, displayName)
+            res.status(200).json({message:'Set Display Name Successfully', resultant})
+        } else {
+            // console.log('putcustom security verification error')
+            res.status(500).json({message:'Error Verifying User Security Permissions'})
+        }
+    } catch (err) {
+        console.log('setDisplayName err', err)
+        res.status(500).json(err)
     }
 })
 
