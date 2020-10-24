@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
 
 const queries = require('../database/queries.js');
-const { insertUser, singleUserForLogin, customByListId, getListId } = require('../database/queries.js');
+const { insertUser, singleUserForLogin, customByListId, getListId, updatePassword } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
 
 // authRouter.get('/', (req, res) => {
@@ -102,7 +102,6 @@ authRouter.post('/register', async (req, res) => {
       if(user[0].userId == sub && bcrypt.compareSync(password, user[0].password)){
         const hash = bcrypt.hashSync(newPassword, 12)
         const updatePassword = await updatePassword(email, hash)
-        console.log('hash', hash)
         res.status(200).json({message:'successful password change', updatePassword:updatePassword})
       } else {
         res.status(401).json({message:'unable to verify credentials'})
