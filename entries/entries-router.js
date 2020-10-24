@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry } = require('../database/queries.js');
+const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
 
 // entriesRouter.use(function(req, res, next) {
@@ -9,27 +9,29 @@ const restricted = require('../middleware/restricted.js');
 // });
 
 entriesRouter.post('/new', restricted, async (req, res) => {
-    const date = new Date();
-    const creationDate = date;
-    console.log('req.decodedToken', req.decodedToken)
-    const { sub } = req.decodedToken
-    console.log('sub', sub)
-    const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
-    console.log('userId', userId)
-    const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
-    // console.log(entry)
-    const parsedUserId = parseInt(userId, 10)
-    if(sub === parsedUserId){
-        return newEntry(entry)
-        .then(result => {
-            res.header('Access-Control-Allow-Origin', '*')
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-            return res.status(200).json({message:"Entry Added Successfully", result});
-        })
-        .catch(err => {console.log('failed in catch', err); res.status(500).json(err)});
-    }  else {
-        res.status(500).json({message:'userId inequals sub'})
+    try {
+        const date = new Date();
+        const creationDate = date;
+        const { sub } = req.decodedToken
+        const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
+        const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
+        const parsedUserId = parseInt(userId, 10)
+        const checkedListId = await getListId(sub)
+        if(sub === parsedUserId && checkedListId[0].listId == listId){
+            return newEntry(entry)
+            .then(result => {
+                res.header('Access-Control-Allow-Origin', '*')
+                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+                return res.status(200).json({message:"Entry Added Successfully", result});
+            })
+            .catch(err => {console.log('failed in catch', err); res.status(500).json(err)});
+        }  else {
+            res.status(500).json({message:'userId inequals sub'})
+        }
+    } catch(err){
+        console.log('addentry logic issue', err)
+        res.status(500).json({message:'problem with logic'})
     }
 });
 
@@ -46,7 +48,7 @@ entriesRouter.post('/new', restricted, async (req, res) => {
 //     .catch(err => res.status(500).json(err));
 // })
 
-// get single entry by entryId
+// get single entry by entryId - no need to secure i think
 entriesRouter.get('/editEntry/:entryId', (req, res) => {
     const entryId = req.params.entryId
     return getSingleEntry(entryId)
@@ -86,31 +88,54 @@ entriesRouter.get('/editEntry/:entryId', (req, res) => {
 // })
 
 // edit referencingUrl, description and title aka edit entry production
-entriesRouter.put('/replaceEntry', async (req, res) => {
-    console.log('req.body', req.body)
-    const { entryId, referencingURL, description, linkTitle, imgURL } = req.body;
-    return updateEntry(entryId, referencingURL, description, linkTitle, imgURL)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        return res.status(200).json(result);
-    })
-    .catch(err => {console.log(err); res.status(500).json(err)})
+entriesRouter.put('/replaceEntry', restricted, async (req, res) => {
+    try {
+        const {sub} = req.decodedToken
+        const { entryId, referencingURL, description, linkTitle, imgURL, listId } = req.body;
+        const checkedListId = await getListId(sub)
+        if(checkedListId[0].listId == listId){
+            return updateEntry(entryId, referencingURL, description, linkTitle, imgURL)
+            .then(result => {
+                res.header('Access-Control-Allow-Origin', '*')
+                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+                return res.status(200).json(result);
+            })
+            .catch(err => {console.log(err); res.status(500).json(err)})
+        } else {
+            res.status(401).json({message:'Error Verifying Security Permissions'})
+        }
+    } catch(err){
+        console.log('edit entry replace error', err)
+        res.status(500).json(err)
+    }
+    // console.log('req.body', req.body)
+    
 });
 
 // delete entry production
-entriesRouter.post('/deleteEntry', (req, res) => {
+entriesRouter.post('/deleteEntry', restricted, (req, res) => {
     // console.log(req.body)
-    const { entryId } = req.body
-    return deleteEntry(entryId)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        return res.status(200).json(result);
-    })
-    .catch(err => {console.log(err); res.status(500).json(err)})
+    const {sub} = req.decodedToken
+    const { userId, listId, entryId } = req.body
+    try {
+        const checkedListId = await getListId(sub)
+        if(sub == userId && checkedListId[0].listId == listId){
+            return deleteEntry(entryId)
+            .then(result => {
+                res.header('Access-Control-Allow-Origin', '*')
+                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+                return res.status(200).json(result);
+            })
+            .catch(err => {console.log(err); res.status(500).json(err)})
+        } else {
+            res.status(401).json({message:'Error Verifying User Security Permissions'})
+        }
+    } catch (err){
+        console.log('Error Deleting Entry', err)
+        res.status(500).json({message:'Error Deleting Entry', err})
+    }
 });
 
 
