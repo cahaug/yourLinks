@@ -121,7 +121,7 @@ statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
     if(userId == sub){
         return getEntries(userId)
         .then(links => {
-            console.log('links', links)
+            // console.log('links', links)
             return getEntries2(userId)
             .then(nums => {
                 let mergedLinks = []

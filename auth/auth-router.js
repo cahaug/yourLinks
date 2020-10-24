@@ -3,7 +3,8 @@ const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
 
 const queries = require('../database/queries.js');
-const { insertUser, singleUserForLogin, customByListId, getListId } = require('../database/queries.js')
+const { insertUser, singleUserForLogin, customByListId, getListId } = require('../database/queries.js');
+const restricted = require('../middleware/restricted.js');
 
 // authRouter.get('/', (req, res) => {
 //     queries.getAllUsers().then((users) => {
@@ -90,5 +91,24 @@ authRouter.post('/register', async (req, res) => {
         res.status(500).json(error);
       });
   });
+
+  authRouter.put('/SettingsCPW', restricted,  async (req, res) => {
+    const { email, password, newPassword } = req.body
+    const {sub} = req.decodedToken
+    try{
+      const user = await singleUserForLogin(email)
+      console.log('settings CPW User', user)
+      if(user.userId == sub && bcrypt.compareSync(password, user.password)){
+        const hash = bcrypt.hashSync(newPassword, 12)
+        const updatePassword = await updatePassword(email, hash)
+        res.status(200).json({message:'successful password change', updatePassword:updatePassword})
+      } else {
+        res.status(401).json({message:'unable to verify credentials'})
+      }
+    } catch(err){
+      console.log(err)
+      res.status(500).json({message:'Error Changing Password', err})
+    }
+  })
 
 module.exports = authRouter;
