@@ -106,7 +106,7 @@ module.exports = {
     },
 
     statsForEntry(entryId){
-        return knex('stats').where({ entryId }).count('statId as clickCount')
+        return knex('stats').where({ entryId })
     },
 
     statsRecords(){
