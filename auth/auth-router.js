@@ -101,8 +101,8 @@ authRouter.post('/register', async (req, res) => {
       console.log('user 0', user[0])
       if(user[0].userId == sub && bcrypt.compareSync(password, user[0].password)){
         const hash = bcrypt.hashSync(newPassword, 12)
-        const updatePassword = await updatePassword(email, hash)
-        res.status(200).json({message:'successful password change', updatePassword:updatePassword})
+        const updatedPassword = await updatePassword(email, hash)
+        res.status(200).json({message:'successful password change', updatedPassword:updatedPassword})
       } else {
         res.status(401).json({message:'unable to verify credentials'})
       }
