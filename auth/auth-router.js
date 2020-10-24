@@ -97,8 +97,8 @@ authRouter.post('/register', async (req, res) => {
     const {sub} = req.decodedToken
     try{
       const user = await singleUserForLogin(email)
-      console.log('settings CPW User', user)
-      console.log('user 0', user[0])
+      // console.log('settings CPW User', user)
+      // console.log('user 0', user[0])
       if(user[0].userId == sub && bcrypt.compareSync(password, user[0].password)){
         const hash = bcrypt.hashSync(newPassword, 12)
         const updatedPassword = await updatePassword(email, hash)
