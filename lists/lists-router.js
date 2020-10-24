@@ -95,7 +95,7 @@ listsRouter.post('/checkCHomepage/', async (req, res) => {
             const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
             // console.log('gr', googleResponse)
             // console.log('recaptcha data', googleResponse.data)
-            return googleResponse.data.success
+            return await googleResponse.data.success
         }
         const isNotBot = await checkToken(token)
 

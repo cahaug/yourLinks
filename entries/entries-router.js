@@ -114,7 +114,7 @@ entriesRouter.put('/replaceEntry', restricted, async (req, res) => {
 });
 
 // delete entry production
-entriesRouter.post('/deleteEntry', restricted, (req, res) => {
+entriesRouter.post('/deleteEntry', restricted, async (req, res) => {
     // console.log(req.body)
     const {sub} = req.decodedToken
     const { userId, listId, entryId } = req.body
