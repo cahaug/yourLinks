@@ -131,8 +131,18 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
     try {
         if(userId == sub){
             const pieData = await pieGraph(userId)
-            const withTitles = await titleAdder(pieData)
-            res.status(200).json(withTitles)
+            const newArray = []
+            const withTitle = pieData.forEach(async value => {
+                const title = await getSingleEntry(value.entryId)
+                // console.log('title ret', title)
+                const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
+                console.log('obp', obp)
+                newArray.push(obp)
+                console.log('newArray Inner', newArray)
+            })
+            console.log('newArrayAfter', newArray)
+            console.log('withTitle', withTitle)
+            res.status(200).json(newArray)
         } else {
             res.status(400).json({message:'Security Verification Issue'})
         }
