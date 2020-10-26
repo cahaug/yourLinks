@@ -118,14 +118,19 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
     const {sub} = req.decodedToken
     const titleAdder = async (data) => {
         const newArray = [] 
+        const isReadyforFullSend = () => {
+            if(newArray.length === data.lenth){
+                return newArray
+            }
+        }
         data.forEach(async value => {
             const title = await getSingleEntry(value.entryId)
             console.log('title ret', title)
             const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
             console.log('obp', obp)
             newArray.push(obp)
+            isReadyforFullSend()
             console.log('newArray Inner', newArray)
-            return
         })
         console.log('newArray', newArray)
         return newArray
