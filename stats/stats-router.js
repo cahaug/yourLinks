@@ -140,13 +140,12 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
                 newArray.push(obp)
                 if(newArray.length==pieData.length){
                     console.log('criteria met', newArray)
-                    continue
+                    res.status(200).json(newArray)                    
                 }
                 // console.log('newArray Inner', newArray)
             })
-            console.log('newArrayAfter', newArray)
-            console.log('withTitle', withTitle)
-            res.status(200).json(newArray)
+            // console.log('newArrayAfter', newArray)
+            // console.log('withTitle', withTitle)
         } else {
             res.status(400).json({message:'Security Verification Issue'})
         }
