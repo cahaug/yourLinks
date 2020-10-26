@@ -131,6 +131,12 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
             newArray.push(obp)
             isReadyforFullSend(data, newArray)
             console.log('newArray Inner', newArray)
+        }).then((stuff)=>{
+            console.log('thestuff', stuff)
+            return newArray
+        }).catch((err)=>{
+            console.log('piegraph catcherr', err)
+            return err
         })
         console.log('newArray', newArray)
         return newArray
