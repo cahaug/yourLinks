@@ -41,6 +41,10 @@ module.exports = {
         return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').orderBy('stats.entryId', 'asc').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
     },
 
+    pieGraph(userId){
+        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').orderBy('stats.entryId', 'asc').count().leftJoin('entries', 'stats.entryId', 'entries.entryId').groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
+    },
+
     putCustom(listId, customURL){
         return knex('lists').where("listId", listId).update({customURL:customURL})
     },

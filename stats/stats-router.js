@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 
 // YYYY-MM-DDTHH:mm:ss
@@ -110,6 +110,23 @@ statsRouter.get('/st/:userId', (req, res, next) => {
         res.status(200).json(numbers)
     }) 
     .catch(err => res.status(500).json(err))
+})
+
+// needs to be secured w sub verification
+statsRouter.post('/pieGraph', restricted, async (req, res) => {
+    const { userId } = req.body
+    const {sub} = req.decodedToken
+    try {
+        if(userId == sub){
+            const pieData = await pieGraph(userId)
+            res.status(200).json(pieData)
+        } else {
+            res.status(400).json({message:'Security Verification Issue'})
+        }
+    } catch (err){
+        console.log('piegraph error', err)
+        res.status(500).json({message:'piegraph error', err})
+    }
 })
 
 // aio stats and links
