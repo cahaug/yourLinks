@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 
 // YYYY-MM-DDTHH:mm:ss
@@ -116,10 +116,23 @@ statsRouter.get('/st/:userId', (req, res, next) => {
 statsRouter.post('/pieGraph', restricted, async (req, res) => {
     const { userId } = req.body
     const {sub} = req.decodedToken
+    const titleAdder = async (data) => {
+        const newArray = [] 
+        const fullForm =  data.forEach(async value => {
+            const title = await getSingleEntry(value.entryId)
+            console.log('title ret', title)
+            const obp = {linkTitle:title.linkTitle, entryId:value.entryId, count:value.count}
+            console.log('obp', obp)
+            newArray.push(obp)
+        })
+        console.log('newArray', newArray)
+        return newArray
+    }
     try {
         if(userId == sub){
             const pieData = await pieGraph(userId)
-            res.status(200).json(pieData)
+            const withTitles = await titleAdder(pieData)
+            res.status(200).json(withTitles)
         } else {
             res.status(400).json({message:'Security Verification Issue'})
         }
