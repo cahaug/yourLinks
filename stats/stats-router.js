@@ -125,21 +125,16 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
         }
         data.forEach(async value => {
             const title = await getSingleEntry(value.entryId)
-            console.log('title ret', title)
+            // console.log('title ret', title)
             const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
             console.log('obp', obp)
             newArray.push(obp)
             isReadyforFullSend(data, newArray)
             console.log('newArray Inner', newArray)
-        }).then((stuff)=>{
-            console.log('thestuff', stuff)
+        }).then(()=>{
+            console.log('newArray post', newArray)
             return newArray
-        }).catch((err)=>{
-            console.log('piegraph catcherr', err)
-            return err
         })
-        console.log('newArray', newArray)
-        return newArray
     }
     try {
         if(userId == sub){
