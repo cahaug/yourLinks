@@ -124,6 +124,8 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
             const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
             console.log('obp', obp)
             newArray.push(obp)
+            console.log('newArray Inner', newArray)
+            return
         })
         console.log('newArray', newArray)
         return newArray
