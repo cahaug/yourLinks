@@ -135,7 +135,7 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
             const withTitle = pieData.forEach(async value => {
                 const title = await getSingleEntry(value.entryId)
                 // console.log('title ret', title)
-                const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
+                const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
                 console.log('obp', obp)
                 newArray.push(obp)
                 if(newArray.length==pieData.length){
