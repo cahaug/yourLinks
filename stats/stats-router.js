@@ -139,7 +139,8 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
                 console.log('obp', obp)
                 newArray.push(obp)
                 if(newArray.length==pieData.length){
-                    return newArray
+                    console.log('criteria met', newArray)
+                    break
                 }
                 // console.log('newArray Inner', newArray)
             })
