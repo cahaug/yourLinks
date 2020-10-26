@@ -116,18 +116,18 @@ statsRouter.get('/st/:userId', (req, res, next) => {
 statsRouter.post('/pieGraph', restricted, async (req, res) => {
     const { userId } = req.body
     const {sub} = req.decodedToken
-    const titleAdder = async (data) => {
-        const newArray = [] 
-        const newThing = data.forEach(async value => {
-            const title = await getSingleEntry(value.entryId)
-            // console.log('title ret', title)
-            const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
-            console.log('obp', obp)
-            newArray.push(obp)
-            console.log('newArray Inner', newArray)
-        })
-        return newThing, newArray
-    }
+    // const titleAdder = async (data) => {
+    //     const newArray = [] 
+    //     const newThing = data.forEach(async value => {
+    //         const title = await getSingleEntry(value.entryId)
+    //         // console.log('title ret', title)
+    //         const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
+    //         console.log('obp', obp)
+    //         newArray.push(obp)
+    //         console.log('newArray Inner', newArray)
+    //     })
+    //     return newThing, newArray
+    // }
     try {
         if(userId == sub){
             const pieData = await pieGraph(userId)
@@ -138,7 +138,10 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
                 const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:value.count}
                 console.log('obp', obp)
                 newArray.push(obp)
-                console.log('newArray Inner', newArray)
+                if(newArray.length==pieData.length){
+                    return newArray
+                }
+                // console.log('newArray Inner', newArray)
             })
             console.log('newArrayAfter', newArray)
             console.log('withTitle', withTitle)
