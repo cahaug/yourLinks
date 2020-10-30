@@ -5,7 +5,7 @@ const restricted = require('../middleware/restricted.js')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 const fs = require('fs');
 const Reader = require('@maxmind/geoip2-node').Reader;
-const dbBuffer = fs.readFileSync('./GeoLite2-Country.mmdb');
+const dbBuffer = fs.readFileSync('../stats/MaxMindDb/GeoLite2-Country.mmdb');
 const reader = Reader.openBuffer(dbBuffer);
 // YYYY-MM-DDTHH:mm:ss
 
