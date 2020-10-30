@@ -1,8 +1,8 @@
 const statsRouter = require('express').Router();
 const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
-const WebServiceClient = require('@maxmind/geoip2-node').WebServiceClient;
-const client = new WebServiceClient(process.env.MAXMINDUID, process.env.MAXMINDLICENSEKEY);
+const Reader = require('@maxmind/geoip2-node').Reader;
+// const client = new WebServiceClient(process.env.MAXMINDUID, process.env.MAXMINDLICENSEKEY);
 // YYYY-MM-DDTHH:mm:ss
 
 // statsRouter.use(function(req, res, next) {
@@ -226,10 +226,13 @@ statsRouter.get('/listViews/:listId', restricted, (req, res) => {
 
 // test location get
 statsRouter.get('/locationTest', async (req, res) => {
-    client.country(`${req.headers['x-forwarded-for']}`).then(response => {
-        console.log('response', response)
-        console.log('country',response.country.isoCode); // 'CA'
-        res.status(200).json({message:'here is the info', response:response, country: response.country})
+    const options = {}
+    Reader.open('./MaxMindDb/GeoLite2-Country.mmdb', options).then(reader => {
+        // console.log('response', response)
+        // console.log('country',response.country.isoCode); // 'CA'
+        console.log(reader.country(`${req.headers['x-forwarded-for']}`))
+        const readValue = await reader.country(`${req.headers['x-forwarded-for']}`)
+        res.status(200).json({message:'here is the info', response:readValue, country: readValue.country})
     })
     .catch(err => {
         console.log('geolocation err', err)
