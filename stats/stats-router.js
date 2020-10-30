@@ -1,7 +1,8 @@
 const statsRouter = require('express').Router();
 const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
-
+const WebServiceClient = require('@maxmind/geoip2-node').WebServiceClient;
+const client = new WebServiceClient(process.env.MAXMINDUID, process.env.MAXMINDLICENSEKEY);
 // YYYY-MM-DDTHH:mm:ss
 
 // statsRouter.use(function(req, res, next) {
@@ -221,6 +222,19 @@ statsRouter.get('/listViews/:listId', restricted, (req, res) => {
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
 
+})
+
+// test location get
+statsRouter.get('/locationTest', async (req, res) => {
+    client.country(`${req.headers['x-forwarded-for']}`).then(response => {
+        console.log('response', response)
+        console.log('country',response.country.isoCode); // 'CA'
+        res.status(200).json({message:'here is the info', response:response, country: response.country})
+    })
+    .catch(err => {
+        console.log('geolocation err', err)
+        res.status(400).json({message:'geolocation error', err:err})
+    })
 })
 
 module.exports = statsRouter;
