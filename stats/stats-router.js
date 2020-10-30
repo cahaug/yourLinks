@@ -3,6 +3,7 @@ const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, st
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
+const fs = require('fs');
 const Reader = require('@maxmind/geoip2-node').Reader;
 const dbBuffer = fs.readFileSync('./MaxMindDb/GeoLite2-Country.mmdb');
 const reader = Reader.openBuffer(dbBuffer);
