@@ -1,8 +1,8 @@
 const statsRouter = require('express').Router();
 const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
-const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
-const Reader = require('@maxmind/geoip2-node').Reader;
+// const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
+// const Reader = require('@maxmind/geoip2-node').Reader;
 // const client = new WebServiceClient(process.env.MAXMINDUID, process.env.MAXMINDLICENSEKEY);
 // YYYY-MM-DDTHH:mm:ss
 
@@ -227,18 +227,18 @@ statsRouter.get('/listViews/:listId', restricted, (req, res) => {
 
 // test location get
 statsRouter.get('/locationTest', async (req, res) => {
-    const options = {}
-    Reader.open(maxMindDb, options).then(reader => {
-        // console.log('response', response)
-        // console.log('country',response.country.isoCode); // 'CA'
-        console.log(reader.country(`${req.headers['x-forwarded-for']}`))
-        const readValue = reader.country(`${req.headers['x-forwarded-for']}`)
-        res.status(200).json({message:'here is the info', response:readValue, country: readValue.country})
-    })
-    .catch(err => {
-        console.log('geolocation err', err)
-        res.status(400).json({message:'geolocation error', err:err})
-    })
+    // const options = {}
+    // Reader.open(maxMindDb, options).then(reader => {
+    //     // console.log('response', response)
+    //     // console.log('country',response.country.isoCode); // 'CA'
+    //     console.log(reader.country(`${req.headers['x-forwarded-for']}`))
+    //     const readValue = reader.country(`${req.headers['x-forwarded-for']}`)
+    //     res.status(200).json({message:'here is the info', response:readValue, country: readValue.country})
+    // })
+    // .catch(err => {
+    //     console.log('geolocation err', err)
+    //     res.status(400).json({message:'geolocation error', err:err})
+    // })
 })
 
 module.exports = statsRouter;
