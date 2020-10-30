@@ -231,7 +231,7 @@ statsRouter.get('/locationTest', async (req, res) => {
         // console.log('response', response)
         // console.log('country',response.country.isoCode); // 'CA'
         console.log(reader.country(`${req.headers['x-forwarded-for']}`))
-        const readValue = await reader.country(`${req.headers['x-forwarded-for']}`)
+        const readValue = reader.country(`${req.headers['x-forwarded-for']}`)
         res.status(200).json({message:'here is the info', response:readValue, country: readValue.country})
     })
     .catch(err => {
