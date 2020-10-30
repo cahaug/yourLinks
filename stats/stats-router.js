@@ -5,10 +5,10 @@ const restricted = require('../middleware/restricted.js')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 const fs = require('fs');
 const Reader = require('@maxmind/geoip2-node').Reader;
-const dbBufferCity = fs.readFileSync('./stats/MaxMindDb/GeoLite2-City.mmdb');
-const dbBufferCountry = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
-const readerCity = Reader.openBuffer(dbBufferCity);
-const readerCountry = Reader.openBuffer(dbBufferCountry);
+const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-City.mmdb');
+// const dbBufferCountry = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
+const reader = Reader.openBuffer(dbBuffer);
+// const readerCountry = Reader.openBuffer(dbBufferCountry);
 // YYYY-MM-DDTHH:mm:ss
 
 // statsRouter.use(function(req, res, next) {
@@ -233,9 +233,9 @@ statsRouter.get('/listViews/:listId', restricted, (req, res) => {
 // test location get
 statsRouter.get('/locationTest', async (req, res) => {
     try {
-        const locationValueCountry = await readerCountry.country(`${req.headers['x-forwarded-for']}`)
-        const locationValueCity = await readerCity.city(`${req.headers['x-forwarded-for']}`)
-        res.status(200).json({message:'location located', locationValueCountry: locationValueCountry.country, locationValueCity:locationValueCity.city, locationValueCityFull: locationValueCity, locationValueCountryFull: locationValueCountry})
+        // const locationValueCountry = await readerCountry.country(`${req.headers['x-forwarded-for']}`)
+        const locationValueCity = await reader.city(`${req.headers['x-forwarded-for']}`)
+        res.status(200).json({message:'location located', locationValueCityFull: locationValueCity})
     } catch (err){
         console.log('location err', err)
         res.status(400).json(err)
