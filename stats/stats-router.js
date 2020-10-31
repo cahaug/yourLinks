@@ -37,7 +37,6 @@ statsRouter.get('/', async (req, res) => {
     const countryOfOrigin = locationValueCountry.country.isoCode
     const province = null
     const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
-    console.log('uaDataScrape', uaDataScrape)
     const isMobileDevice = uaDataScrape.data.device.is_mobile_device
     const deviceType = uaDataScrape.data.device.type
     const deviceBrandName = uaDataScrape.data.device.brand
