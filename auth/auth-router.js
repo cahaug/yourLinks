@@ -61,28 +61,16 @@ authRouter.post('/login', async (req, res) => {
   const checkToken = async (token) => {
     const secret = process.env.RECAPTCHA_SECRET
     const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
-    // console.log('gr', googleResponse)
-    // console.log('recaptcha data', googleResponse.data)
     return await googleResponse.data.success
   }
   const isNotBot = await checkToken(token)
   if(isNotBot===true){
-    // console.log('username', username, 'password', password)
-    // console.log('req.body', req.body)
     return singleUserForLogin(email)
       .first()
       .then(async user => {
-        console.log('user', user)
-        console.log('pw slice', password.slice(0,3), req.body.password.slice(0,3))
         if (user && bcrypt.compareSync(password, user.password)) {
-          // a jwt should be generated
           const token = generateToken(user);
-          // console.log('token', token);
-          // console.log('user', user)
           const userListID = await getListId(user.userId)
-          console.log('userListID', userListID)
-          // const customURL = await customByListId(userListId[0].listId)
-          // console.log('customURL', customURL)
           res.status(200).json({
             email: `${user.email}`,
             firstName:`${user.firstName}`,
@@ -111,8 +99,6 @@ authRouter.post('/login', async (req, res) => {
     const {sub} = req.decodedToken
     try{
       const user = await singleUserForLogin(email)
-      // console.log('settings CPW User', user)
-      // console.log('user 0', user[0])
       if(user[0].userId == sub && bcrypt.compareSync(password, user[0].password)){
         const hash = bcrypt.hashSync(newPassword, 12)
         const updatedPassword = await updatePassword(email, hash)
