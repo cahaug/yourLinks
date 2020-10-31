@@ -4,6 +4,7 @@ const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 const fs = require('fs');
+const axios = require('axios')
 const Reader = require('@maxmind/geoip2-node').Reader;
 const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
 // const dbBufferCountry = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
@@ -20,12 +21,6 @@ const reader = Reader.openBuffer(dbBuffer);
 
 
 statsRouter.get('/', async (req, res) => {
-    const refURL = req.query.ref
-    const entryId = req.query.eid
-    const redirect = req.query.red
-    const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
-    const countryOfOrigin = locationValueCountry.country.isoCode
-    const province = null
     const date = new Date().toISOString();
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
@@ -34,9 +29,25 @@ statsRouter.get('/', async (req, res) => {
     const mn = date.slice(14, 16)
     const sc = date.slice(17, 19)
     const doNotTrack = !!req.headers.dnt
-    const userIP = req.headers['x-forwarded-for'];
+    const refURL = req.query.ref
+    const entryId = req.query.eid
+    const redirect = req.query.red
+    const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     const userAgent = req.headers['user-agent'];
-    const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province }
+    const countryOfOrigin = locationValueCountry.country.isoCode
+    const province = null
+    const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
+    console.log('uaDataScrape', uaDataScrape)
+    const isMobileDevice = uaDataScrape.data.device.is_mobile_device
+    const deviceType = uaDataScrape.data.device.type
+    const deviceBrandName = uaDataScrape.data.device.brand
+    const deviceOwnName = uaDataScrape.data.device.name
+    const osName = uaDataScrape.data.os.name
+    const osFamily = uaDataScrape.data.os.family
+    const browserName = uaDataScrape.data.browser.name
+    const browserVersionMajor = uaDataScrape.data.browser.version_major
+    const userIP = req.headers['x-forwarded-for'];
+    const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
     console.log('stat', stat)
     return logAClick(stat)
     .then(result => {
