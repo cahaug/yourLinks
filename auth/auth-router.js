@@ -54,8 +54,18 @@ authRouter.post('/register', async (req, res) => {
 
 
 
-  authRouter.post('/login', async (req, res) => {
-    let { password } = req.body;
+authRouter.post('/login', async (req, res) => {
+  let { password, token } = req.body;
+
+  const checkToken = async (token) => {
+    const secret = process.env.RECAPTCHA_SECRET
+    const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
+    // console.log('gr', googleResponse)
+    // console.log('recaptcha data', googleResponse.data)
+    return await googleResponse.data.success
+  }
+  const isNotBot = await checkToken(token)
+  if(isNotBot===true){
     // console.log('username', username, 'password', password)
     // console.log('req.body', req.body)
     return singleUserForLogin(req.body.email)
@@ -90,6 +100,10 @@ authRouter.post('/register', async (req, res) => {
         console.log(error);
         res.status(500).json(error);
       });
+    } else {
+      res.status(401).json({message:'Ya Failed The Recaptchas Bruh'})
+      return
+    }
   });
 
   authRouter.put('/SettingsCPW', restricted,  async (req, res) => {
