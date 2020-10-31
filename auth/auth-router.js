@@ -72,7 +72,7 @@ authRouter.post('/login', async (req, res) => {
     return singleUserForLogin(email)
       .first()
       .then(async user => {
-        if (user && bcrypt.compareSync(password, user[0].password)) {
+        if (user && bcrypt.compareSync(req.body.password, user[0].password)) {
           // a jwt should be generated
           const token = generateToken(user[0]);
           // console.log('token', token);
