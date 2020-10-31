@@ -74,20 +74,20 @@ authRouter.post('/login', async (req, res) => {
       .then(async user => {
         console.log('user', user)
         console.log('pw slice', password.slice(0,3), req.body.password.slice(0,3))
-        if (user && bcrypt.compareSync(password, user[0].password)) {
+        if (user && bcrypt.compareSync(password, user.password)) {
           // a jwt should be generated
-          const token = generateToken(user[0]);
+          const token = generateToken(user);
           // console.log('token', token);
-          console.log('user', user[0])
-          const userListID = await getListId(user[0].userId)
+          // console.log('user', user)
+          const userListID = await getListId(user.userId)
           console.log('userListID', userListID)
           // const customURL = await customByListId(userListId[0].listId)
           // console.log('customURL', customURL)
           res.status(200).json({
-            email: `${user[0].email}`,
-            firstName:`${user[0].firstName}`,
-            lastName:`${user[0].lastName}`,
-            userId:`${user[0].userId}`,
+            email: `${user.email}`,
+            firstName:`${user.firstName}`,
+            lastName:`${user.lastName}`,
+            userId:`${user.userId}`,
             listId:`${userListID[0].listId}`,
             customURL:`${userListID[0].customURL}`,
             token
