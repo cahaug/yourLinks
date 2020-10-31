@@ -69,12 +69,10 @@ authRouter.post('/login', async (req, res) => {
   if(isNotBot===true){
     // console.log('username', username, 'password', password)
     // console.log('req.body', req.body)
-    console.log('user was not bot', isNotBot)
     return singleUserForLogin(email)
       // .first()
       .then(async user => {
-        console.log('inside .then', user)
-        if (user && bcrypt.compareSync(password, user.password)) {
+        if (user && bcrypt.compareSync(password, user[0].password)) {
           // a jwt should be generated
           const token = generateToken(user);
           // console.log('token', token);
