@@ -23,7 +23,8 @@ statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
     const entryId = req.query.eid
     const redirect = req.query.red
-    const countryOfOrigin = null
+    const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
+    const countryOfOrigin = locationValueCountry.country.isoCode
     const province = null
     const date = new Date().toISOString();
     const dy = date.slice(8, 10)
@@ -235,7 +236,7 @@ statsRouter.get('/locationTest', async (req, res) => {
     try {
         // const locationValueCountry = await readerCountry.country(`${req.headers['x-forwarded-for']}`)
         const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
-        res.status(200).json({message:'location located', locationValueCountry: locationValueCountry})
+        res.status(200).json({message:'location located', locationValueCountry: locationValueCountry.country.isoCode})
     } catch (err){
         console.log('location err', err)
         res.status(400).json(err)
