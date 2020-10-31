@@ -5,7 +5,7 @@ const restricted = require('../middleware/restricted.js')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 const fs = require('fs');
 const Reader = require('@maxmind/geoip2-node').Reader;
-const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-City.mmdb');
+const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
 // const dbBufferCountry = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
 const reader = Reader.openBuffer(dbBuffer);
 // const readerCountry = Reader.openBuffer(dbBufferCountry);
@@ -234,8 +234,8 @@ statsRouter.get('/listViews/:listId', restricted, (req, res) => {
 statsRouter.get('/locationTest', async (req, res) => {
     try {
         // const locationValueCountry = await readerCountry.country(`${req.headers['x-forwarded-for']}`)
-        const locationValueCity = await reader.city(`${req.headers['x-forwarded-for']}`)
-        res.status(200).json({message:'location located', locationValueCityFull: locationValueCity})
+        const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
+        res.status(200).json({message:'location located', locationValueCountry: locationValueCountry})
     } catch (err){
         console.log('location err', err)
         res.status(400).json(err)
