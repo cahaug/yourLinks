@@ -112,4 +112,14 @@ authRouter.post('/register', async (req, res) => {
     }
   })
 
+  authRouter.post('verifyValidToken', restricted, async (req, res) => {
+    const { userId } = req.body
+    const { sub } = req.decodedToken
+    if(sub==userId){
+      res.status(200).json(true)
+    } else {
+      res.status(200).json(false)
+    }
+  })
+
 module.exports = authRouter;
