@@ -253,7 +253,7 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         // old, wack increment list indicator
         const pastListViews = await listViewsGet(listId)
         console.log('pastListViews Result', pastListViews)
-        const listViews = parseInt(result[0].listViews) + 1
+        const listViews = parseInt(pastListViews[0].listViews) + 1
         const pastIncrementedListViews = await incrementListViews(listId, listViews)
         console.log('pastIncrmentedListViews', pastIncrementedListViews)
         const doNotTrack = !!req.headers.dnt
