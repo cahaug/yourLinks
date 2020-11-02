@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
@@ -94,6 +94,19 @@ statsRouter.get('/StatsRecordsCount/', restricted, async (req, res) => {
 statsRouter.post('/statForEntry', async (req, res) => {
     const { entryId } = req.body
     return statsForEntry(entryId)
+    .then(result => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        res.status(200).json(result)
+    })
+    .catch(err => res.status(500).json(err))
+})
+
+
+statsRouter.post('/statForList', async (req, res) => {
+    const { listId } = req.body
+    return statsForList(listId)
     .then(result => {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
@@ -208,23 +221,73 @@ statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
 })
 
 // increment listviews
-statsRouter.get('/ili/:listId', (req, res) => {
-    const { listId } = req.params
-    return listViewsGet(listId)
-    .then(result => {
-        console.log('result', result)
+// statsRouter.get('/ili/:listId', (req, res) => {
+//     const { listId } = req.params
+//     return listViewsGet(listId)
+//     .then(result => {
+//         console.log('result', result)
+//         const listViews = parseInt(result[0].listViews) + 1
+//         return incrementListViews(listId, listViews)
+//         .then(result2 => {
+//             res.header('Access-Control-Allow-Origin', '*')
+//             res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//             res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//             res.status(200).json(result2)
+//         })
+//         .catch(err => res.status(500).json(err))
+//     })
+//     .catch(err => res.status(500).json(err))
+// })
+
+// new increment listViews
+statsRouter.get('/ili/:listId', async (req, res) => {
+    try {
+        const { listId } = req.params
+        const date = new Date().toISOString();
+        const dy = date.slice(8, 10)
+        const mo = date.slice(5, 7)
+        const yr = date.slice(0, 4)
+        const hr = date.slice(11, 13)
+        const mn = date.slice(14, 16)
+        const sc = date.slice(17, 19)
+        // old, wack increment list indicator
+        const pastListViews = await listViewsGet(listId)
+        console.log('pastListViews Result', pastListViews)
         const listViews = parseInt(result[0].listViews) + 1
-        return incrementListViews(listId, listViews)
-        .then(result2 => {
-            res.header('Access-Control-Allow-Origin', '*')
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-            res.status(200).json(result2)
+        const pastIncrementedListViews = await incrementListViews(listId, listViews)
+        console.log('pastIncrmentedListViews', pastIncrementedListViews)
+        const doNotTrack = !!req.headers.dnt
+        const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
+        const userAgent = req.headers['user-agent'];
+        const countryOfOrigin = locationValueCountry.country.isoCode
+        const province = null
+        const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
+        const isMobileDevice = uaDataScrape.data.device.is_mobile_device
+        const deviceType = uaDataScrape.data.device.type
+        const deviceBrandName = uaDataScrape.data.device.brand
+        const deviceOwnName = uaDataScrape.data.device.name
+        const osName = uaDataScrape.data.os.name
+        const osFamily = uaDataScrape.data.os.family
+        const browserName = uaDataScrape.data.browser.name
+        const browserVersionMajor = uaDataScrape.data.browser.version_major
+        const userIP = req.headers['x-forwarded-for'];
+        const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+        console.log('view', view)
+        return logPageView(view)
+        .then(result => {
+            console.log('add pageview result', result)
+            res.status(201).json(result)
+            
         })
-        .catch(err => res.status(500).json(err))
-    })
-    .catch(err => res.status(500).json(err))
-})
+        .catch(err => {
+            console.log('innererr', err)
+            res.status(500).json(err)
+        });
+    } catch(err){
+        console.log('tc err', err)
+        res.status(500).json(err)
+    }
+});
 
 // return listviews for given list
 statsRouter.get('/listViews/:listId', restricted, (req, res) => {

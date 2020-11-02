@@ -105,12 +105,20 @@ module.exports = {
         return knex('stats').insert(stat)
     },
 
+    logPageView(view){
+        return knex('pageViews').insert(view)
+    },
+
     statsRecordsCount(){
         return knex('stats').count('statId as statId')
     },
 
     statsForEntry(entryId){
         return knex('stats').where({ entryId })
+    },
+
+    statsForList(listId){
+        return knex('pageViews').where({ listId })
     },
 
     statsRecords(){
