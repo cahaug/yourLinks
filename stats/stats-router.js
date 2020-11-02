@@ -252,10 +252,8 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         const sc = date.slice(17, 19)
         // old, wack increment list indicator
         const pastListViews = await listViewsGet(listId)
-        console.log('pastListViews Result', pastListViews)
         const listViews = parseInt(pastListViews[0].listViews) + 1
         const pastIncrementedListViews = await incrementListViews(listId, listViews)
-        console.log('pastIncrmentedListViews', pastIncrementedListViews)
         const doNotTrack = !!req.headers.dnt
         const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
         const userAgent = req.headers['user-agent'];
@@ -272,19 +270,19 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         const browserVersionMajor = uaDataScrape.data.browser.version_major
         const userIP = req.headers['x-forwarded-for'];
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
-        console.log('view', view)
+        // console.log('view', view)
         return logPageView(view)
         .then(result => {
-            console.log('add pageview result', result)
+            // console.log('add pageview result', result)
             res.status(201).json(result)
             
         })
         .catch(err => {
-            console.log('innererr', err)
+            console.log('innererr s/ili', err)
             res.status(500).json(err)
         });
     } catch(err){
-        console.log('tc err', err)
+        console.log('tc err s/ili', err)
         res.status(500).json(err)
     }
 });
