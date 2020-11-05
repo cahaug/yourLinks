@@ -277,13 +277,13 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         // console.log('view', view)
         
         const uaData = parser(userAgent)
-        const isMobileDevice = false
+        let isMobileDevice = false
         const deviceType = uaData.device.type
         const deviceBrandName = uaData.device.vendor
         const deviceOwnName = uaData.device.model
         const osFamily = uaData.os.name
         const osName = uaData.os.version
-        const browserName = uaData.browser.name
+        let browserName = uaData.browser.name
         const browserVersionMajor = uaData.browser.major
         
         if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
