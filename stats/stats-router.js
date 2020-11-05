@@ -50,7 +50,7 @@ statsRouter.get('/', async (req, res) => {
     let browserName = uaData.browser.name
     const browserVersionMajor = uaData.browser.major
     if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
-        browserName = 'Instagram Browser'
+        browserName = 'Instagram App'
     }
     if(maxTouch>0){
         isMobileDevice = true
@@ -305,7 +305,7 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         let browserName = uaData.browser.name
         const browserVersionMajor = uaData.browser.major
         if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
-            browserName = 'Instagram Browser'
+            browserName = 'Instagram App'
         }
         if(maxTouch>0){
             isMobileDevice = true
