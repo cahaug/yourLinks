@@ -283,13 +283,13 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         }
         // ip2loc:
         ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
-        const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+        // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
         // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
-        const countryOfOrigin0 = ip2loc.IP2Location_get_country_short(userIP)
-        const province0 = ip2loc.IP2Location_get_region(userIP)
-        console.log('cool', countryOfOrigin0, 'provool', province0)
-        const countryOfOrigin = ipLocResult.country_short
-        const province = ipLocResult.region
+        const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+        const province = ip2loc.IP2Location_get_region(userIP)
+        // console.log('cool', countryOfOrigin0, 'provool', province0)
+        // const countryOfOrigin = ipLocResult.country_short
+        // const province = ipLocResult.region
         ip2loc.IP2Location_close()
         
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
