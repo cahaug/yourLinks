@@ -260,22 +260,9 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         const listViews = parseInt(pastListViews[0].listViews) + 1
         const pastIncrementedListViews = await incrementListViews(listId, listViews)
         const doNotTrack = !!req.headers.dnt
-        // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
         const userAgent = req.headers['user-agent'];
-        // const countryOfOrigin = locationValueCountry.country.isoCode
-        // const province = null
-        // const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
-        // const isMobileDevice = uaDataScrape.data.device.is_mobile_device
-        // const deviceType = uaDataScrape.data.device.type
-        // const deviceBrandName = uaDataScrape.data.device.brand
-        // const deviceOwnName = uaDataScrape.data.device.name
-        // const osName = uaDataScrape.data.os.name
-        // const osFamily = uaDataScrape.data.os.family
-        // const browserName = uaDataScrape.data.browser.name
-        // const browserVersionMajor = uaDataScrape.data.browser.version_major
         const userIP = req.headers['x-forwarded-for'];
-        // console.log('view', view)
-        
+        // ua-parser-js
         const uaData = parser(userAgent)
         let isMobileDevice = false
         const deviceType = uaData.device.type
@@ -285,7 +272,6 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         const osName = uaData.os.version
         let browserName = uaData.browser.name
         const browserVersionMajor = uaData.browser.major
-        
         if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
             browserName = 'Instagram Browser'
         }
@@ -295,15 +281,13 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
             isMobileDevice = true
         }
-        
-        console.log('BOWzer!!1! Pwah Pwah!', Bowser.parse(userAgent))
-        
-        console.log('ip2loc:')
+        // ip2loc:
         ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
         const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-        for(var key in ipLocResult){
-            console.log(key+': '+ ipLocResult[key])
-        }
+        // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+        const countryOfOrigin0 = ip2loc.IP2Location_get_country_short(userIP)
+        const province0 = ip2loc.IP2Location_get_region(userIP)
+        console.log('cool', countryOfOrigin0, 'provool', province0)
         const countryOfOrigin = ipLocResult.country_short
         const province = ipLocResult.region
         ip2loc.IP2Location_close()
