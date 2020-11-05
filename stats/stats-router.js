@@ -17,6 +17,8 @@ const reader = Reader.openBuffer(dbBuffer);
 //     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 //     next();
 // });
+var ip2loc = require("ip2location-nodejs");
+
 
 
 
@@ -271,6 +273,15 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         const userIP = req.headers['x-forwarded-for'];
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
         // console.log('view', view)
+        console.log('ip2loc:')
+        ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB11.BIN");
+        const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+        for(var key in result){
+
+            console.log(key+': '+ ipLocResult[key])
+        }
+        ip2loc.IP2Location_close()
+
         return logPageView(view)
         .then(result => {
             // console.log('add pageview result', result)
