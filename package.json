@@ -23,6 +23,7 @@
     "@maxmind/geoip2-node": "^1.6.0",
     "axios": "^0.20.0",
     "bcryptjs": "^2.4.3",
+    "bowser": "^2.11.0",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",

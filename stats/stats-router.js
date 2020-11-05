@@ -18,6 +18,7 @@ const reader = Reader.openBuffer(dbBuffer);
 //     next();
 // });
 var ip2loc = require("ip2location-nodejs");
+const Bowser = require("bowser")
 
 
 
@@ -273,11 +274,13 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         const userIP = req.headers['x-forwarded-for'];
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
         // console.log('view', view)
+        
+        console.log('BOWzer!!1! Pwah Pwah!', Bowser.parse(userAgent))
+
         console.log('ip2loc:')
         ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB11.BIN");
         const ipLocResult = ip2loc.IP2Location_get_all(userIP)
         for(var key in ipLocResult){
-
             console.log(key+': '+ ipLocResult[key])
         }
         ip2loc.IP2Location_close()
