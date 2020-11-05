@@ -3,12 +3,12 @@ const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, g
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
-const fs = require('fs');
+// const fs = require('fs');
 const axios = require('axios')
-const Reader = require('@maxmind/geoip2-node').Reader;
-const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
+// const Reader = require('@maxmind/geoip2-node').Reader;
+// const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
 // const dbBufferCountry = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
-const reader = Reader.openBuffer(dbBuffer);
+// const reader = Reader.openBuffer(dbBuffer);
 // const readerCountry = Reader.openBuffer(dbBufferCountry);
 // YYYY-MM-DDTHH:mm:ss
 
@@ -18,7 +18,7 @@ const reader = Reader.openBuffer(dbBuffer);
 //     next();
 // });
 var ip2loc = require("ip2location-nodejs");
-const Bowser = require("bowser")
+// const Bowser = require("bowser")
 const parser = require("ua-parser-js")
 
 
@@ -26,6 +26,7 @@ const parser = require("ua-parser-js")
 
 statsRouter.get('/', async (req, res) => {
     const date = new Date().toISOString();
+    const maxTouch = req.query.mt
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
@@ -36,20 +37,51 @@ statsRouter.get('/', async (req, res) => {
     const refURL = req.query.ref
     const entryId = req.query.eid
     const redirect = req.query.red
-    const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     const userAgent = req.headers['user-agent'];
-    const countryOfOrigin = locationValueCountry.country.isoCode
-    const province = null
-    const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
-    const isMobileDevice = uaDataScrape.data.device.is_mobile_device
-    const deviceType = uaDataScrape.data.device.type
-    const deviceBrandName = uaDataScrape.data.device.brand
-    const deviceOwnName = uaDataScrape.data.device.name
-    const osName = uaDataScrape.data.os.name
-    const osFamily = uaDataScrape.data.os.family
-    const browserName = uaDataScrape.data.browser.name
-    const browserVersionMajor = uaDataScrape.data.browser.version_major
     const userIP = req.headers['x-forwarded-for'];
+    // ua-parser-js
+    const uaData = parser(userAgent)
+    let isMobileDevice = false
+    const deviceType = uaData.device.type
+    const deviceBrandName = uaData.device.vendor
+    const deviceOwnName = uaData.device.model
+    const osFamily = uaData.os.name
+    const osName = uaData.os.version
+    let browserName = uaData.browser.name
+    const browserVersionMajor = uaData.browser.major
+    if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
+        browserName = 'Instagram Browser'
+    }
+    if(maxTouch>0){
+        isMobileDevice = true
+    }
+    if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
+        isMobileDevice = true
+    }
+    // ip2loc:
+    ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+    // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+    // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+    const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+    const province = ip2loc.IP2Location_get_region(userIP)
+    // console.log('cool', countryOfOrigin0, 'provool', province0)
+    // const countryOfOrigin = ipLocResult.country_short
+    // const province = ipLocResult.region
+    ip2loc.IP2Location_close()
+    // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
+    // const userAgent = req.headers['user-agent'];
+    // const countryOfOrigin = locationValueCountry.country.isoCode
+    // const province = null
+    // const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
+    // const isMobileDevice = uaDataScrape.data.device.is_mobile_device
+    // const deviceType = uaDataScrape.data.device.type
+    // const deviceBrandName = uaDataScrape.data.device.brand
+    // const deviceOwnName = uaDataScrape.data.device.name
+    // const osName = uaDataScrape.data.os.name
+    // const osFamily = uaDataScrape.data.os.family
+    // const browserName = uaDataScrape.data.browser.name
+    // const browserVersionMajor = uaDataScrape.data.browser.version_major
+    // const userIP = req.headers['x-forwarded-for'];
     const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
     console.log('stat', stat)
     return logAClick(stat)
