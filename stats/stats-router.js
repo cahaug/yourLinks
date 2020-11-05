@@ -276,7 +276,7 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         console.log('ip2loc:')
         ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB11.BIN");
         const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-        for(var key in result){
+        for(var key in ipLocResult){
 
             console.log(key+': '+ ipLocResult[key])
         }
