@@ -289,8 +289,10 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
             browserName = 'Instagram Browser'
         }
-        
         if(maxTouch>0){
+            isMobileDevice = true
+        }
+        if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
             isMobileDevice = true
         }
         
