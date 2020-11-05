@@ -19,6 +19,7 @@ const reader = Reader.openBuffer(dbBuffer);
 // });
 var ip2loc = require("ip2location-nodejs");
 const Bowser = require("bowser")
+const parser = require("ua-parser-js")
 
 
 
@@ -275,6 +276,8 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
         // console.log('view', view)
         
+        console.log('ua-parser-js', parser(userAgent))
+
         console.log('BOWzer!!1! Pwah Pwah!', Bowser.parse(userAgent))
 
         console.log('ip2loc:')
