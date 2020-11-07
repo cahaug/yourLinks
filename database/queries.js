@@ -145,6 +145,10 @@ module.exports = {
         return knex('pageViews').where('listId', listId).distinct('countryOfOrigin').count().groupBy('countryOfOrigin')
     },
 
+    provinceCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('province').count().groupBy('province')
+    },
+
     checkRecentlyAttempted(email){
         return knex('pwReset').where('email', email)
     },
