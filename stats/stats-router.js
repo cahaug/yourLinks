@@ -362,8 +362,8 @@ statsRouter.get('/enhancedlistViews/:listId', restricted, (req, res) => {
     console.log(listId)
     return pageViewsGet(listId)
     .then(result => {
-        console.log('enhanced pageviews result', result)
-        res.status(200).json(result[0])
+        console.log('enhanced pageviews result', result[0])
+        res.status(200).json(result)
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
 
