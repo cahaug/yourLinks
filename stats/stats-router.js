@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
@@ -350,6 +350,19 @@ statsRouter.get('/listViews/:listId', restricted, (req, res) => {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+        res.status(200).json(result[0])
+    })
+    .catch(err => {console.log(err); res.status(500).json(err)})
+
+})
+
+// return listviews for given list
+statsRouter.get('/enhancedlistViews/:listId', restricted, (req, res) => {
+    const { listId } = req.params
+    console.log(listId)
+    return pageViewsGet(listId)
+    .then(result => {
+        console.log('enhanced pageviews result', result)
         res.status(200).json(result[0])
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
