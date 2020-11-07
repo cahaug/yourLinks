@@ -138,7 +138,7 @@ module.exports = {
     },
 
     pageViewsGet(listId){
-        return knex('pageviews').where('listId', listId)
+        return knex('pageViews').where('listId', listId)
     },
 
     checkRecentlyAttempted(email){
