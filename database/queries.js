@@ -142,7 +142,7 @@ module.exports = {
     },
 
     countryCounts(listId){
-        return knex('pageViews').where('listId', listId).countDistinct('countryOfOrigin')
+        return knex('pageViews').where('listId', listId).select('pageViewId', 'countryOfOrigin').count().groupBy('countryOfOrigin')
     },
 
     checkRecentlyAttempted(email){
