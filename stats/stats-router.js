@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
@@ -363,10 +363,26 @@ statsRouter.get('/enhancedlistViews/:listId', restricted, (req, res) => {
     return pageViewsGet(listId)
     .then(result => {
         console.log('enhanced pageviews result', result[0])
+        
+        // var i
+        // for(i=0;i<result.length;i++){
+
+        // }
         res.status(200).json(result)
     })
     .catch(err => {console.log(err); res.status(500).json(err)})
 
+})
+
+statsRouter.get('/elv/:listId', restricted, async (req,res) => {
+    try {
+        const { listId } = req.params
+        const countryListCount = await countryCounts(listId)
+        res.status(200).json(countryListCount)
+    }catch (err){
+        console.log('elv err',err)
+        res.status(400).json(err)
+    }
 })
 
 // test location get

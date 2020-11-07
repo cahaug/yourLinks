@@ -141,6 +141,10 @@ module.exports = {
         return knex('pageViews').where('listId', listId)
     },
 
+    countryCounts(listId){
+        return knex('pageViews').where('listId', listId).select('countryOfOrigin').orderBy('countryOfOrigin','asc').count().groupBy('countryOfOrigin').orderBy('pageViewId','asc')
+    },
+
     checkRecentlyAttempted(email){
         return knex('pwReset').where('email', email)
     },
