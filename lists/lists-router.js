@@ -3,7 +3,7 @@ const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, g
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
 var FormData = require('form-data');
-const Blob = require("cross-blob");
+const Blob = require("blob");
 
 
 
@@ -275,10 +275,10 @@ listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
             // const blob = await fetch(imageString).then(res => res.blob());
             const formData = new FormData()
             const blob = dataURItoBlob(imageString)
-            formData.append('file@', blob)
             formData.append('album', 'link-in.bio')
             formData.append('api_key', process.env.SHACK_API_KEY)
             formData.append('auth_token', process.env.SHACK_AUTH_TOKEN)
+            formData.append('file@', JSON.stringify(blob))
             const photoPost = await axios.post(`https://api.imageshack.com/v2/images`, formData, {headers:{'Content-Type': 'multipart/form-data'}})
             const profilePictureURL = `https://${photoPost.data.result.images[0].direct_link}`
             const shackImageId = photoPost.data.result.images[0].id
