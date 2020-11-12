@@ -248,9 +248,10 @@ listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
     }
 })
 
-listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
+listsRouter.put('/uploadProfilePicture',  async (req, res) => {
+// listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
     const {userId, imageString} = req.body
-    const {sub} = req.decodedToken
+    // const {sub} = req.decodedToken
 
     const dataURItoBlob = (dataURI) => {
         // convert base64/URLEncoded data component to raw binary data held in a string
@@ -271,21 +272,23 @@ listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
     }
 
     try {
-        if(sub == userId && imageString){
+        // if(sub == userId && imageString){
+        if(userId == userId && imageString){
             // const blob = await fetch(imageString).then(res => res.blob());
             const formData = new FormData()
             const blob = dataURItoBlob(imageString)
-            formData.append(JSON.stringify({
-                'album':'link-in.bio',
-                'api_key':process.env.SHACK_API_KEY,
-                'auth_token':process.env.SHACK_AUTH_TOKEN,
-                'file@':blob
-            }))
-            // formData.append('album', 'link-in.bio')
-            // formData.append('api_key', process.env.SHACK_API_KEY)
-            // formData.append('auth_token', process.env.SHACK_AUTH_TOKEN)
-            // formData.append('file@', JSON.stringify(blob))
-            const photoPost = await axios.post(`https://api.imageshack.com/v2/images`, formData, {headers:{'Content-Type': 'multipart/form-data'}})
+            // formData.append(JSON.stringify({
+            //     'album':'link-in.bio',
+            //     'api_key':process.env.SHACK_API_KEY,
+            //     'auth_token':process.env.SHACK_AUTH_TOKEN,
+            //     'file@':blob
+            // }))
+            
+            formData.append('album', 'link-in.bio')
+            formData.append('api_key', process.env.SHACK_API_KEY)
+            formData.append('auth_token', process.env.SHACK_AUTH_TOKEN)
+            formData.append('file@', JSON.stringify(blob))
+            const photoPost = await axios.post(`https://api.imageshack.com/v2/images`, formData, {headers:{'Content-Type': 'multipart/form-data', 'Content-Length': formData.length}})
             const profilePictureURL = `https://${photoPost.data.result.images[0].direct_link}`
             const shackImageId = photoPost.data.result.images[0].id
             console.log('shackImageId', shackImageId, profilePictureURL)
