@@ -248,7 +248,7 @@ listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
     const {userId, imageString} = req.body
     const {sub} = req.decodedToken
     try {
-        if(sub == userId && shackImageId){
+        if(sub == userId && imageString){
             const blob = await fetch(imageString).then(res => res.blob());
             const formData = new FormData()
             formData.append('file@', blob)
