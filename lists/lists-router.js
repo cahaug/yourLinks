@@ -3,7 +3,7 @@ const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, g
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
 var FormData = require('form-data');
-const Blob = require("blob");
+const Blob = require('cross-blob');
 
 
 
