@@ -2,6 +2,7 @@ const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
+const fetch = require("node-fetch");
 var FormData = require('form-data');
 
 
@@ -251,9 +252,9 @@ listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
     const {sub} = req.decodedToken
     try {
         if(sub == userId && imageString){
-            // const blob = await fetch(imageString).then(res => res.blob());
+            const blob = await fetch(imageString).then(res => res.blob());
             const formData = new FormData()
-            formData.append('file@', imageString)
+            formData.append('file@', blob)
             formData.append('album', 'link-in.bio')
             formData.append('api_key', process.env.SHACK_API_KEY)
             formData.append('auth_token', process.env.SHACK_AUTH_TOKEN)
