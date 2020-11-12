@@ -229,11 +229,37 @@ listsRouter.post('/resolveCustom', restricted, async (req,res) => {
 
 // change user profilepictureURL
 listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
-    const {userId, profilePictureURL} = req.body
+    const {userId, profilePictureURL, shackImageId} = req.body
     const {sub} = req.decodedToken
     try {
         if(sub == userId){
-            const didChangeProfilePicture = await changeProfilePicture(userId, profilePictureURL)
+            const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
+            res.status(200).json(didChangeProfilePicture)
+        } else {
+            res.status(401).json({message:'chi imbalance'})
+        }
+    } catch (err){
+        console.log('changeProfPicErr', err)
+        res.status(500).json({message:'failed changing profile picture'})
+    }
+})
+
+listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
+    const {userId, imageString} = req.body
+    const {sub} = req.decodedToken
+    try {
+        if(sub == userId && shackImageId){
+            const blob = await fetch(imageString).then(res => res.blob());
+            const formData = new FormData()
+            formData.append('file@', blob)
+            formData.append('album', 'link-in.bio')
+            formData.append('api_key', process.env.SHACK_API_KEY)
+            formData.append('auth_token', process.env.SHACK_AUTH_TOKEN)
+            const photoPost = await axios.post(`https://api.imageshack.com/v2/images`, formData, {headers:{'Content-Type': 'multipart/form-data'}})
+            const profilePictureURL = `https://${photoPost.data.result.images[0].direct_link}`
+            const shackImageId = photoPost.data.result.images[0].id
+            console.log('shackImageId', shackImageId, profilePictureURL)
+            const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
             res.status(200).json(didChangeProfilePicture)
         } else {
             res.status(401).json({message:'chi imbalance'})

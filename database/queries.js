@@ -215,4 +215,8 @@ module.exports = {
         return knex('users').where('userId', userId).update({'profilePictureURL':profilePictureURL})
     },
 
+    changeProfilePictureShack(userId, profilePictureURL, shackImageId){
+        return knex('users').where('userId', userId).update({'profilePictureURL':profilePictureURL, 'shackImageId':shackImageId})
+    },
+
 }
