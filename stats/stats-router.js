@@ -461,7 +461,7 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         console.log('timelineCounts',timelineCounts)
         const timelineUnorderedArray = Object.entries(timelineCounts)
         for (var j = 0; j<timelineUnorderedArray.length; j++){
-            timelineArray.push({date:new Date(timelineUnorderedArray[j][0].slice(0,4), timelineUnorderedArray[j][0].slice(4,6), timelineUnorderedArray[j][0].slice(6,8)), count:timelineUnorderedArray[j][1]})
+            timelineArray.push({x:new Date(timelineUnorderedArray[j][0].slice(0,4), timelineUnorderedArray[j][0].slice(4,6), timelineUnorderedArray[j][0].slice(6,8)), y:timelineUnorderedArray[j][1]})
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
         res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray })
