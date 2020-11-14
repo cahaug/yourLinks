@@ -157,6 +157,22 @@ module.exports = {
         return knex('pageViews').where('listId', listId).distinct('browserName').count().groupBy('browserName')
     },
 
+    touchNotTouchCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('isMobileDevice').count().groupBy('isMobileDevice')
+    },
+
+    osFamilyCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('osFamily').count().groupBy('osFamily')
+    },
+
+    deviceBrandNamesCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('deviceBrandName').count().groupBy('deviceBrandName')
+    },
+
+    deviceOwnNamesCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('deviceOwnName').count().groupBy('deviceOwnName')
+    },
+
     checkRecentlyAttempted(email){
         return knex('pwReset').where('email', email)
     },
