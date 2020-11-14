@@ -260,8 +260,8 @@ var imageshack = require('imageshack')({
 listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) => {
 // listsRouter.put('/uploadProfilePicture/:userId', async (req, res) => {
     try {
-        const sub = req.decodedToken
-        const userId = parseInt(req.params,10)
+        const sub = req.decodedToken.sub
+        const userId = parseInt(req.params.userId,10)
         console.log('sub', sub, typeof sub,'userId', userId, typeof userId)
         if(sub !== userId){
             res.status(400).json({message:'You may only modify your own list.'})
