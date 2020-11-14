@@ -445,7 +445,7 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
                 console.log('option 2')
                 timeline.push(parseInt(`${x.yr}${'0'+x.mo}${+x.dy}`,10))
             } else if(x.dy.toString().length == 1){
-                console.log('option 3')
+                console.log('option 3', x.dy, x.mo)
                 timeline.push(parseInt(`${x.yr}${x.mo}${'0'+x.dy}`,10))
             } else {
                 console.log('option 4')
@@ -461,6 +461,7 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         console.log('timelineCounts',timelineCounts)
         const timelineUnorderedArray = Object.entries(timelineCounts)
         for (var j = 0; j<timelineUnorderedArray.length; j++){
+            console.log(timelineUnorderedArray[i][0], timelineUnorderedArray[i][0].slice(4,6))
             timelineArray.push({x:new Date(timelineUnorderedArray[j][0].slice(0,4), timelineUnorderedArray[j][0].slice(4,6), timelineUnorderedArray[j][0].slice(6,8)), y:timelineUnorderedArray[j][1]})
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
