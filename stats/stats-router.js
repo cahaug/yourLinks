@@ -380,12 +380,23 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         const { listId } = req.params
         const countryListCount = await countryCounts(listId)
         const provinceListCount = await provinceCounts(listId)
-        const deviceTypesListCount = await deviceTypes(listId)
+        const regions = []
+        provinceListCount.map(x => {
+            if(x.province !== null){
+                regions.push({province:`${x.province}`, count:x.count })
+            }
+        })
+        const deviceTypesListCount = []
+        const deviceTypesList = await deviceTypes(listId)
+        deviceTypesList.map(x => {
+            if(x.deviceType !== null){
+                deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:x.count})
+            }
+        })
         const browserNameListCount = await browserNamesCounts(listId)
         const isItTouchDevice = await touchNotTouchCounts(listId)
         const isTouchDevice = []
         isItTouchDevice.map(x => {
-            console.log('x',x)
             if(x.isMobileDevice===true){
                 isTouchDevice.push({isMobileDevice:'touchscreen', count:x.count})
             } else {
@@ -393,9 +404,22 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
             }
         })
         const osFamilyCount = await osFamilyCounts(listId)
-        const deviceBrandNamesCount = await deviceBrandNamesCounts(listId)
-        const deviceOwnNamesCount = await deviceOwnNamesCounts(listId)
-        res.status(200).json({countries:countryListCount, regions: provinceListCount, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount })
+        const deviceBrandNamesCount = [] 
+        const brandNamesCount = await deviceBrandNamesCounts(listId)
+        brandNamesCount.map(x => {
+            if(x.deviceBrandName !== null){
+                deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:x.count})
+            }
+        })
+        const deviceOwnNamesCount = []
+        const ownNamesCount =  await deviceOwnNamesCounts(listId)
+        ownNamesCount.map(x => {
+            if(x.deviceOwnName !== null){
+                deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:x.count})
+            }
+        })
+
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount })
     }catch (err){
         console.log('elv err',err)
         res.status(400).json(err)
