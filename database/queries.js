@@ -220,7 +220,7 @@ module.exports = {
     },
 
     getPreviousProfileShack(userId){
-        return knex('users').where('userId').select('shackImageId')
+        return knex('users').where('userId', userId).select('shackImageId')
     }
 
 }
