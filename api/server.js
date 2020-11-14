@@ -16,8 +16,7 @@ server.use(helmet());
 var allowedOrigins = ['http://localhost:3000',
                       'https://link-in.bio',
                       'https://link-in-bio.herokuapp.com/auth/login',
-                      'https://link-in-bio.herokuapp.com/auth/register',
-                      'http://localhost:3000/settingsPanel'];
+                      'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
 //                       'https://link-in-bio.herokuapp.com/auth/login',
 //                       'https://link-in-bio.herokuapp.com/auth/register'];
