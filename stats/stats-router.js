@@ -443,6 +443,7 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         for (var i = 0; i < timeline.length; i++) {
             timelineCounts[timeline[i]] = 1 + (timelineCounts[timeline[i]] || 0);
         }
+        console.log('timelineCounts',timelineCounts)
         const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(4,8), key.slice(0,2), key.slice(2,4)), timelineCounts[key]])
         res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray })
     }catch (err){
