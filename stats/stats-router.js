@@ -437,16 +437,13 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         const timeline = []
         const allpageViews = await pageViewsGet(listId)
         allpageViews.map(x => {
-            timeline.push(parseInt(`${x.month}${x.day}${x.yr}`,10))
+            timeline.push(parseInt(`${x.mo}${x.dy}${x.yr}`,10))
         })
+        console.log('timeline', timeline)
         var timelineCounts = {};
-        for (var i = 0; i < timeline.length; i++) {
-            if(timeline[i] in Object.keys(timelineCounts)){
-                timelineCounts[timeline[i]] +=1
-            } else {
-                timelineCounts[timeline[i]] = 1
-            }
-            // timelineCounts[timeline[i]] = 1 + (timelineCounts[timeline[i]] || 0);
+        var counts = {};
+        for (var i = 0; i < arr.length; i++) {
+            counts[arr[i]] = 1 + (counts[arr[i]] || 0);
         }
         console.log('timelineCounts',timelineCounts)
         const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(4,8), key.slice(0,2), key.slice(2,4)), timelineCounts[key]])
