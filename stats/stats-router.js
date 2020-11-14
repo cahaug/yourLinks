@@ -383,11 +383,13 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         const deviceTypesListCount = await deviceTypes(listId)
         const browserNameListCount = await browserNamesCounts(listId)
         const isItTouchDevice = await touchNotTouchCounts(listId)
-        const isTouchDevice = isItTouchDevice.map(value => {
-            if(value.isMobileDevice===true){
-                value.isMobileDevice = 'touchscreen'
+        const isTouchDevice = []
+        isItTouchDevice.map(x => {
+            console.log('x',x)
+            if(x.isMobileDevice===true){
+                isTouchDevice.push({isMobileDevice:'touchscreen', count:x.count})
             } else {
-                value.isMobileDevice = 'no touch'
+                isTouchDevice.push({isMobileDevice: 'no touch', count:x.count})
             }
         })
         const osFamilyCount = await osFamilyCounts(listId)
