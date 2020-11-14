@@ -452,17 +452,17 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
                 timeline.push(parseInt(`${x.yr}${x.mo}${x.dy}`,10))
             }
         })
-        console.log('timeline', timeline)
+        // console.log('timeline', timeline)
         var timelineCounts = {};
         for (var i = 0; i < timeline.length; i++) {
             timelineCounts[timeline[i]] = 1 + (timelineCounts[timeline[i]] || 0);
         }
         const timelineArray = []
-        console.log('timelineCounts',timelineCounts)
+        // console.log('timelineCounts',timelineCounts)
         const timelineUnorderedArray = Object.entries(timelineCounts)
         for (var j = 0; j<timelineUnorderedArray.length; j++){
-            console.log(timelineUnorderedArray[j][0], timelineUnorderedArray[j][0].slice(4,6))
-            const valobj = {x:new Date(timelineUnorderedArray[j][0].slice(0,4), timelineUnorderedArray[j][0].slice(4,6), timelineUnorderedArray[j][0].slice(6,8)), y:timelineUnorderedArray[j][1]}
+            // console.log(timelineUnorderedArray[j][0], timelineUnorderedArray[j][0].slice(4,6))
+            const valobj = {x:new Date(parseInt(timelineUnorderedArray[j][0].slice(0,4),10), parseInt(timelineUnorderedArray[j][0].slice(4,6),10), parseInt(timelineUnorderedArray[j][0].slice(6,8),10)), y:timelineUnorderedArray[j][1]}
             console.log(valobj)
             timelineArray.push(valobj)
         }
