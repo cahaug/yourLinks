@@ -2,8 +2,7 @@ const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
-var FormData = require('form-data');
-const Blob = require('cross-blob');
+require('dotenv').config();
 
 
 
@@ -248,55 +247,50 @@ listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
     }
 })
 
-listsRouter.put('/uploadProfilePicture',  async (req, res) => {
-// listsRouter.put('/uploadProfilePicture', restricted, async (req, res) => {
-    const {userId, imageString} = req.body
-    // const {sub} = req.decodedToken
+const fs = require("fs");
+const fileUpload = require('express-fileupload');
+listsRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
 
-    const dataURItoBlob = (dataURI) => {
-        // convert base64/URLEncoded data component to raw binary data held in a string
-        var byteString;
-        if (dataURI.split(',')[0].indexOf('base64') >= 0)
-            byteString = new Buffer.from(dataURI.split(',')[1], 'base64').toString('binary')
-            // byteString = atob(dataURI.split(',')[1]);
-        else
-            byteString = unescape(dataURI.split(',')[1]);
-        // separate out the mime component
-        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        // write the bytes of the string to a typed array
-        var ia = new Uint8Array(byteString.length);
-        for (var i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        return new Blob([ia], {type:mimeString});
-    }
+var imageshack = require('imageshack')({
+    api_key: process.env.SHACK_API_KEY,
+    email: process.env.SHACK_EMAIL,
+    passwd: process.env.SHACK_PASS
+});
 
+listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) => {
+// listsRouter.put('/uploadProfilePicture/:userId', async (req, res) => {
     try {
-        // if(sub == userId && imageString){
-        if(userId == userId && imageString){
-            // const blob = await fetch(imageString).then(res => res.blob());
-            const formData = new FormData()
-            const blob = dataURItoBlob(imageString)
-            // formData.append(JSON.stringify({
-            //     'album':'link-in.bio',
-            //     'api_key':process.env.SHACK_API_KEY,
-            //     'auth_token':process.env.SHACK_AUTH_TOKEN,
-            //     'file@':blob
-            // }))
-            
-            formData.append('album', 'link-in.bio')
-            formData.append('api_key', process.env.SHACK_API_KEY)
-            formData.append('auth_token', process.env.SHACK_AUTH_TOKEN)
-            formData.append('file@', JSON.stringify(blob))
-            const photoPost = await axios.post(`https://api.imageshack.com/v2/images`, formData, {headers:{'Content-Type': 'multipart/form-data', 'Content-Length': formData.length}})
-            const profilePictureURL = `https://${photoPost.data.result.images[0].direct_link}`
-            const shackImageId = photoPost.data.result.images[0].id
-            console.log('shackImageId', shackImageId, profilePictureURL)
-            const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
-            res.status(200).json(didChangeProfilePicture)
-        } else {
-            res.status(401).json({message:'chi imbalance'})
+        const sub = req.decodedToken
+        const userId = req.params
+        if(sub !== userId){
+            res.status(400).json({message:'You may only modify your own list.'})
         }
+        console.log('req.file', req.files.myImage)
+        const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
+        imageshack.upload(myimage, async function(err, filejson){
+            if(err){
+                console.log(err);
+            }else{
+                /* filejson is a json with:
+                {
+                    original_filename: 'image.png',
+                    link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
+                    id: 'newtsep'
+                }
+               */
+                console.log(filejson);
+                const profilePictureURL = `https://${filejson.link}`
+                const shackImageId = filejson.id
+                console.log('shackImageId', shackImageId, profilePictureURL)
+                const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
+                console.log('didChangeProfilePicture', didChangeProfilePicture)
+                if(didChangeProfilePicture===1){
+                    res.status(201).json({message:'Successfully Uploaded Profile Picture'})
+                } else {
+                    res.status(400).json({message:'Profile Photo Upload Failed'})
+                }
+            }
+        });
     } catch (err){
         console.log('changeProfPicErr', err)
         res.status(500).json({message:'failed changing profile picture'})
