@@ -301,7 +301,7 @@ listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) =>
                             }
                         });
                     } else {
-                        res.status(201).json({message:'Successfully Uploaded New Profile Picture'})
+                        res.status(201).json({message:'Successfully Uploaded New Profile Picture No Delete'})
                     }
                 } else {
                     res.status(400).json({message:'Profile Photo Upload Failed'})
