@@ -378,44 +378,60 @@ statsRouter.get('/enhancedlistViews/:listId', restricted, (req, res) => {
 statsRouter.get('/elv/:listId', restricted, async (req,res) => {
     try {
         const { listId } = req.params
-        const countryListCount = await countryCounts(listId)
-        const provinceListCount = await provinceCounts(listId)
+        const countryListCount = []
+        const countryList = await countryCounts(listId)
+        countryList.map(x => {
+            if(x.countryOfOrigin !== null){
+                countryListCount.push({countryOfOrigin:`${x.countryOfOrigin}`, count:parseInt(x.count,10)})
+            }
+        })
         const regions = []
+        const provinceListCount = await provinceCounts(listId)
         provinceListCount.map(x => {
             if(x.province !== null){
-                regions.push({province:`${x.province}`, count:x.count })
+                regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
             }
         })
         const deviceTypesListCount = []
         const deviceTypesList = await deviceTypes(listId)
         deviceTypesList.map(x => {
             if(x.deviceType !== null){
-                deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:x.count})
+                deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:parseInt(x.count,10)})
             }
         })
-        const browserNameListCount = await browserNamesCounts(listId)
-        const isItTouchDevice = await touchNotTouchCounts(listId)
+        const browserNameListCount = []
+        const browserNamesList =  await browserNamesCounts(listId)
+        browserNamesList.map(x => {
+            browserNameListCount.push({browserName:`${x.browserName}`, count:parseInt(x.count,10)})
+        })
         const isTouchDevice = []
+        const isItTouchDevice = await touchNotTouchCounts(listId)
         isItTouchDevice.map(x => {
             if(x.isMobileDevice===true){
-                isTouchDevice.push({isMobileDevice:'touchscreen', count:x.count})
+                isTouchDevice.push({isMobileDevice:'touchscreen', count:parseInt(x.count,10)})
             } else {
-                isTouchDevice.push({isMobileDevice: 'no touch', count:x.count})
+                isTouchDevice.push({isMobileDevice: 'no touch', count:parseInt(x.count,10)})
             }
         })
-        const osFamilyCount = await osFamilyCounts(listId)
+        const osFamilyCount = []
+        const osFamilyList = await osFamilyCounts(listId)
+        osFamilyList.map(x => {
+            if(x.osFamily !== null){
+                osFamilyCount.push({osFamily:`${x.osFamily}`, count:parseInt(x.count,10)})
+            }
+        })
         const deviceBrandNamesCount = [] 
         const brandNamesCount = await deviceBrandNamesCounts(listId)
         brandNamesCount.map(x => {
             if(x.deviceBrandName !== null){
-                deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:x.count})
+                deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:parseInt(x.count,10)})
             }
         })
         const deviceOwnNamesCount = []
         const ownNamesCount =  await deviceOwnNamesCounts(listId)
         ownNamesCount.map(x => {
             if(x.deviceOwnName !== null){
-                deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:x.count})
+                deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:parseInt(x.count,10)})
             }
         })
 
