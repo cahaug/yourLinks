@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName, getPreviousProfileShack } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
 require('dotenv').config();
@@ -262,6 +262,8 @@ listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) =>
     try {
         const sub = req.decodedToken.sub
         const userId = parseInt(req.params.userId,10)
+        const hasShackAlready = await getPreviousProfileShack(sub)
+        console.log(hasShackAlready)
         console.log('sub', sub, typeof sub,'userId', userId, typeof userId)
         if(sub !== userId){
             res.status(400).json({message:'You may only modify your own list.'})
@@ -286,10 +288,21 @@ listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) =>
                 const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
                 console.log('didChangeProfilePicture', didChangeProfilePicture)
                 if(didChangeProfilePicture===1){
-                    res.header('Access-Control-Allow-Origin', '*')
-                    res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-                    res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-                    res.status(201).json({message:'Successfully Uploaded Profile Picture'})
+                    if(hasShackAlready[0].shackImageId !== null){
+                        imageshack.del(`${hasShackAlready[0].shackImageId}`,function(err){
+                            if(err){
+                                console.log('delete failed',err);
+                            }else{
+                                // Delete successful
+                                res.header('Access-Control-Allow-Origin', '*')
+                                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+                                res.status(201).json({message:'Successfully Uploaded Profile Picture'})
+                            }
+                        });
+                    } else {
+                        res.status(201).json({message:'Successfully Uploaded New Profile Picture'})
+                    }
                 } else {
                     res.status(400).json({message:'Profile Photo Upload Failed'})
                 }
@@ -297,7 +310,7 @@ listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) =>
         });
     } catch (err){
         console.log('changeProfPicErr', err)
-        res.status(500).json({message:'failed changing profile picture'})
+        res.status(400).json({message:'failed changing profile picture'})
     }
 })
 
