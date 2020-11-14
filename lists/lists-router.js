@@ -286,6 +286,9 @@ listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) =>
                 const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
                 console.log('didChangeProfilePicture', didChangeProfilePicture)
                 if(didChangeProfilePicture===1){
+                    res.header('Access-Control-Allow-Origin', '*')
+                    res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                    res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
                     res.status(201).json({message:'Successfully Uploaded Profile Picture'})
                 } else {
                     res.status(400).json({message:'Profile Photo Upload Failed'})
