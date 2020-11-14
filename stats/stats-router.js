@@ -325,6 +325,7 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         ip2loc.IP2Location_close()
         
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+        console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName)
         return logPageView(view)
         .then(result => {
             // console.log('add pageview result', result)
