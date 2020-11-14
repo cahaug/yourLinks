@@ -437,14 +437,18 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         const timeline = []
         const allpageViews = await pageViewsGet(listId)
         allpageViews.map(x => {
-            console.log('x', x.dy, x.dy.length)
-            if(x.dy.length == 1 && x.mo.length == 1){
+            // console.log('x', x.dy, x.dy.toString().length)
+            if(x.dy.toString().length == 1 && x.mo.toString().length == 1){
+                console.log('option 1')
                 timeline.push(parseInt(`${x.yr}${'0'+x.mo}${'0'+x.dy}`,10))
-            } else if(x.mo.length == 1){
+            } else if(x.mo.toString().length == 1){
+                console.log('option 2')
                 timeline.push(parseInt(`${x.yr}${'0'+x.mo}${+x.dy}`,10))
-            } else if(x.dy.length == 1){
+            } else if(x.dy.toString().length == 1){
+                console.log('option 3')
                 timeline.push(parseInt(`${x.yr}${x.mo}${'0'+x.dy}`,10))
             } else {
+                console.log('option 4')
                 timeline.push(parseInt(`${x.yr}${x.mo}${x.dy}`,10))
             }
         })
