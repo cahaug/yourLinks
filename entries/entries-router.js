@@ -175,7 +175,7 @@ entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
                 const pictureURL = `https://${filejson.link}`
                 const shackImageId = filejson.id
                 console.log('shackImageId', shackImageId, pictureURL)
-                res.status(201).json({message:'Successfully Uploaded Picture'}, shackImageId, pictureURL)             
+                res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
             }
         });
     } catch(err){
