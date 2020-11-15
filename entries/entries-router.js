@@ -1,6 +1,8 @@
 const entriesRouter = require('express').Router();
 const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
+const axios = require('axios')
+require('dotenv').config();
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -137,6 +139,49 @@ entriesRouter.post('/deleteEntry', restricted, async (req, res) => {
         res.status(500).json({message:'Error Deleting Entry', err})
     }
 });
+
+const fs = require("fs");
+const fileUpload = require('express-fileupload');
+entriesRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+
+var imageshack = require('imageshack')({
+    api_key: process.env.SHACK_API_KEY,
+    email: process.env.SHACK_EMAIL,
+    passwd: process.env.SHACK_PASS
+});
+
+entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
+    try {
+        const sub = req.decodedToken.sub
+        const userId = parseInt(req.params.userId, 10)
+        if(sub !== userId){
+            res.status(400).json({message:'Only Paid Users Can Upload Photos.'})
+            return
+        }
+        console.log('req.file', req.files.myImage)
+        const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
+        imageshack.upload(myimage, async function(err, filejson){
+            if(err){
+                console.log(err);
+            }else{
+                /* filejson is a json with:
+                {
+                    original_filename: 'image.png',
+                    link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
+                    id: 'newtsep'
+                }
+               */
+                console.log(filejson);
+                const pictureURL = `https://${filejson.link}`
+                const shackImageId = filejson.id
+                console.log('shackImageId', shackImageId, pictureURL)
+                res.status(201).json({message:'Successfully Uploaded Picture'}, shackImageId, pictureURL)             
+            }
+        });
+    } catch(err){
+        res.status(500).json({message:'Error Adding Photo'})
+    }
+})
 
 
 module.exports = entriesRouter;

@@ -267,6 +267,7 @@ listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) =>
         console.log('sub', sub, typeof sub,'userId', userId, typeof userId)
         if(sub !== userId){
             res.status(400).json({message:'You may only modify your own list.'})
+            return 
         }
         console.log('req.file', req.files.myImage)
         const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
