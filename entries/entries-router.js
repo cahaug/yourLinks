@@ -190,7 +190,7 @@ entriesRouter.post('/deleteImage', restricted, async (req, res) => {
         const parsedUserId = parseInt(userId, 10)
         const checkedListId = await getListId(sub)
         if(sub === parsedUserId && checkedListId[0].listId == listId){
-            imageshack.del(`${shackImageId}`,function(err){
+            imageshack.del(`${shackImageId}`,async function(err){
                 if(err){
                     console.log(err);
                 }else{
