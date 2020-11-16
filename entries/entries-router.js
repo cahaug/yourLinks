@@ -15,8 +15,8 @@ entriesRouter.post('/new', restricted, async (req, res) => {
         const date = new Date();
         const creationDate = date;
         const { sub } = req.decodedToken
-        const { userId, listId, referencingURL, description, linkTitle, imgURL } = req.body;
-        const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL };
+        const { userId, listId, referencingURL, description, linkTitle, imgURL, shackImageId } = req.body;
+        const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL, shackImageId };
         const parsedUserId = parseInt(userId, 10)
         const checkedListId = await getListId(sub)
         if(sub === parsedUserId && checkedListId[0].listId == listId){
