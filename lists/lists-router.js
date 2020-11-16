@@ -245,10 +245,9 @@ listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
     try {
         const {profilePictureURL, shackImageId} = req.body
         const sub = req.decodedToken.sub
-        const userId = parseInt(req.params.userId,10)
+        const userId = parseInt(req.body.userId,10)
         const hasShackAlready = await getPreviousProfileShack(sub)
-        console.log(hasShackAlready)
-        if(sub == userId){
+        if(sub === userId){
             if(hasShackAlready[0].shackImageId !== null){
                 imageshack.del(`${hasShackAlready[0].shackImageId}`, async function(err){
                     if(err){
