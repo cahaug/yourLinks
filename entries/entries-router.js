@@ -183,5 +183,29 @@ entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
     }
 })
 
+entriesRouter.post('/deleteImage', restricted, async (req, res) => {
+    try {
+        const sub = req.decodedToken.sub
+        const {shackImageId, listId, userId} = req.body
+        const parsedUserId = parseInt(userId, 10)
+        const checkedListId = await getListId(sub)
+        if(sub === parsedUserId && checkedListId[0].listId == listId){
+            imageshack.del(`${shackImageId}`,function(err){
+                if(err){
+                    console.log(err);
+                }else{
+                    // Delete successful
+                    res.status(200).json({message:'Successfully Deleted ShackImage'})
+                }
+            });
+        } else {
+            res.status(400).json({message:'Failed to Delete ShackImage'})
+        }
+    } catch(err){
+        console.log('deleteImagecatchErr',err)
+        res.status(400).json({message:'CatchErr deleteImage'})
+    }
+})
+
 
 module.exports = entriesRouter;
