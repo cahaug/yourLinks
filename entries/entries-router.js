@@ -50,8 +50,9 @@ entriesRouter.post('/new', restricted, async (req, res) => {
 //     .catch(err => res.status(500).json(err));
 // })
 
-// get single entry by entryId - no need to secure i think
-entriesRouter.get('/editEntry/:entryId', (req, res) => {
+// SECURE THIS ENDPOINT ASAP
+// get single entry by entryId -  need to secure i think
+entriesRouter.get('/editEntry/:entryId', restricted, (req, res) => {
     const entryId = req.params.entryId
     return getSingleEntry(entryId)
     .then(result => {
@@ -115,31 +116,6 @@ entriesRouter.put('/replaceEntry', restricted, async (req, res) => {
     
 });
 
-// delete entry production
-entriesRouter.post('/deleteEntry', restricted, async (req, res) => {
-    // console.log(req.body)
-    const {sub} = req.decodedToken
-    const { userId, listId, entryId } = req.body
-    try {
-        const checkedListId = await getListId(sub)
-        if(sub == userId && checkedListId[0].listId == listId){
-            return deleteEntry(entryId)
-            .then(result => {
-                res.header('Access-Control-Allow-Origin', '*')
-                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-                return res.status(200).json(result);
-            })
-            .catch(err => {console.log(err); res.status(500).json(err)})
-        } else {
-            res.status(401).json({message:'Error Verifying User Security Permissions'})
-        }
-    } catch (err){
-        console.log('Error Deleting Entry', err)
-        res.status(500).json({message:'Error Deleting Entry', err})
-    }
-});
-
 const fs = require("fs");
 const fileUpload = require('express-fileupload');
 entriesRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
@@ -148,6 +124,42 @@ var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,
     email: process.env.SHACK_EMAIL,
     passwd: process.env.SHACK_PASS
+});
+
+// delete entry production
+entriesRouter.post('/deleteEntry', restricted, async (req, res) => {
+    // console.log(req.body)
+    const {sub} = req.decodedToken
+    const { userId, listId, entryId } = req.body
+    try {
+        const singleEntry = await getSingleEntry(entryId)
+        console.log('singleEntry', singleEntry)
+        const checkedListId = await getListId(sub)
+        if(sub == userId && checkedListId[0].listId == listId){
+            return deleteEntry(entryId)
+            .then(result => {
+                if(singleEntry[0].shackImageId !== null){
+                    imageshack.del(`${singleEntry[0].shackImageId}`, async function(err){
+                        if(err){
+                            console.log('deletelist inner shack err',err);
+                            res.status(500).json({message:'the image deletion had problem'})
+                        }else{
+                            // Delete successful
+                            res.status(200).json(result)
+                        }
+                    });
+                } else {
+                    res.status(200).json(result);
+                }
+            })
+            .catch(err => {console.log('deletelist delete entry err',err); res.status(500).json(err)})
+        } else {
+            res.status(401).json({message:'Error Verifying User Security Permissions'})
+        }
+    } catch (err){
+        console.log('Error Deleting Entry', err)
+        res.status(500).json({message:'Error Deleting Entry', err})
+    }
 });
 
 entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
