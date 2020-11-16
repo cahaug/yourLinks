@@ -93,6 +93,13 @@ module.exports = {
             })
     },
 
+    nullPhoto(entryId){
+        return knex('entries').where({ entryId }).update({
+            imgURL:null,
+            shackImageId:null
+        })
+    },
+
     deleteEntry(entryId){
         return knex('entries').where({ entryId }).del()
     },

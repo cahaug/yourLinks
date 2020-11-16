@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry } = require('../database/queries.js');
+const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry, nullPhoto } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
 const axios = require('axios')
 require('dotenv').config();
@@ -186,7 +186,7 @@ entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
 entriesRouter.post('/deleteImage', restricted, async (req, res) => {
     try {
         const sub = req.decodedToken.sub
-        const {shackImageId, listId, userId} = req.body
+        const {shackImageId, listId, userId, entryId} = req.body
         const parsedUserId = parseInt(userId, 10)
         const checkedListId = await getListId(sub)
         if(sub === parsedUserId && checkedListId[0].listId == listId){
@@ -194,8 +194,9 @@ entriesRouter.post('/deleteImage', restricted, async (req, res) => {
                 if(err){
                     console.log(err);
                 }else{
-                    // Delete successful
-                    res.status(200).json({message:'Successfully Deleted ShackImage'})
+                    // Delete successful, wipe db entry
+                    const didNullPhoto = await nullPhoto(entryId)
+                    res.status(200).json({message:'Successfully Deleted ShackImage', didNullPhoto:didNullPhoto})
                 }
             });
         } else {
