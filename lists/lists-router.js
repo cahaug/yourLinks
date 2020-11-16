@@ -230,23 +230,6 @@ listsRouter.post('/resolveCustom', restricted, async (req,res) => {
     }
 })
 
-// change user profilepictureURL
-listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
-    const {userId, profilePictureURL, shackImageId} = req.body
-    const {sub} = req.decodedToken
-    try {
-        if(sub == userId){
-            const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
-            res.status(200).json(didChangeProfilePicture)
-        } else {
-            res.status(401).json({message:'chi imbalance'})
-        }
-    } catch (err){
-        console.log('changeProfPicErr', err)
-        res.status(500).json({message:'failed changing profile picture'})
-    }
-})
-
 const fs = require("fs");
 const fileUpload = require('express-fileupload');
 listsRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
@@ -256,6 +239,40 @@ var imageshack = require('imageshack')({
     email: process.env.SHACK_EMAIL,
     passwd: process.env.SHACK_PASS
 });
+
+// change user profilepictureURL
+listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
+    try {
+        const {profilePictureURL, shackImageId} = req.body
+        const sub = req.decodedToken.sub
+        const userId = parseInt(req.params.userId,10)
+        const hasShackAlready = await getPreviousProfileShack(sub)
+        console.log(hasShackAlready)
+        if(sub === userId){
+            if(hasShackAlready[0].shackImageId !== null){
+                imageshack.del(`${hasShackAlready[0].shackImageId}`, async function(err){
+                    if(err){
+                        console.log('delete failed',err);
+                        res.status(400).json({message:'Image Deletion Failed'})
+                    }else{
+                        // Delete successful
+                        shackImageId = null
+                        const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
+                        res.status(200).json(didChangeProfilePicture)
+                    }
+                });
+            } else {
+                console.log('shackId was null')
+                res.status(200).json(didChangeProfilePicture)
+            }
+        } else {
+            res.status(401).json({message:'chi imbalance'})
+        }
+    } catch (err){
+        console.log('changeProfPicErr', err)
+        res.status(500).json({message:'failed changing profile picture'})
+    }
+})
 
 listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) => {
 // listsRouter.put('/uploadProfilePicture/:userId', async (req, res) => {
@@ -335,5 +352,7 @@ listsRouter.put('/setDisplayName', restricted, async (req, res) => {
         res.status(500).json(err)
     }
 })
+
+
 
 module.exports = listsRouter;
