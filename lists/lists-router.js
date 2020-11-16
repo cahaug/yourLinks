@@ -243,7 +243,7 @@ var imageshack = require('imageshack')({
 // change user profilepictureURL
 listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
     try {
-        const {profilePictureURL, shackImageId} = req.body
+        let {profilePictureURL, shackImageId} = req.body
         const sub = req.decodedToken.sub
         const userId = parseInt(req.body.userId,10)
         const hasShackAlready = await getPreviousProfileShack(sub)
