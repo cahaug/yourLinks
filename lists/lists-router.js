@@ -1,7 +1,10 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePicture, setDisplayName } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName, getPreviousProfileShack } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
+require('dotenv').config();
+
+
 
 // listsRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -33,7 +36,7 @@ listsRouter.get('/list4user/:userId', async (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
-// create new list
+// create new list (unguarded but logs, should only be hit on registration)
 listsRouter.post('/new', restricted, async (req, res) => {
     const date = new Date();
     const creationDate = date;
@@ -41,10 +44,10 @@ listsRouter.post('/new', restricted, async (req, res) => {
     const list = { userId, creationDate, backColor, txtColor, fontSelection, customURL };
     return createList(list)
     .then(result => {
-        console.log('new list result ', result)
+        console.log('new list created ', result)
         return getListByUser(userId)
             .then(list => {
-                console.log('list return', list)
+                // console.log('list return', list)
                 res.header('Access-Control-Allow-Origin', '*')
                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
@@ -54,15 +57,15 @@ listsRouter.post('/new', restricted, async (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
-// delete list
-listsRouter.delete('/deleteList', restricted, async (req, res) => {
-    const {listId} = req.body
-    return deleteList(listId)
-    .then(result => {
-        console.log("result",result)
-        res.status(200).json(result)
-    })
-})
+// delete list - should never be necessary unless deleting account
+// listsRouter.delete('/deleteList', restricted, async (req, res) => {
+//     const {listId} = req.body
+//     return deleteList(listId)
+//     .then(result => {
+//         console.log("result",result)
+//         res.status(200).json(result)
+//     })
+// })
 
 // display customURL facsimile
 listsRouter.get('/c/:customURL', async (req, res) => {
@@ -88,27 +91,32 @@ listsRouter.post('/checkCustom/', async (req, res) => {
 // return bool for whether a certain customURL is taken or not
 listsRouter.post('/checkCHomepage/', async (req, res) => {
     const { customURL, token } = req.body
-    // verify recaptcha
-    const checkToken = async (token) => {
-        const secret = process.env.RECAPTCHA_SECRET
-        const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
-        // console.log('gr', googleResponse)
-        // console.log('recaptcha data', googleResponse.data)
-        return googleResponse.data.success
-    }
-    const isNotBot = await checkToken(token)
+    try {
+        // verify recaptcha
+        const checkToken = async (token) => {
+            const secret = process.env.RECAPTCHA_SECRET
+            const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
+            // console.log('gr', googleResponse)
+            // console.log('recaptcha data', googleResponse.data)
+            return await googleResponse.data.success
+        }
+        const isNotBot = await checkToken(token)
 
-    if(isNotBot===true){
-        return checkIfCustomURLAvailable(customURL)
-        .then(result => {
-            // console.log(res)
-            res.status(200).json(result)
-        })
-        .catch(err => {console.log('checkcustom err',err); res.status(500).json(err)})
-    } else {
-        res.status(500).json({message:'You sound like a robot'})
-        return
+        if(isNotBot===true){
+            return checkIfCustomURLAvailable(customURL)
+            .then(result => {
+                // console.log(res)
+                res.status(200).json(result)
+            })
+            .catch(err => {console.log('checkcustom err',err); res.status(500).json(err)})
+        } else {
+            res.status(401).json({message:'You sound like a robot'})
+            return
+        }
+    } catch(err){
+        res.status(500).json({message:'error checkcHomepage', err})
     }
+    
 })
 
 // assign a user a customURL
@@ -140,14 +148,20 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
 
 // change background color
 listsRouter.put('/setBg', restricted, async (req,res) => {
+    const {listId, userId, backColor} = req.body
     const {sub} = req.decodedToken
     // console.log('sub',sub)
-    const {listId, userId, backColor} = req.body
     // console.log('background change reqbody', req.body, 'sub', sub)
     try{
-        if (sub == userId){
+        const checkedListId = await getListId(sub)
+        // console.log('checkedListId', checkedListId)
+        if(sub == userId && checkedListId[0].listId == listId){
+            // console.log('sub equals user')
             const resultant = await putBackground(listId, backColor)
-            res.status(200).json({resultant, message:'background set successfully'})
+            res.status(200).json({message:'Background Set Successfully', resultant})
+        } else {
+            // console.log('putcustom security verification error')
+            res.status(401).json({message:'Error Verifying User Security Permissions'})
         }
     } catch(err){
         console.log('background set error', err)
@@ -158,13 +172,19 @@ listsRouter.put('/setBg', restricted, async (req,res) => {
 
 // change text color - lightmode
 listsRouter.put('/setText', restricted, async (req,res) => {
-    const {sub} = req.decodedToken
     const {listId, userId, fontSelection} = req.body
+    const {sub} = req.decodedToken
     // console.log('req.body setFont', req.body)
     try{
-        if (sub == userId){
+        const checkedListId = await getListId(sub)
+        // console.log('checkedListId', checkedListId)
+        if(sub == userId && checkedListId[0].listId == listId){
+            // console.log('sub equals user')
             const resultant = await putFont(listId, fontSelection)
-            res.status(200).json({resultant, message:'font set successfully'})
+            res.status(200).json({message:'Font Set Successfully', resultant})
+        } else {
+            // console.log('putcustom security verification error')
+            res.status(401).json({message:'Error Verifying User Security Permissions'})
         }
     } catch(err){
         console.log('set font error', err)
@@ -174,18 +194,21 @@ listsRouter.put('/setText', restricted, async (req,res) => {
 
 // change font selection - lightmode
 listsRouter.put('/setTcolor', restricted, async (req,res) => {
+    const {listId, userId, txtColor} = req.body
     const {sub} = req.decodedToken
     // console.log('sub',req.decodedToken.sub, sub)
     // console.log('req', req)
     // console.log('req.body textcolor', req.body)
-    const {listId, userId, txtColor} = req.body
     try{
-        // console.log('we tryin')
-        if(sub == userId){
-            // console.log('try')
+        const checkedListId = await getListId(sub)
+        // console.log('checkedListId', checkedListId)
+        if(sub == userId && checkedListId[0].listId == listId){
+            // console.log('sub equals user')
             const resultant = await putTColor(listId, txtColor)
-            // console.log('resultant', resultant)
-            res.status(200).json({resultant, message:'textColor set successfully'})
+            res.status(200).json({message:'Text Color Set Successfully', resultant})
+        } else {
+            // console.log('putcustom security verification error')
+            res.status(401).json({message:'Error Verifying User Security Permissions'})
         }
     }catch(err){
         console.log('textColorChange error', err)
@@ -207,20 +230,105 @@ listsRouter.post('/resolveCustom', restricted, async (req,res) => {
     }
 })
 
+const fs = require("fs");
+const fileUpload = require('express-fileupload');
+listsRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+
+var imageshack = require('imageshack')({
+    api_key: process.env.SHACK_API_KEY,
+    email: process.env.SHACK_EMAIL,
+    passwd: process.env.SHACK_PASS
+});
+
 // change user profilepictureURL
 listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
-    const {userId, profilePictureURL} = req.body
-    const {sub} = req.decodedToken
     try {
-        if(sub == userId){
-            const didChangeProfilePicture = await changeProfilePicture(userId, profilePictureURL)
-            res.status(200).json(didChangeProfilePicture)
+        let {profilePictureURL, shackImageId} = req.body
+        const sub = req.decodedToken.sub
+        const userId = parseInt(req.body.userId,10)
+        const hasShackAlready = await getPreviousProfileShack(sub)
+        if(sub === userId){
+            if(hasShackAlready[0].shackImageId !== null){
+                imageshack.del(`${hasShackAlready[0].shackImageId}`, async function(err){
+                    if(err){
+                        console.log('delete failed',err);
+                        res.status(400).json({message:'Image Deletion Failed'})
+                    }else{
+                        // Delete successful
+                        shackImageId = null
+                        const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
+                        res.status(200).json(didChangeProfilePicture)
+                    }
+                });
+            } else {
+                console.log('shackId was null')
+                const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
+                res.status(200).json(didChangeProfilePicture)
+            }
         } else {
-            res.status(500).json({message:'chi imbalance'})
+            res.status(401).json({message:'chi imbalance'})
         }
     } catch (err){
         console.log('changeProfPicErr', err)
         res.status(500).json({message:'failed changing profile picture'})
+    }
+})
+
+listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) => {
+// listsRouter.put('/uploadProfilePicture/:userId', async (req, res) => {
+    try {
+        const sub = req.decodedToken.sub
+        const userId = parseInt(req.params.userId,10)
+        const hasShackAlready = await getPreviousProfileShack(sub)
+        console.log(hasShackAlready)
+        console.log('sub', sub, typeof sub,'userId', userId, typeof userId)
+        if(sub !== userId){
+            res.status(400).json({message:'You may only modify your own list.'})
+            return 
+        }
+        console.log('req.file', req.files.myImage)
+        const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
+        imageshack.upload(myimage, async function(err, filejson){
+            if(err){
+                console.log(err);
+            }else{
+                /* filejson is a json with:
+                {
+                    original_filename: 'image.png',
+                    link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
+                    id: 'newtsep'
+                }
+               */
+                console.log(filejson);
+                const profilePictureURL = `https://${filejson.link}`
+                const shackImageId = filejson.id
+                console.log('shackImageId', shackImageId, profilePictureURL)
+                const didChangeProfilePicture = await changeProfilePictureShack(userId, profilePictureURL, shackImageId)
+                console.log('didChangeProfilePicture', didChangeProfilePicture)
+                if(didChangeProfilePicture===1){
+                    if(hasShackAlready[0].shackImageId !== null){
+                        imageshack.del(`${hasShackAlready[0].shackImageId}`,function(err){
+                            if(err){
+                                console.log('delete failed',err);
+                            }else{
+                                // Delete successful
+                                res.header('Access-Control-Allow-Origin', '*')
+                                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+                                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+                                res.status(201).json({message:'Successfully Uploaded Profile Picture'})
+                            }
+                        });
+                    } else {
+                        res.status(201).json({message:'Successfully Uploaded New Profile Picture No Delete'})
+                    }
+                } else {
+                    res.status(400).json({message:'Profile Photo Upload Failed'})
+                }
+            }
+        });
+    } catch (err){
+        console.log('changeProfPicErr', err)
+        res.status(400).json({message:'failed changing profile picture'})
     }
 })
 
@@ -237,12 +345,14 @@ listsRouter.put('/setDisplayName', restricted, async (req, res) => {
             res.status(200).json({message:'Set Display Name Successfully', resultant})
         } else {
             // console.log('putcustom security verification error')
-            res.status(500).json({message:'Error Verifying User Security Permissions'})
+            res.status(401).json({message:'Error Verifying User Security Permissions'})
         }
     } catch (err) {
         console.log('setDisplayName err', err)
         res.status(500).json(err)
     }
 })
+
+
 
 module.exports = listsRouter;

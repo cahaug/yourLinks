@@ -41,6 +41,10 @@ module.exports = {
         return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').orderBy('stats.entryId', 'asc').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
     },
 
+    pieGraph(userId){
+        return knex('entries').where("userId", userId).leftJoin('stats', 'entries.entryId', 'stats.entryId').select('stats.entryId').orderBy('stats.entryId', 'asc').count().groupBy('stats.entryId').orderBy('stats.entryId', 'asc');
+    },
+
     putCustom(listId, customURL){
         return knex('lists').where("listId", listId).update({customURL:customURL})
     },
@@ -89,6 +93,13 @@ module.exports = {
             })
     },
 
+    nullPhoto(entryId){
+        return knex('entries').where({ entryId }).update({
+            imgURL:null,
+            shackImageId:null
+        })
+    },
+
     deleteEntry(entryId){
         return knex('entries').where({ entryId }).del()
     },
@@ -101,12 +112,20 @@ module.exports = {
         return knex('stats').insert(stat)
     },
 
+    logPageView(view){
+        return knex('pageViews').insert(view)
+    },
+
     statsRecordsCount(){
         return knex('stats').count('statId as statId')
     },
 
     statsForEntry(entryId){
-        return knex('stats').where({ entryId }).count('statId as clickCount')
+        return knex('stats').where({ entryId })
+    },
+
+    statsForList(listId){
+        return knex('pageViews').where({ listId })
     },
 
     statsRecords(){
@@ -123,6 +142,42 @@ module.exports = {
 
     listViewsGet(listId){
         return knex('lists').where('listId', listId).select('listViews')
+    },
+
+    pageViewsGet(listId){
+        return knex('pageViews').where('listId', listId)
+    },
+
+    countryCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('countryOfOrigin').count().groupBy('countryOfOrigin')
+    },
+
+    provinceCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('province').count().groupBy('province')
+    },
+
+    deviceTypes(listId){
+        return knex('pageViews').where('listId', listId).distinct('deviceType').count().groupBy('deviceType')
+    },
+
+    browserNamesCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('browserName').count().groupBy('browserName')
+    },
+
+    touchNotTouchCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('isMobileDevice').count().groupBy('isMobileDevice')
+    },
+
+    osFamilyCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('osFamily').count().groupBy('osFamily')
+    },
+
+    deviceBrandNamesCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('deviceBrandName').count().groupBy('deviceBrandName')
+    },
+
+    deviceOwnNamesCounts(listId){
+        return knex('pageViews').where('listId', listId).distinct('deviceOwnName').count().groupBy('deviceOwnName')
     },
 
     checkRecentlyAttempted(email){
@@ -182,5 +237,13 @@ module.exports = {
     changeProfilePicture(userId, profilePictureURL){
         return knex('users').where('userId', userId).update({'profilePictureURL':profilePictureURL})
     },
+
+    changeProfilePictureShack(userId, profilePictureURL, shackImageId){
+        return knex('users').where('userId', userId).update({'profilePictureURL':profilePictureURL, 'shackImageId':shackImageId})
+    },
+
+    getPreviousProfileShack(userId){
+        return knex('users').where('userId', userId).select('shackImageId')
+    }
 
 }
