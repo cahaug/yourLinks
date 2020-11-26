@@ -36,26 +36,27 @@ listsRouter.get('/list4user/:userId', async (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
+// main registration code, commented out because unsafe and will be integrated in monetized gigaregistration
 // create new list (unguarded but logs, should only be hit on registration)
-listsRouter.post('/new', restricted, async (req, res) => {
-    const date = new Date();
-    const creationDate = date;
-    const { userId, backColor, txtColor, fontSelection, customURL } = req.body;
-    const list = { userId, creationDate, backColor, txtColor, fontSelection, customURL };
-    return createList(list)
-    .then(result => {
-        console.log('new list created ', result)
-        return getListByUser(userId)
-            .then(list => {
-                // console.log('list return', list)
-                res.header('Access-Control-Allow-Origin', '*')
-                res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-                res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-                res.status(200).json(list);
-            })
-    })
-    .catch(err => res.status(500).json(err));
-})
+// listsRouter.post('/new', restricted, async (req, res) => {
+//     const date = new Date();
+//     const creationDate = date;
+//     const { userId, backColor, txtColor, fontSelection, customURL } = req.body;
+//     const list = { userId, creationDate, backColor, txtColor, fontSelection, customURL };
+//     return createList(list)
+//     .then(result => {
+//         console.log('new list created ', result)
+//         return getListByUser(userId)
+//             .then(list => {
+//                 // console.log('list return', list)
+//                 res.header('Access-Control-Allow-Origin', '*')
+//                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//                 res.status(200).json(list);
+//             })
+//     })
+//     .catch(err => res.status(500).json(err));
+// })
 
 // delete list - should never be necessary unless deleting account
 // listsRouter.delete('/deleteList', restricted, async (req, res) => {
@@ -67,18 +68,18 @@ listsRouter.post('/new', restricted, async (req, res) => {
 //     })
 // })
 
-// display customURL facsimile
-listsRouter.get('/c/:customURL', async (req, res) => {
-    console.log(req.params.customURL)
-    return listByCustomURL({customURL: req.params.customURL})
-    .then(result => {
-        res.status(200).json(result)
-    })
-    .catch(err => {res.status(500).json(err)})
-})
+// display customURL facsimile - used nowhere detectable on front end and nonGDPR so removed
+// listsRouter.get('/c/:customURL', async (req, res) => {
+//     console.log(req.params.customURL)
+//     return listByCustomURL({customURL: req.params.customURL})
+//     .then(result => {
+//         res.status(200).json(result)
+//     })
+//     .catch(err => {res.status(500).json(err)})
+// })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCustom/', async (req, res) => {
+listsRouter.post('/checkCustom/', restricted, async (req, res) => {
     const { customURL } = req.body
     return checkIfCustomURLAvailable(customURL)
     .then(result => {
@@ -344,7 +345,7 @@ listsRouter.put('/setDisplayName', restricted, async (req, res) => {
             const resultant = await setDisplayName(listId, displayName)
             res.status(200).json({message:'Set Display Name Successfully', resultant})
         } else {
-            // console.log('putcustom security verification error')
+            console.log('putcustom security verification error')
             res.status(401).json({message:'Error Verifying User Security Permissions'})
         }
     } catch (err) {

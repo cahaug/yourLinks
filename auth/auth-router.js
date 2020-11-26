@@ -13,45 +13,46 @@ const restricted = require('../middleware/restricted.js');
 //     });
 // });
 
-authRouter.post('/register', async (req, res) => {
-    let user = req.body;
-    console.log('incoming user', user)
-    const email = user.email;
-    const date = new Date();
-    const creationDate = date
-    const hash = bcrypt.hashSync(user.password, 12); // 2 ^ n
-    user.password = hash;
-    user = { ...user, creationDate };
-    console.log('user w date',user)
-    return await insertUser(user)
-        .then(saved => {
-            // a jwt should be generated
-            console.log('1.saved', saved)
-            return singleUserForLogin(email)
-            .then(user => {
-              console.log('1.user', user)
-              user = user[0]
-              console.log('2.user', user)
-              const token = generateToken(user);
-              res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-              res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
-              res.header('Access-Control-Allow-Origin', '*')
-              res.status(201).json({
-                    message:'user saved successfully',
-                    userId: `${user.userId}`,
-                    email: `${user.email}`,
-                    firstName: `${user.firstName}`,
-                    profilePictureURL:`${user.profilePictureURL}`,
-                    token,
-                    user
-                })
-            })
-        })
-      .catch(error => {
-        console.log(error);
-        res.status(500).json(error);
-      });
-});
+// backend registration now closed, awaiting buildout of auxilary gigaregistration aio with paddle
+// authRouter.post('/register', async (req, res) => {
+//     let user = req.body;
+//     console.log('incoming user', user)
+//     const email = user.email;
+//     const date = new Date();
+//     const creationDate = date
+//     const hash = bcrypt.hashSync(user.password, 12); // 2 ^ n
+//     user.password = hash;
+//     user = { ...user, creationDate };
+//     console.log('user w date',user)
+//     return await insertUser(user)
+//         .then(saved => {
+//             // a jwt should be generated
+//             console.log('1.saved', saved)
+//             return singleUserForLogin(email)
+//             .then(user => {
+//               console.log('1.user', user)
+//               user = user[0]
+//               console.log('2.user', user)
+//               const token = generateToken(user);
+//               res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//               res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')  
+//               res.header('Access-Control-Allow-Origin', '*')
+//               res.status(201).json({
+//                     message:'user saved successfully',
+//                     userId: `${user.userId}`,
+//                     email: `${user.email}`,
+//                     firstName: `${user.firstName}`,
+//                     profilePictureURL:`${user.profilePictureURL}`,
+//                     token,
+//                     user
+//                 })
+//             })
+//         })
+//       .catch(error => {
+//         console.log(error);
+//         res.status(500).json(error);
+//       });
+// });
 
 
 
