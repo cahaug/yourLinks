@@ -56,6 +56,7 @@ entriesRouter.get('/editEntry/:entryId', restricted, async (req, res) => {
     try {
         const entryId = req.params.entryId
         const {sub} = req.decodedToken
+        console.log('req.body ee', req.body)
         const {listId} = req.body
         console.log('listId ', listId, 'entryId ', entryId, 'sub ',sub)
         const checkedListId = await getListId(sub)
