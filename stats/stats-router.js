@@ -633,10 +633,11 @@ statsRouter.get('/listViews/:listId', restricted, async (req, res) => {
 statsRouter.get('/elv/:listId', restricted, async (req,res) => {
     try {
         const {sub} = req.decodedToken
-        const { listId } = req.params
+        let { listId } = req.params
+        listId = parseInt(listId, 10)
         const checkedListId = await getListId(sub)
         // console.log('checkedListId', checkedListId)
-        if(sub == userId && checkedListId[0].listId == listId){
+        if(checkedListId[0].listId === listId){
             const countryListCount = []
             const countryList = await countryCounts(listId)
             countryList.map(x => {
