@@ -52,12 +52,12 @@ entriesRouter.post('/new', restricted, async (req, res) => {
 
 // SECURE THIS ENDPOINT ASAP
 // get single entry by entryId -  need to secure i think
-entriesRouter.get('/editEntry/:entryId', restricted, async (req, res) => {
+entriesRouter.post('/editEntry/:entryId', restricted, async (req, res) => {
     try {
         const entryId = req.params.entryId
-        const {sub} = req.decodedToken
+        const sub = req.decodedToken.sub
         console.log('req.body ee', req.body)
-        const {listId} = req.body
+        const listId = req.body.listId
         console.log('listId ', listId, 'entryId ', entryId, 'sub ',sub)
         const checkedListId = await getListId(sub)
         console.log('checkedListid', checkedListId)
