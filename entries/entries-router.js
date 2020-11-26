@@ -57,15 +57,19 @@ entriesRouter.get('/editEntry/:entryId', restricted, async (req, res) => {
         const entryId = req.params.entryId
         const {sub} = req.decodedToken
         const {listId} = req.body
+        console.log('listId ', listId, 'entryId ', entryId, 'sub ',sub)
         const checkedListId = await getListId(sub)
+        console.log('checkedListid', checkedListId)
         if(checkedListId[0].listId == listId){
             const singleEntry = await getSingleEntry(entryId)
+            console.log(singleEntry)
             res.status(200).json(singleEntry)
         } else {
             res.status(400).json({message:'Parameter Error'})
         }
     } catch (err){
-        
+        console.log('err in editentry endpoint', err)
+        res.status(400).json({message:'err in editEntry'})
     }
 });
 
