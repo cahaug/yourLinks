@@ -71,7 +71,9 @@ server.get('/', (req, res) => {
 server.get('/:listId', (req, res) => {
     const { listId } = req.params;
     const parsed = parseInt(listId,10);
-    console.log('req.hostname', req.hostname, req.headers.host, req.headers.origin)
+    console.log('req.hostname', req.originalUrl, req.headers.origin)
+    const fakeCustom = `${req.headers.origin}${req.originalUrl}`
+    console.log('assembled fakecustom', fakeCustom)
     console.log('typeof listId', typeof listId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
