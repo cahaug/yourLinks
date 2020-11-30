@@ -71,7 +71,7 @@ server.get('/', (req, res) => {
 server.get('/:listId', (req, res) => {
     const { listId } = req.params;
     const parsed = parseInt(listId,10);
-    console.log('req.hostname', req.hostname, req.originalUrl, req.url)
+    console.log('req.hostname', req.hostname, req.headers.host, req.headers.origin)
     console.log('typeof listId', typeof listId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
