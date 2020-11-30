@@ -26,6 +26,8 @@ var allowedOrigins = ['http://localhost:3000',
                       'https://link-in-profile.co',
                       'https://link-in-description.co',
                       'https://linkinbio.us',
+                      'https://link-in-bio.us',
+                      'https://the-link.is',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
