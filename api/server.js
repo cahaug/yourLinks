@@ -15,6 +15,17 @@ server.use(helmet());
 
 var allowedOrigins = ['http://localhost:3000',
                       'https://link-in.bio',
+                      'https://this-links.to',
+                      'https://bio-link.me',
+                      'https://i-am.so',
+                      'https://i-am.name',
+                      'https://i-am.onl',
+                      'https://i-am.place',
+                      'https://i-am.show',
+                      'https;//i-am.directory',
+                      'https://link-in-profile.co',
+                      'https://link-in-description.co',
+                      'https://linkinbio.us',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
