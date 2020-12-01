@@ -94,8 +94,8 @@ server.get('/:listId', (req, res) => {
         console.log('parsed is string, acting')
         console.log('yo', listId)
         const customURL = listId
-        console.log('yo custom', customURL)
-        return listByCustomURL(customURL)
+        console.log('yo custom', fakeCustom)
+        return listByCustomURL(fakeCustom)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
