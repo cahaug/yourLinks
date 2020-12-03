@@ -28,6 +28,8 @@ var allowedOrigins = ['http://localhost:3000',
                       'https://linkinbio.us',
                       'https://link-in-bio.us',
                       'https://the-link.is',
+                      'https://link-m.ee',
+                      'https://link-me.ee',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
