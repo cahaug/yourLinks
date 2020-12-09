@@ -184,6 +184,10 @@ module.exports = {
         return knex('pageViews').where('listId', listId).distinct('deviceOwnName').count().groupBy('deviceOwnName')
     },
 
+    homepageViewsGet(){
+        return knex('homepageViews')
+    },
+
     homepagecountryCounts(){
         return knex('homepageViews').distinct('countryOfOrigin').count().groupBy('countryOfOrigin')
     },
