@@ -418,7 +418,7 @@ statsRouter.get('/hpA1', async (req, res) => {
     // const browserName = uaDataScrape.data.browser.name
     // const browserVersionMajor = uaDataScrape.data.browser.version_major
     // const userIP = req.headers['x-forwarded-for'];
-    const stat = { entryId, dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+    const stat = { dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
     console.log('stat', stat)
     return logHomepageView(stat)
     .then(result => {
