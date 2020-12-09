@@ -302,7 +302,7 @@ statsRouter.get('/', async (req, res) => {
     if(maxTouch>0){
         isMobileDevice = true
     }
-    if(maxTouch === 0 && deviceOwnName === undefined){
+    if(maxTouch === 0 && deviceOwnName === null){
         deviceType = 'desktop'
         deviceBrandName = 'desktop'
         deviceOwnName = 'desktop'
@@ -323,7 +323,7 @@ statsRouter.get('/', async (req, res) => {
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
-    // const province = undefined
+    // const province = null
     // const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
     // const isMobileDevice = uaDataScrape.data.device.is_mobile_device
     // const deviceType = uaDataScrape.data.device.type
@@ -383,7 +383,7 @@ statsRouter.get('/hpA1', async (req, res) => {
     if(maxTouch>0){
         isMobileDevice = true
     }
-    if(maxTouch === 0 && deviceOwnName === undefined){
+    if(maxTouch === 0 && deviceOwnName === null){
         deviceType = 'desktop'
         deviceBrandName = 'desktop'
         deviceOwnName = 'desktop'
@@ -820,21 +820,21 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const countryListCount = []
         const countryList = await homepagecountryCounts()
         countryList.map(x => {
-            if(x.countryOfOrigin !== undefined){
+            if(x.countryOfOrigin !== null){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
             }
         })
         const regions = []
         const provinceListCount = await homepageprovinceCounts()
         provinceListCount.map(x => {
-            if(x.province !== undefined){
+            if(x.province !== null){
                 regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
             }
         })
         const deviceTypesListCount = []
         const deviceTypesList = await homepagedeviceTypes()
         deviceTypesList.map(x => {
-            if(x.deviceType !== undefined){
+            if(x.deviceType !== null){
                 deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:parseInt(x.count,10)})
             }
         })
@@ -855,21 +855,21 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const osFamilyCount = []
         const osFamilyList = await homepageosFamilyCounts()
         osFamilyList.map(x => {
-            if(x.osFamily !== undefined){
+            if(x.osFamily !== null){
                 osFamilyCount.push({osFamily:`${x.osFamily}`, count:parseInt(x.count,10)})
             }
         })
         const deviceBrandNamesCount = [] 
         const brandNamesCount = await homepagedeviceBrandNamesCounts()
         brandNamesCount.map(x => {
-            if(x.deviceBrandName !== undefined){
+            if(x.deviceBrandName !== null){
                 deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:parseInt(x.count,10)})
             }
         })
         const deviceOwnNamesCount = []
         const ownNamesCount =  await homepagedeviceOwnNamesCounts()
         ownNamesCount.map(x => {
-            if(x.deviceOwnName !== undefined){
+            if(x.deviceOwnName !== null){
                 deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:parseInt(x.count,10)})
             }
         })
