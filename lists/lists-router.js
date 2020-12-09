@@ -220,7 +220,7 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', restricted, async (req, re
                         });
                     } else {
                         // good to go
-                        res.status(201).json({message:'Successfully Uploaded Background Image', shackImageId:shackImageId, pictureURL:pictureURL})             
+                        res.status(201).json({message:'Successfully Uploaded Background Image'})             
                     }
                 }
             });
@@ -231,6 +231,33 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', restricted, async (req, re
     }
 })
 
+listsRouter.put('/deleteListBackground', restricted, async (req, res) => {
+    try{
+        const sub = req.decodedToken.sub
+        const {listId} = req.body
+        const checkedListId = await getListId(sub)
+        if(checkedListId[0].listId == listId){
+            const hasPreviousShackBackground = await getPreviousBackgroundShack(listId)
+            imageshack.del(`${hasPreviousShackBackground[0].listBackgroundImageId}`, async function(err){
+                if(err){
+                    console.log('delete failed',err);
+                }else{
+                    // Delete successful
+                    let listBackgroundImageId = null
+                    let listBackgroundURL = null
+                    const changedListBackground = await changeBgImgShack(listId, listBackgroundURL, listBackgroundImageId)
+                    res.status(201).json({message:'Successfully Uploaded Background Image'})
+                }
+            });
+        } else {
+            res.status(400).json({message:'You can only delete your own photo'})
+        }
+
+    }catch(err){
+        console.log('deleting list bgphoto error', err)
+        res.status(500).json({message:'Error Removing Photo'})
+    }
+})
 
 // change text color - lightmode
 listsRouter.put('/setText', restricted, async (req,res) => {
