@@ -19,7 +19,8 @@ const axios = require('axios')
 // });
 var ip2loc = require("ip2location-nodejs");
 // const Bowser = require("bowser")
-const parser = require("ua-parser-js")
+const parser = require("ua-parser-js");
+const { max } = require('../database/knex.js');
 
 const flagsDict = {
     'AF':'🇦🇫',
@@ -841,7 +842,9 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const browserNameListCount = []
         const browserNamesList =  await homepagebrowserNamesCounts()
         browserNamesList.map(x => {
-            browserNameListCount.push({browserName:`${x.browserName}`, count:parseInt(x.count,10)})
+            if(x.browserName !== null){
+                browserNameListCount.push({browserName:`${x.browserName}`, count:parseInt(x.count,10)})
+            }
         })
         const isTouchDevice = []
         const isItTouchDevice = await homepagetouchNotTouchCounts()
@@ -898,15 +901,19 @@ statsRouter.get('/steakSauce', async (req,res) => {
         }
         const timelineArray = []
         // console.log('timelineCounts',timelineCounts)
+        let maxCount = 0
         const timelineUnorderedArray = Object.entries(timelineCounts)
         for (var j = 0; j<timelineUnorderedArray.length; j++){
             // console.log(timelineUnorderedArray[j][0], timelineUnorderedArray[j][0].slice(4,6))
             const valobj = {x:new Date(parseInt(timelineUnorderedArray[j][0].slice(0,4),10), parseInt(timelineUnorderedArray[j][0].slice(4,6),10)-1, parseInt(timelineUnorderedArray[j][0].slice(6,8),10)), y:timelineUnorderedArray[j][1]}
             // console.log(valobj)
+            if(parseInt(valobj['y'],10)>parseInt(maxCount,10)){
+                maxCount = parseInt(valobj['y'],10)
+            }
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray })
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount})
     
     }catch (err){
         console.log('elv err',err)
