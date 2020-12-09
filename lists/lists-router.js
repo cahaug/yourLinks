@@ -1,5 +1,5 @@
 const listsRouter = require('express').Router();
-const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName, getPreviousProfileShack } = require('../database/queries.js');
+const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName, getPreviousProfileShack, getPreviousBackgroundShack, changeBgImgShack } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
 require('dotenv').config();
@@ -171,6 +171,67 @@ listsRouter.put('/setBg', restricted, async (req,res) => {
 
 })
 
+
+const fs = require("fs");
+const fileUpload = require('express-fileupload');
+listsRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+
+var imageshack = require('imageshack')({
+    api_key: process.env.SHACK_API_KEY,
+    email: process.env.SHACK_EMAIL,
+    passwd: process.env.SHACK_PASS
+});
+
+
+listsRouter.put('/uploadListBackgroundPhoto/:listId', restricted, async (req, res) => {
+    try {
+        const sub = req.decodedToken.sub
+        const listId = parseInt(req.params.listId, 10)
+        const checkedListId = await getListId(sub)
+        if(checkedListId[0].listId == listId){
+            const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
+            imageshack.upload(myimage, async function(err, filejson){
+                if(err){
+                    console.log(err);
+                }else{
+                    /* filejson is a json with:
+                    {
+                        original_filename: 'image.png',
+                        link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
+                        id: 'newtsep'
+                    }
+                   */
+                    console.log(filejson);
+                    const listBackgroundURL = `https://${filejson.link}`
+                    const listBackgroundImageId = filejson.id
+                    console.log('shackImageId bg', listBackgroundImageId, listBackgroundURL)
+                    const hasPreviousShackBackground = await getPreviousBackgroundShack(listId)
+                    const changedListBackground = await changeBgImgShack(listId, listBackgroundURL, listBackgroundImageId)
+                    console.log('changedListBackground', changedListBackground)
+                    if(hasPreviousShackBackground[0].listBackgroundImageId !== null){
+                        // delete old image then good to go
+                        imageshack.del(`${hasPreviousShackBackground[0].listBackgroundImageId}`, async function(err){
+                            if(err){
+                                console.log('delete failed',err);
+                            }else{
+                                // Delete successful
+                                res.status(201).json({message:'Successfully Uploaded Background Image'})
+                            }
+                        });
+                    } else {
+                        // good to go
+                        res.status(201).json({message:'Successfully Uploaded Background Image', shackImageId:shackImageId, pictureURL:pictureURL})             
+                    }
+                }
+            });
+        }
+    } catch(err){
+        console.log('photouploadbg err',err)
+        res.status(500).json({message:'Error Adding Photo'})
+    }
+})
+
+
 // change text color - lightmode
 listsRouter.put('/setText', restricted, async (req,res) => {
     const {listId, userId, fontSelection} = req.body
@@ -231,15 +292,6 @@ listsRouter.post('/resolveCustom', restricted, async (req,res) => {
     }
 })
 
-const fs = require("fs");
-const fileUpload = require('express-fileupload');
-listsRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
-
-var imageshack = require('imageshack')({
-    api_key: process.env.SHACK_API_KEY,
-    email: process.env.SHACK_EMAIL,
-    passwd: process.env.SHACK_PASS
-});
 
 // change user profilepictureURL
 listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
