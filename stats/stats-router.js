@@ -303,7 +303,12 @@ statsRouter.get('/', async (req, res) => {
     if(maxTouch>0){
         isMobileDevice = true
     }
-    if(maxTouch == 0 && deviceOwnName == undefined){
+    if(maxTouch>0 && deviceOwnName == null){
+        deviceType = 'laptop'
+        deviceBrandName = 'laptop'
+        deviceOwnName = 'laptop'
+    }
+    if(maxTouch == 0 && deviceOwnName == null){
         deviceType = 'desktop'
         deviceBrandName = 'desktop'
         deviceOwnName = 'desktop'
@@ -383,6 +388,11 @@ statsRouter.get('/hpA1', async (req, res) => {
     }
     if(maxTouch>0){
         isMobileDevice = true
+    }
+    if(maxTouch>0 && deviceOwnName == null){
+        deviceType = 'laptop'
+        deviceBrandName = 'laptop'
+        deviceOwnName = 'laptop'
     }
     if(maxTouch == 0 && deviceOwnName == null){
         deviceType = 'desktop'
