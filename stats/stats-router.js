@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
@@ -289,9 +289,9 @@ statsRouter.get('/', async (req, res) => {
     // ua-parser-js
     const uaData = parser(userAgent)
     let isMobileDevice = false
-    const deviceType = uaData.device.type
-    const deviceBrandName = uaData.device.vendor
-    const deviceOwnName = uaData.device.model
+    let deviceType = uaData.device.type
+    let deviceBrandName = uaData.device.vendor
+    let deviceOwnName = uaData.device.model
     const osFamily = uaData.os.name
     const osName = uaData.os.version
     let browserName = uaData.browser.name
@@ -301,6 +301,11 @@ statsRouter.get('/', async (req, res) => {
     }
     if(maxTouch>0){
         isMobileDevice = true
+    }
+    if(maxTouch === 0 && deviceOwnName === null){
+        deviceType = 'Desktop'
+        deviceBrandName = 'Desktop'
+        deviceOwnName = 'Desktop'
     }
     if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
         isMobileDevice = true
@@ -344,6 +349,82 @@ statsRouter.get('/', async (req, res) => {
         } else {
             return res.redirect(`${refURL}`)
         }
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json(err)
+    });
+});
+
+statsRouter.get('/hpA1', async (req, res) => {
+    const date = new Date().toISOString();
+    const maxTouch = req.query.mt
+    const dy = date.slice(8, 10)
+    const mo = date.slice(5, 7)
+    const yr = date.slice(0, 4)
+    const hr = date.slice(11, 13)
+    const mn = date.slice(14, 16)
+    const sc = date.slice(17, 19)
+    const refURL = req.query.ref
+    const entryId = req.query.eid
+    const redirect = req.query.red
+    const userAgent = req.headers['user-agent'];
+    const userIP = req.headers['x-forwarded-for'];
+    // ua-parser-js
+    const uaData = parser(userAgent)
+    let isMobileDevice = false
+    let deviceType = uaData.device.type
+    let deviceBrandName = uaData.device.vendor
+    let deviceOwnName = uaData.device.model
+    const osFamily = uaData.os.name
+    const osName = uaData.os.version
+    let browserName = uaData.browser.name
+    const browserVersionMajor = uaData.browser.major
+    if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
+        browserName = 'Instagram App'
+    }
+    if(maxTouch>0){
+        isMobileDevice = true
+    }
+    if(maxTouch === 0 && deviceOwnName === null){
+        deviceType = 'Desktop'
+        deviceBrandName = 'Desktop'
+        deviceOwnName = 'Desktop'
+    }
+    if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
+        isMobileDevice = true
+    }
+    // ip2loc:
+    ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+    // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+    // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+    const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+    const province = ip2loc.IP2Location_get_region(userIP)
+    // console.log('cool', countryOfOrigin0, 'provool', province0)
+    // const countryOfOrigin = ipLocResult.country_short
+    // const province = ipLocResult.region
+    ip2loc.IP2Location_close()
+    // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
+    // const userAgent = req.headers['user-agent'];
+    // const countryOfOrigin = locationValueCountry.country.isoCode
+    // const province = null
+    // const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
+    // const isMobileDevice = uaDataScrape.data.device.is_mobile_device
+    // const deviceType = uaDataScrape.data.device.type
+    // const deviceBrandName = uaDataScrape.data.device.brand
+    // const deviceOwnName = uaDataScrape.data.device.name
+    // const osName = uaDataScrape.data.os.name
+    // const osFamily = uaDataScrape.data.os.family
+    // const browserName = uaDataScrape.data.browser.name
+    // const browserVersionMajor = uaDataScrape.data.browser.version_major
+    // const userIP = req.headers['x-forwarded-for'];
+    const stat = { entryId, dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+    console.log('stat', stat)
+    return logHomepageView(stat)
+    .then(result => {
+        console.log('homepageviewres', result)
+        // return this.props.history.push(`${refURL}`)
+        res.status(200).json({message:'Stat Logged Successfully'})
     })
     .catch(err => {
         console.log(err)
@@ -732,6 +813,106 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         console.log(`elv security verification error userId : ${sub}`)
         res.status(401).json({message:'No Peeping'})
     }
+    }catch (err){
+        console.log('elv err',err)
+        res.status(400).json(err)
+    }
+})
+
+// homepage stats endpoint
+statsRouter.get('/steakSauce', async (req,res) => {
+    try {
+        const countryListCount = []
+        const countryList = await homepagecountryCounts()
+        countryList.map(x => {
+            if(x.countryOfOrigin !== null){
+                countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+            }
+        })
+        const regions = []
+        const provinceListCount = await homepageprovinceCounts()
+        provinceListCount.map(x => {
+            if(x.province !== null){
+                regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
+            }
+        })
+        const deviceTypesListCount = []
+        const deviceTypesList = await homepagedeviceTypes()
+        deviceTypesList.map(x => {
+            if(x.deviceType !== null){
+                deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:parseInt(x.count,10)})
+            }
+        })
+        const browserNameListCount = []
+        const browserNamesList =  await homepagebrowserNamesCounts()
+        browserNamesList.map(x => {
+            browserNameListCount.push({browserName:`${x.browserName}`, count:parseInt(x.count,10)})
+        })
+        const isTouchDevice = []
+        const isItTouchDevice = await homepagetouchNotTouchCounts()
+        isItTouchDevice.map(x => {
+            if(x.isMobileDevice===true){
+                isTouchDevice.push({isMobileDevice:'touchscreen', count:parseInt(x.count,10)})
+            } else {
+                isTouchDevice.push({isMobileDevice: 'no touch', count:parseInt(x.count,10)})
+            }
+        })
+        const osFamilyCount = []
+        const osFamilyList = await homepageosFamilyCounts()
+        osFamilyList.map(x => {
+            if(x.osFamily !== null){
+                osFamilyCount.push({osFamily:`${x.osFamily}`, count:parseInt(x.count,10)})
+            }
+        })
+        const deviceBrandNamesCount = [] 
+        const brandNamesCount = await homepagedeviceBrandNamesCounts()
+        brandNamesCount.map(x => {
+            if(x.deviceBrandName !== null){
+                deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:parseInt(x.count,10)})
+            }
+        })
+        const deviceOwnNamesCount = []
+        const ownNamesCount =  await homepagedeviceOwnNamesCounts()
+        ownNamesCount.map(x => {
+            if(x.deviceOwnName !== null){
+                deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:parseInt(x.count,10)})
+            }
+        })
+        const timeline = []
+        const allpageViews = await homepagepageViewsGet()
+        allpageViews.map(x => {
+            // console.log('x', x.dy, x.dy.toString().length)
+            if(x.dy.toString().length == 1 && x.mo.toString().length == 1){
+                // console.log('option 1')
+                timeline.push(parseInt(`${x.yr}${'0'+x.mo}${'0'+x.dy}`,10))
+            } else if(x.mo.toString().length == 1){
+                // console.log('option 2')
+                timeline.push(parseInt(`${x.yr}${'0'+x.mo}${+x.dy}`,10))
+            } else if(x.dy.toString().length == 1){
+                // console.log('option 3', x.dy, x.mo)
+                timeline.push(parseInt(`${x.yr}${x.mo}${'0'+x.dy}`,10))
+            } else {
+                // console.log('option 4')
+                timeline.push(parseInt(`${x.yr}${x.mo}${x.dy}`,10))
+            }
+        })
+        // console.log('timeline', timeline)
+        var timelineCounts = {};
+        for (var i = 0; i < timeline.length; i++) {
+            timelineCounts[timeline[i]] = 1 + (timelineCounts[timeline[i]] || 0);
+        }
+        const timelineArray = []
+        // console.log('timelineCounts',timelineCounts)
+        const timelineUnorderedArray = Object.entries(timelineCounts)
+        for (var j = 0; j<timelineUnorderedArray.length; j++){
+            // console.log(timelineUnorderedArray[j][0], timelineUnorderedArray[j][0].slice(4,6))
+            const valobj = {x:new Date(parseInt(timelineUnorderedArray[j][0].slice(0,4),10), parseInt(timelineUnorderedArray[j][0].slice(4,6),10)-1, parseInt(timelineUnorderedArray[j][0].slice(6,8),10)), y:timelineUnorderedArray[j][1]}
+            // console.log(valobj)
+            timelineArray.push(valobj)
+        }
+        // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray })
+    
     }catch (err){
         console.log('elv err',err)
         res.status(400).json(err)

@@ -112,6 +112,10 @@ module.exports = {
         return knex('stats').insert(stat)
     },
 
+    logHomepageView(stat){
+        return knex('homepageViews').insert(stat)
+    },
+
     logPageView(view){
         return knex('pageViews').insert(view)
     },
@@ -178,6 +182,38 @@ module.exports = {
 
     deviceOwnNamesCounts(listId){
         return knex('pageViews').where('listId', listId).distinct('deviceOwnName').count().groupBy('deviceOwnName')
+    },
+
+    homepagecountryCounts(){
+        return knex('homepageViews').distinct('countryOfOrigin').count().groupBy('countryOfOrigin')
+    },
+
+    homepageprovinceCounts(){
+        return knex('homepageViews').distinct('province').count().groupBy('province')
+    },
+
+    homepagedeviceTypes(){
+        return knex('homepageViews').distinct('deviceType').count().groupBy('deviceType')
+    },
+
+    homepagebrowserNamesCounts(){
+        return knex('homepageViews').distinct('browserName').count().groupBy('browserName')
+    },
+
+    homepagetouchNotTouchCounts(){
+        return knex('homepageViews').distinct('isMobileDevice').count().groupBy('isMobileDevice')
+    },
+
+    homepageosFamilyCounts(){
+        return knex('homepageViews').distinct('osFamily').count().groupBy('osFamily')
+    },
+
+    homepagedeviceBrandNamesCounts(){
+        return knex('homepageViews').distinct('deviceBrandName').count().groupBy('deviceBrandName')
+    },
+
+    homepagedeviceOwnNamesCounts(){
+        return knex('homepageViews').distinct('deviceOwnName').count().groupBy('deviceOwnName')
     },
 
     checkRecentlyAttempted(email){
