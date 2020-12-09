@@ -302,10 +302,10 @@ statsRouter.get('/', async (req, res) => {
     if(maxTouch>0){
         isMobileDevice = true
     }
-    if(maxTouch === 0 && deviceOwnName === null){
-        deviceType = 'Desktop'
-        deviceBrandName = 'Desktop'
-        deviceOwnName = 'Desktop'
+    if(maxTouch === 0 && deviceOwnName === undefined){
+        deviceType = 'desktop'
+        deviceBrandName = 'desktop'
+        deviceOwnName = 'desktop'
     }
     if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
         isMobileDevice = true
@@ -323,7 +323,7 @@ statsRouter.get('/', async (req, res) => {
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
-    // const province = null
+    // const province = undefined
     // const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
     // const isMobileDevice = uaDataScrape.data.device.is_mobile_device
     // const deviceType = uaDataScrape.data.device.type
@@ -365,9 +365,6 @@ statsRouter.get('/hpA1', async (req, res) => {
     const hr = date.slice(11, 13)
     const mn = date.slice(14, 16)
     const sc = date.slice(17, 19)
-    const refURL = req.query.ref
-    const entryId = req.query.eid
-    const redirect = req.query.red
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
     // ua-parser-js
@@ -386,10 +383,10 @@ statsRouter.get('/hpA1', async (req, res) => {
     if(maxTouch>0){
         isMobileDevice = true
     }
-    if(maxTouch === 0 && deviceOwnName === null){
-        deviceType = 'Desktop'
-        deviceBrandName = 'Desktop'
-        deviceOwnName = 'Desktop'
+    if(maxTouch === 0 && deviceOwnName === undefined){
+        deviceType = 'desktop'
+        deviceBrandName = 'desktop'
+        deviceOwnName = 'desktop'
     }
     if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
         isMobileDevice = true
@@ -422,9 +419,7 @@ statsRouter.get('/hpA1', async (req, res) => {
     console.log('stat', stat)
     return logHomepageView(stat)
     .then(result => {
-        console.log('homepageviewres', result)
-        // return this.props.history.push(`${refURL}`)
-        res.status(200).json({message:'Stat Logged Successfully'})
+        res.status(200).json({message:'Visit Successfully Logged :) Thank You!'})
     })
     .catch(err => {
         console.log(err)
@@ -825,21 +820,21 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const countryListCount = []
         const countryList = await homepagecountryCounts()
         countryList.map(x => {
-            if(x.countryOfOrigin !== null){
+            if(x.countryOfOrigin !== undefined){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
             }
         })
         const regions = []
         const provinceListCount = await homepageprovinceCounts()
         provinceListCount.map(x => {
-            if(x.province !== null){
+            if(x.province !== undefined){
                 regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
             }
         })
         const deviceTypesListCount = []
         const deviceTypesList = await homepagedeviceTypes()
         deviceTypesList.map(x => {
-            if(x.deviceType !== null){
+            if(x.deviceType !== undefined){
                 deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:parseInt(x.count,10)})
             }
         })
@@ -860,21 +855,21 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const osFamilyCount = []
         const osFamilyList = await homepageosFamilyCounts()
         osFamilyList.map(x => {
-            if(x.osFamily !== null){
+            if(x.osFamily !== undefined){
                 osFamilyCount.push({osFamily:`${x.osFamily}`, count:parseInt(x.count,10)})
             }
         })
         const deviceBrandNamesCount = [] 
         const brandNamesCount = await homepagedeviceBrandNamesCounts()
         brandNamesCount.map(x => {
-            if(x.deviceBrandName !== null){
+            if(x.deviceBrandName !== undefined){
                 deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:parseInt(x.count,10)})
             }
         })
         const deviceOwnNamesCount = []
         const ownNamesCount =  await homepagedeviceOwnNamesCounts()
         ownNamesCount.map(x => {
-            if(x.deviceOwnName !== null){
+            if(x.deviceOwnName !== undefined){
                 deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:parseInt(x.count,10)})
             }
         })
