@@ -303,7 +303,7 @@ statsRouter.get('/', async (req, res) => {
     if(maxTouch>0){
         isMobileDevice = true
     }
-    if(maxTouch === 0 && deviceOwnName === undefined){
+    if(maxTouch == 0 && deviceOwnName == undefined){
         deviceType = 'desktop'
         deviceBrandName = 'desktop'
         deviceOwnName = 'desktop'
