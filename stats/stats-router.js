@@ -831,11 +831,11 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const mostPopular = []
         const mostPupular = await mostPop()
         console.log('mostPupular', mostPupular)
-        mostPupular.map(x => {
-            if(x.customURL !== null){
-                mostPopular.push({customURL:x.customURL})
-            }
-        })
+        // mostPupular.map(x => {
+        //     if(x.customURL !== null){
+        //         mostPopular.push({customURL:x.customURL})
+        //     }
+        // })
         const countryListCount = []
         const countryList = await homepagecountryCounts()
         countryList.map(x => {
@@ -931,7 +931,7 @@ statsRouter.get('/steakSauce', async (req,res) => {
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPopular})
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular})
     
     }catch (err){
         console.log('elv err',err)
