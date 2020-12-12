@@ -220,6 +220,10 @@ module.exports = {
         return knex('homepageViews').distinct('deviceOwnName').count().groupBy('deviceOwnName')
     },
 
+    mostPop(){
+        return knex('pageViews').distinct('listId').count().groupBy('customURL') 
+    },
+
     checkRecentlyAttempted(email){
         return knex('pwReset').where('email', email)
     },
