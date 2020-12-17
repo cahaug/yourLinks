@@ -152,6 +152,10 @@ module.exports = {
         return knex('pageViews').where('listId', listId)
     },
 
+    distinctViewers(listId){
+        return knex('pageViews').where('listId', listId).distinct('userIP').count().groupBy('userIP')
+    },
+
     countryCounts(listId){
         return knex('pageViews').where('listId', listId).distinct('countryOfOrigin').count().groupBy('countryOfOrigin')
     },
