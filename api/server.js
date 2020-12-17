@@ -14,7 +14,7 @@ const server = express();
 server.use(helmet());
 
 var allowedOrigins = [
-                    //   'http://localhost:3000',
+                      'http://localhost:3000',
                       'https://link-in.bio',
                       'https://this-links.to',
                       'https://bio-link.me',
