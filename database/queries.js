@@ -50,11 +50,11 @@ module.exports = {
     },
 
     listByCustomURL(customURL){
-        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.displayName', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
+        return knex('lists').where("customURL", customURL).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.displayName', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection', 'lists.listBackgroundURL').orderBy('entries.entryId', 'asc');
     },
 
     listByNumber(listId){
-        return knex('lists').where("lists.listId", listId).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.displayName', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection').orderBy('entries.entryId', 'asc');
+        return knex('lists').where("lists.listId", listId).join('entries', 'lists.listId', 'entries.listId').orderBy('entries.entryId', 'asc').join('users', 'entries.userId', 'users.userId').select('users.firstName', 'users.lastName', 'users.profilePictureURL', 'entries.entryId', 'entries.listId', 'entries.creationDate', 'entries.referencingURL', 'entries.linkTitle', 'entries.description', 'entries.imgURL', 'lists.displayName', 'lists.creationDate', 'lists.backColor', 'lists.txtColor', 'lists.fontSelection', 'lists.listBackgroundURL').orderBy('entries.entryId', 'asc');
     },
     // join('entries', 'lists.listId', 'entries.listId')
     checkIfCustomURLAvailable(customURL){
@@ -112,6 +112,10 @@ module.exports = {
         return knex('stats').insert(stat)
     },
 
+    logHomepageView(stat){
+        return knex('homepageViews').insert(stat)
+    },
+
     logPageView(view){
         return knex('pageViews').insert(view)
     },
@@ -148,6 +152,10 @@ module.exports = {
         return knex('pageViews').where('listId', listId)
     },
 
+    distinctViewers(listId){
+        return knex('pageViews').where('listId', listId).distinct('userIP').count().groupBy('userIP')
+    },
+
     countryCounts(listId){
         return knex('pageViews').where('listId', listId).distinct('countryOfOrigin').count().groupBy('countryOfOrigin')
     },
@@ -178,6 +186,46 @@ module.exports = {
 
     deviceOwnNamesCounts(listId){
         return knex('pageViews').where('listId', listId).distinct('deviceOwnName').count().groupBy('deviceOwnName')
+    },
+
+    homepageViewsGet(){
+        return knex('homepageViews')
+    },
+
+    homepagecountryCounts(){
+        return knex('homepageViews').distinct('countryOfOrigin').count().groupBy('countryOfOrigin')
+    },
+
+    homepageprovinceCounts(){
+        return knex('homepageViews').distinct('province').count().groupBy('province')
+    },
+
+    homepagedeviceTypes(){
+        return knex('homepageViews').distinct('deviceType').count().groupBy('deviceType')
+    },
+
+    homepagebrowserNamesCounts(){
+        return knex('homepageViews').distinct('browserName').count().groupBy('browserName')
+    },
+
+    homepagetouchNotTouchCounts(){
+        return knex('homepageViews').distinct('isMobileDevice').count().groupBy('isMobileDevice')
+    },
+
+    homepageosFamilyCounts(){
+        return knex('homepageViews').distinct('osFamily').count().groupBy('osFamily')
+    },
+
+    homepagedeviceBrandNamesCounts(){
+        return knex('homepageViews').distinct('deviceBrandName').count().groupBy('deviceBrandName')
+    },
+
+    homepagedeviceOwnNamesCounts(){
+        return knex('homepageViews').distinct('deviceOwnName').count().groupBy('deviceOwnName')
+    },
+
+    mostPop(){
+        return knex('pageViews').distinct('pageViews.listId').count().groupBy('pageViews.listId').join('lists', 'pageViews.listId', 'lists.listId')
     },
 
     checkRecentlyAttempted(email){
@@ -240,6 +288,14 @@ module.exports = {
 
     changeProfilePictureShack(userId, profilePictureURL, shackImageId){
         return knex('users').where('userId', userId).update({'profilePictureURL':profilePictureURL, 'shackImageId':shackImageId})
+    },
+
+    getPreviousBackgroundShack(listId){
+        return knex('lists').where('listId', listId).select('listBackgroundImageId')
+    },
+
+    changeBgImgShack(listId, listBackgroundURL, listBackgroundImageId){
+        return knex('lists').where('listId', listId).update({'listBackgroundURL':listBackgroundURL, 'listBackgroundImageId':listBackgroundImageId})
     },
 
     getPreviousProfileShack(userId){

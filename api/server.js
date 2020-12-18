@@ -13,8 +13,41 @@ const server = express();
 
 server.use(helmet());
 
-var allowedOrigins = ['http://localhost:3000',
+var allowedOrigins = [
+                    //   'http://localhost:3000',
                       'https://link-in.bio',
+                      'https://this-links.to',
+                      'https://bio-link.me',
+                      'https://i-am.so',
+                      'https://i-am.name',
+                      'https://i-am.onl',
+                      'https://i-am.place',
+                      'https://i-am.show',
+                      'https://i-am.directory',
+                      'https://link-in-profile.co',
+                      'https://link-in-description.co',
+                      'https://linkinbio.us',
+                      'https://link-in-bio.us',
+                      'https://the-link.is',
+                      'https://link-m.ee',
+                      'https://link-me.ee',
+                      'https://for-my.art',
+                      'https://for-my.click',
+                      'https://for-my.club',
+                      'https://for-my.design',
+                      'https://for-my.digital',
+                      'https://for-my.fans',
+                      'https://for-my.health',
+                      'https://for-my.link',
+                      'https://for-my.network',
+                      'https://for-my.news',
+                      'https://for-my.shop',
+                      'https://for-my.studio',
+                      'https://im-he.re',
+                      'https://listen-he.re',
+                      'https://look-he.re',
+                      'https://stream-he.re',
+                      'https://watch-he.re',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
@@ -58,6 +91,9 @@ server.get('/', (req, res) => {
 server.get('/:listId', (req, res) => {
     const { listId } = req.params;
     const parsed = parseInt(listId,10);
+    console.log('req.hostname', req.originalUrl, req.headers.origin)
+    const fakeCustom = `${req.headers.origin}${req.originalUrl}`
+    console.log('assembled fakecustom', fakeCustom)
     console.log('typeof listId', typeof listId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
@@ -77,8 +113,8 @@ server.get('/:listId', (req, res) => {
     else {
         console.log('parsed is string, acting')
         console.log('yo', listId)
-        const customURL = listId
-        console.log('yo custom', customURL)
+        const customURL = fakeCustom
+        console.log('yo custom', fakeCustom)
         return listByCustomURL(customURL)
         .then(entries => {
             res.header('Access-Control-Allow-Origin', '*')

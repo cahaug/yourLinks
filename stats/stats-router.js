@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
@@ -19,7 +19,8 @@ const axios = require('axios')
 // });
 var ip2loc = require("ip2location-nodejs");
 // const Bowser = require("bowser")
-const parser = require("ua-parser-js")
+const parser = require("ua-parser-js");
+const { max } = require('../database/knex.js');
 
 const flagsDict = {
     'AF':'🇦🇫',
@@ -289,9 +290,9 @@ statsRouter.get('/', async (req, res) => {
     // ua-parser-js
     const uaData = parser(userAgent)
     let isMobileDevice = false
-    const deviceType = uaData.device.type
-    const deviceBrandName = uaData.device.vendor
-    const deviceOwnName = uaData.device.model
+    let deviceType = uaData.device.type
+    let deviceBrandName = uaData.device.vendor
+    let deviceOwnName = uaData.device.model
     const osFamily = uaData.os.name
     const osName = uaData.os.version
     let browserName = uaData.browser.name
@@ -301,6 +302,16 @@ statsRouter.get('/', async (req, res) => {
     }
     if(maxTouch>0){
         isMobileDevice = true
+    }
+    if(maxTouch>0 && deviceOwnName == null){
+        deviceType = 'laptop'
+        deviceBrandName = 'laptop'
+        deviceOwnName = 'laptop'
+    }
+    if(maxTouch == 0 && deviceOwnName == null){
+        deviceType = 'desktop'
+        deviceBrandName = 'desktop'
+        deviceOwnName = 'desktop'
     }
     if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
         isMobileDevice = true
@@ -351,82 +362,161 @@ statsRouter.get('/', async (req, res) => {
     });
 });
 
-statsRouter.get('/StatsRecords/', restricted, async (req, res) => {
-    console.log('statsrecords endpoint hit')
-    return statsRecords()
+statsRouter.get('/hpA1', async (req, res) => {
+    const date = new Date().toISOString();
+    const maxTouch = req.query.mt
+    const dy = date.slice(8, 10)
+    const mo = date.slice(5, 7)
+    const yr = date.slice(0, 4)
+    const hr = date.slice(11, 13)
+    const mn = date.slice(14, 16)
+    const sc = date.slice(17, 19)
+    const userAgent = req.headers['user-agent'];
+    const userIP = req.headers['x-forwarded-for'];
+    // ua-parser-js
+    const uaData = parser(userAgent)
+    let isMobileDevice = false
+    let deviceType = uaData.device.type
+    let deviceBrandName = uaData.device.vendor
+    let deviceOwnName = uaData.device.model
+    const osFamily = uaData.os.name
+    const osName = uaData.os.version
+    let browserName = uaData.browser.name
+    const browserVersionMajor = uaData.browser.major
+    if(userAgent.indexOf('Instagram') >= 0 && browserName === 'WebKit'){
+        browserName = 'Instagram App'
+    }
+    if(maxTouch>0){
+        isMobileDevice = true
+    }
+    if(maxTouch>0 && deviceOwnName == null){
+        deviceType = 'laptop'
+        deviceBrandName = 'laptop'
+        deviceOwnName = 'laptop'
+    }
+    if(maxTouch == 0 && deviceOwnName == null){
+        deviceType = 'desktop'
+        deviceBrandName = 'desktop'
+        deviceOwnName = 'desktop'
+    }
+    if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
+        isMobileDevice = true
+    }
+    // ip2loc:
+    ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+    // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+    // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+    const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+    const province = ip2loc.IP2Location_get_region(userIP)
+    // console.log('cool', countryOfOrigin0, 'provool', province0)
+    // const countryOfOrigin = ipLocResult.country_short
+    // const province = ipLocResult.region
+    ip2loc.IP2Location_close()
+    // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
+    // const userAgent = req.headers['user-agent'];
+    // const countryOfOrigin = locationValueCountry.country.isoCode
+    // const province = null
+    // const uaDataScrape = await axios.get(`https://api.userstack.com/detect?access_key=${process.env.USERSTACK_ACCESS}&ua=${userAgent}&format=1`)
+    // const isMobileDevice = uaDataScrape.data.device.is_mobile_device
+    // const deviceType = uaDataScrape.data.device.type
+    // const deviceBrandName = uaDataScrape.data.device.brand
+    // const deviceOwnName = uaDataScrape.data.device.name
+    // const osName = uaDataScrape.data.os.name
+    // const osFamily = uaDataScrape.data.os.family
+    // const browserName = uaDataScrape.data.browser.name
+    // const browserVersionMajor = uaDataScrape.data.browser.version_major
+    // const userIP = req.headers['x-forwarded-for'];
+    const stat = { dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+    console.log('stat', stat)
+    return logHomepageView(stat)
     .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(result)
+        res.status(200).json({message:'Visit Successfully Logged :) Thank You!'})
     })
-    .catch(err => res.status(500).json(err))
+    .catch(err => {
+        console.log(err)
+        res.status(500).json(err)
+    });
 });
 
-statsRouter.get('/StatsRecordsCount/', restricted, async (req, res) => {
-    return statsRecordsCount()
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(result)
-    })
-    .catch(err => res.status(500).json(err))
-});
+// as far as I can tell, never used
+// statsRouter.get('/StatsRecords/', restricted, async (req, res) => {
+//     console.log('statsrecords endpoint hit')
+//     return statsRecords()
+//     .then(result => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         res.status(200).json(result)
+//     })
+//     .catch(err => res.status(500).json(err))
+// });
 
-statsRouter.post('/statForEntry', async (req, res) => {
-    const { entryId } = req.body
-    return statsForEntry(entryId)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(result)
-    })
-    .catch(err => res.status(500).json(err))
-})
+// as far as I can tell, never used
+// statsRouter.get('/StatsRecordsCount/', restricted, async (req, res) => {
+//     return statsRecordsCount()
+//     .then(result => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         res.status(200).json(result)
+//     })
+//     .catch(err => res.status(500).json(err))
+// });
 
+// as far as I can tell, never used
+// statsRouter.post('/statForEntry', async (req, res) => {
+//     const { entryId } = req.body
+//     return statsForEntry(entryId)
+//     .then(result => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         res.status(200).json(result)
+//     })
+//     .catch(err => res.status(500).json(err))
+// })
 
-statsRouter.post('/statForList', async (req, res) => {
-    const { listId } = req.body
-    return statsForList(listId)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(result)
-    })
-    .catch(err => res.status(500).json(err))
-})
+// as far as I can tell, never used
+// statsRouter.post('/statForList', async (req, res) => {
+//     const { listId } = req.body
+//     return statsForList(listId)
+//     .then(result => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         res.status(200).json(result)
+//     })
+//     .catch(err => res.status(500).json(err))
+// })
 
-// entries where userid
-statsRouter.get('/u/:userId', async (req, res) => {
-    const { userId } = req.params;
-    return getEntries(userId)
-    .then(entries => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        console.log(res.headers)
-        res.status(200).json(entries)
-    })
-    .catch(err => res.status(500).json(err));
-});
+// entries where userid - presently unused
+// statsRouter.get('/u/:userId', async (req, res) => {
+//     const { userId } = req.params;
+//     return getEntries(userId)
+//     .then(entries => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         console.log(res.headers)
+//         res.status(200).json(entries)
+//     })
+//     .catch(err => res.status(500).json(err));
+// });
 
-// entryid and count of datetime records (recorded clicks)
-statsRouter.get('/st/:userId', (req, res, next) => {
-    const { userId } = req.params;
-    return getEntries2(userId)
-    .then(numbers => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(numbers)
-    }) 
-    .catch(err => res.status(500).json(err))
-})
+// entryid and count of datetime records (recorded clicks) - unused as far as i can tell
+// statsRouter.get('/st/:userId', (req, res, next) => {
+//     const { userId } = req.params;
+//     return getEntries2(userId)
+//     .then(numbers => {
+//         res.header('Access-Control-Allow-Origin', '*')
+//         res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+//         res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+//         res.status(200).json(numbers)
+//     }) 
+//     .catch(err => res.status(500).json(err))
+// })
 
-// needs to be secured w sub verification
+// needs to be secured w sub verification - complete
 statsRouter.post('/pieGraph', restricted, async (req, res) => {
     const { userId } = req.body
     const {sub} = req.decodedToken
@@ -444,7 +534,7 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
     // }
     try {
         if(userId == sub){
-            const pieData = await pieGraph(userId)
+            const pieData = await pieGraph(sub)
             const newArray = []
             const withTitle = pieData.forEach(async value => {
                 const title = await getSingleEntry(value.entryId)
@@ -476,10 +566,10 @@ statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
     // console.log('userId == sub', userId==sub)
     // console.log('not equals', userId !== sub)
     if(userId == sub){
-        return getEntries(userId)
+        return getEntries(sub)
         .then(links => {
             // console.log('links', links)
-            return getEntries2(userId)
+            return getEntries2(sub)
             .then(nums => {
                 let mergedLinks = []
                 console.log('nums[0]', nums[0])
@@ -590,69 +680,200 @@ statsRouter.get('/ili/:listId', async (req, res) => {
 });
 
 // return listviews for given list
-statsRouter.get('/listViews/:listId', restricted, (req, res) => {
-    const { listId } = req.params
-    console.log(listId)
-    return listViewsGet(listId)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        res.status(200).json(result[0])
-    })
-    .catch(err => {console.log(err); res.status(500).json(err)})
+statsRouter.get('/listViews/:listId', restricted, async (req, res) => {
+    try {
+        const { listId } = req.params
+        const {sub} = req.decodedToken
+        const checkedListId = await getListId(sub)
+        if(checkedListId[0].listId == listId){
+            const resultant = await listViewsGet(listId)
+            res.status(200).json(resultant[0])
+        } else {
+            console.log('listviews get security verification error')
+            res.status(400).json({message:'Error Verifying User Security Permissions'})
+        }
+
+    }catch (err){
+        res.status(400).json({message:'Missing Parameters'})
+    }
 
 })
 
-// return listviews for given list
-statsRouter.get('/enhancedlistViews/:listId', restricted, (req, res) => {
-    const { listId } = req.params
-    console.log(listId)
-    return pageViewsGet(listId)
-    .then(result => {
-        console.log('enhanced pageviews result', result[0])
+// return listviews for given list - never used on frontend, comment for safety
+// statsRouter.get('/enhancedlistViews/:listId', restricted, (req, res) => {
+//     const { listId } = req.params
+//     console.log(listId)
+//     return pageViewsGet(listId)
+//     .then(result => {
+//         console.log('enhanced pageviews result', result[0])
         
-        // var i
-        // for(i=0;i<result.length;i++){
+//         // var i
+//         // for(i=0;i<result.length;i++){
 
-        // }
-        res.status(200).json(result)
-    })
-    .catch(err => {console.log(err); res.status(500).json(err)})
+//         // }
+//         res.status(200).json(result)
+//     })
+//     .catch(err => {console.log(err); res.status(500).json(err)})
 
-})
+// })
 
 statsRouter.get('/elv/:listId', restricted, async (req,res) => {
     try {
-        const { listId } = req.params
+        const {sub} = req.decodedToken
+        let { listId } = req.params
+        listId = parseInt(listId, 10)
+        const checkedListId = await getListId(sub)
+        // console.log('checkedListId', checkedListId)
+        if(checkedListId[0].listId === listId){
+            const distinctViewer = await distinctViewers(listId)
+            const distinctViewersCount = distinctViewer.length
+            console.log('dv',distinctViewer)
+            // distinctViewer.map(x => {
+            //     if(x.userIP !== null){
+            //         distinctViewersArr.push({userIP: })
+            //     }
+            // })
+            const countryListCount = []
+            const countryList = await countryCounts(listId)
+            countryList.map(x => {
+                if(x.countryOfOrigin !== null){
+                    countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+                }
+            })
+            const regions = []
+            const provinceListCount = await provinceCounts(listId)
+            provinceListCount.map(x => {
+                if(x.province !== null){
+                    regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
+                }
+            })
+            const deviceTypesListCount = []
+            const deviceTypesList = await deviceTypes(listId)
+            deviceTypesList.map(x => {
+                if(x.deviceType !== null){
+                    deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:parseInt(x.count,10)})
+                }
+            })
+            const browserNameListCount = []
+            const browserNamesList =  await browserNamesCounts(listId)
+            browserNamesList.map(x => {
+                browserNameListCount.push({browserName:`${x.browserName}`, count:parseInt(x.count,10)})
+            })
+            const isTouchDevice = []
+            const isItTouchDevice = await touchNotTouchCounts(listId)
+            isItTouchDevice.map(x => {
+                if(x.isMobileDevice===true){
+                    isTouchDevice.push({isMobileDevice:'touchscreen', count:parseInt(x.count,10)})
+                } else {
+                    isTouchDevice.push({isMobileDevice: 'no touch', count:parseInt(x.count,10)})
+                }
+            })
+            const osFamilyCount = []
+            const osFamilyList = await osFamilyCounts(listId)
+            osFamilyList.map(x => {
+                if(x.osFamily !== null){
+                    osFamilyCount.push({osFamily:`${x.osFamily}`, count:parseInt(x.count,10)})
+                }
+            })
+            const deviceBrandNamesCount = [] 
+            const brandNamesCount = await deviceBrandNamesCounts(listId)
+            brandNamesCount.map(x => {
+                if(x.deviceBrandName !== null){
+                    deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:parseInt(x.count,10)})
+                }
+            })
+            const deviceOwnNamesCount = []
+            const ownNamesCount =  await deviceOwnNamesCounts(listId)
+            ownNamesCount.map(x => {
+                if(x.deviceOwnName !== null){
+                    deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:parseInt(x.count,10)})
+                }
+            })
+            const timeline = []
+            const allpageViews = await pageViewsGet(listId)
+            allpageViews.map(x => {
+                // console.log('x', x.dy, x.dy.toString().length)
+                if(x.dy.toString().length == 1 && x.mo.toString().length == 1){
+                    // console.log('option 1')
+                    timeline.push(parseInt(`${x.yr}${'0'+x.mo}${'0'+x.dy}`,10))
+                } else if(x.mo.toString().length == 1){
+                    // console.log('option 2')
+                    timeline.push(parseInt(`${x.yr}${'0'+x.mo}${+x.dy}`,10))
+                } else if(x.dy.toString().length == 1){
+                    // console.log('option 3', x.dy, x.mo)
+                    timeline.push(parseInt(`${x.yr}${x.mo}${'0'+x.dy}`,10))
+                } else {
+                    // console.log('option 4')
+                    timeline.push(parseInt(`${x.yr}${x.mo}${x.dy}`,10))
+                }
+            })
+            // console.log('timeline', timeline)
+            var timelineCounts = {};
+            for (var i = 0; i < timeline.length; i++) {
+                timelineCounts[timeline[i]] = 1 + (timelineCounts[timeline[i]] || 0);
+            }
+            const timelineArray = []
+            // console.log('timelineCounts',timelineCounts)
+            const timelineUnorderedArray = Object.entries(timelineCounts)
+            for (var j = 0; j<timelineUnorderedArray.length; j++){
+                // console.log(timelineUnorderedArray[j][0], timelineUnorderedArray[j][0].slice(4,6))
+                const valobj = {x:new Date(parseInt(timelineUnorderedArray[j][0].slice(0,4),10), parseInt(timelineUnorderedArray[j][0].slice(4,6),10)-1, parseInt(timelineUnorderedArray[j][0].slice(6,8),10)), y:timelineUnorderedArray[j][1]}
+                // console.log(valobj)
+                timelineArray.push(valobj)
+            }
+            // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
+            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount })
+    } else {
+        console.log(`elv security verification error userId : ${sub}`)
+        res.status(401).json({message:'No Peeping'})
+    }
+    }catch (err){
+        console.log('elv err',err)
+        res.status(400).json(err)
+    }
+})
+
+// homepage stats endpoint
+statsRouter.get('/steakSauce', async (req,res) => {
+    try {
+        const mostPopular = []
+        const mostPupular = await mostPop()
+        console.log('mostPupular', mostPupular)
+        // mostPupular.map(x => {
+        //     if(x.customURL !== null){
+        //         mostPopular.push({customURL:x.customURL})
+        //     }
+        // })
         const countryListCount = []
-        const countryList = await countryCounts(listId)
+        const countryList = await homepagecountryCounts()
         countryList.map(x => {
             if(x.countryOfOrigin !== null){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
             }
         })
         const regions = []
-        const provinceListCount = await provinceCounts(listId)
+        const provinceListCount = await homepageprovinceCounts()
         provinceListCount.map(x => {
             if(x.province !== null){
                 regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
             }
         })
         const deviceTypesListCount = []
-        const deviceTypesList = await deviceTypes(listId)
+        const deviceTypesList = await homepagedeviceTypes()
         deviceTypesList.map(x => {
             if(x.deviceType !== null){
                 deviceTypesListCount.push({deviceType:`${x.deviceType}`, count:parseInt(x.count,10)})
             }
         })
         const browserNameListCount = []
-        const browserNamesList =  await browserNamesCounts(listId)
+        const browserNamesList =  await homepagebrowserNamesCounts()
         browserNamesList.map(x => {
-            browserNameListCount.push({browserName:`${x.browserName}`, count:parseInt(x.count,10)})
+            if(x.browserName !== null){
+                browserNameListCount.push({browserName:`${x.browserName}`, count:parseInt(x.count,10)})
+            }
         })
         const isTouchDevice = []
-        const isItTouchDevice = await touchNotTouchCounts(listId)
+        const isItTouchDevice = await homepagetouchNotTouchCounts()
         isItTouchDevice.map(x => {
             if(x.isMobileDevice===true){
                 isTouchDevice.push({isMobileDevice:'touchscreen', count:parseInt(x.count,10)})
@@ -661,28 +882,28 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
             }
         })
         const osFamilyCount = []
-        const osFamilyList = await osFamilyCounts(listId)
+        const osFamilyList = await homepageosFamilyCounts()
         osFamilyList.map(x => {
             if(x.osFamily !== null){
                 osFamilyCount.push({osFamily:`${x.osFamily}`, count:parseInt(x.count,10)})
             }
         })
         const deviceBrandNamesCount = [] 
-        const brandNamesCount = await deviceBrandNamesCounts(listId)
+        const brandNamesCount = await homepagedeviceBrandNamesCounts()
         brandNamesCount.map(x => {
             if(x.deviceBrandName !== null){
                 deviceBrandNamesCount.push({deviceBrandName:`${x.deviceBrandName}`, count:parseInt(x.count,10)})
             }
         })
         const deviceOwnNamesCount = []
-        const ownNamesCount =  await deviceOwnNamesCounts(listId)
+        const ownNamesCount =  await homepagedeviceOwnNamesCounts()
         ownNamesCount.map(x => {
             if(x.deviceOwnName !== null){
                 deviceOwnNamesCount.push({deviceOwnName:`${x.deviceOwnName}`, count:parseInt(x.count,10)})
             }
         })
         const timeline = []
-        const allpageViews = await pageViewsGet(listId)
+        const allpageViews = await homepageViewsGet()
         allpageViews.map(x => {
             // console.log('x', x.dy, x.dy.toString().length)
             if(x.dy.toString().length == 1 && x.mo.toString().length == 1){
@@ -706,15 +927,20 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
         }
         const timelineArray = []
         // console.log('timelineCounts',timelineCounts)
+        let maxCount = 0
         const timelineUnorderedArray = Object.entries(timelineCounts)
         for (var j = 0; j<timelineUnorderedArray.length; j++){
             // console.log(timelineUnorderedArray[j][0], timelineUnorderedArray[j][0].slice(4,6))
             const valobj = {x:new Date(parseInt(timelineUnorderedArray[j][0].slice(0,4),10), parseInt(timelineUnorderedArray[j][0].slice(4,6),10)-1, parseInt(timelineUnorderedArray[j][0].slice(6,8),10)), y:timelineUnorderedArray[j][1]}
             // console.log(valobj)
+            if(parseInt(valobj['y'],10)>parseInt(maxCount,10)){
+                maxCount = parseInt(valobj['y'],10)
+            }
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray })
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular})
+    
     }catch (err){
         console.log('elv err',err)
         res.status(400).json(err)
@@ -725,8 +951,20 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
 statsRouter.get('/locationTest', async (req, res) => {
     try {
         // const locationValueCountry = await readerCountry.country(`${req.headers['x-forwarded-for']}`)
-        const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
-        res.status(200).json({message:'location located', locationValueCountry: locationValueCountry.country.isoCode})
+        const userAgent = req.headers['user-agent'];
+        const userIP = req.headers['x-forwarded-for'];
+        // ua-parser-js
+        const uaData = parser(userAgent)
+        ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+        // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+        // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+        const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+        const province = ip2loc.IP2Location_get_region(userIP)
+        // console.log('cool', countryOfOrigin0, 'provool', province0)
+        // const countryOfOrigin = ipLocResult.country_short
+        // const province = ipLocResult.region
+        ip2loc.IP2Location_close()
+        res.status(200).json({message:'location located', locationValueCountry: countryOfOrigin, locationValueRegion: province, uaData:uaData})
     } catch (err){
         console.log('location err', err)
         res.status(400).json(err)

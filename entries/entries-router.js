@@ -52,16 +52,26 @@ entriesRouter.post('/new', restricted, async (req, res) => {
 
 // SECURE THIS ENDPOINT ASAP
 // get single entry by entryId -  need to secure i think
-entriesRouter.get('/editEntry/:entryId', restricted, (req, res) => {
-    const entryId = req.params.entryId
-    return getSingleEntry(entryId)
-    .then(result => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-        res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-        return res.status(200).json(result);
-    })
-    .catch(err => res.status(500).json(err));
+entriesRouter.post('/editEntry/:entryId', restricted, async (req, res) => {
+    try {
+        const entryId = req.params.entryId
+        const sub = req.decodedToken.sub
+        console.log('req.body ee', req.body)
+        const listId = req.body.listId
+        console.log('listId ', listId, 'entryId ', entryId, 'sub ',sub)
+        const checkedListId = await getListId(sub)
+        console.log('checkedListid', checkedListId)
+        if(checkedListId[0].listId == listId){
+            const singleEntry = await getSingleEntry(entryId)
+            console.log(singleEntry)
+            res.status(200).json(singleEntry)
+        } else {
+            res.status(400).json({message:'Parameter Error'})
+        }
+    } catch (err){
+        console.log('err in editentry endpoint', err)
+        res.status(400).json({message:'err in editEntry'})
+    }
 });
 
 // edit URL
@@ -166,30 +176,31 @@ entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const userId = parseInt(req.params.userId, 10)
-        if(sub !== userId){
-            res.status(400).json({message:'Only Paid Users Can Upload Photos.'})
+        if(sub === userId){
+            console.log('req.file', req.files.myImage)
+            const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
+            imageshack.upload(myimage, async function(err, filejson){
+                if(err){
+                    console.log(err);
+                }else{
+                    /* filejson is a json with:
+                    {
+                        original_filename: 'image.png',
+                        link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
+                        id: 'newtsep'
+                    }
+                   */
+                    console.log(filejson);
+                    const pictureURL = `https://${filejson.link}`
+                    const shackImageId = filejson.id
+                    console.log('shackImageId', shackImageId, pictureURL)
+                    res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
+                }
+            });
+        } else {
+            res.status(400).json({message:'Paid User Can Upload Photos to their own account.'})
             return
         }
-        console.log('req.file', req.files.myImage)
-        const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-        imageshack.upload(myimage, async function(err, filejson){
-            if(err){
-                console.log(err);
-            }else{
-                /* filejson is a json with:
-                {
-                    original_filename: 'image.png',
-                    link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
-                    id: 'newtsep'
-                }
-               */
-                console.log(filejson);
-                const pictureURL = `https://${filejson.link}`
-                const shackImageId = filejson.id
-                console.log('shackImageId', shackImageId, pictureURL)
-                res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
-            }
-        });
     } catch(err){
         res.status(500).json({message:'Error Adding Photo'})
     }
