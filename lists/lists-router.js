@@ -148,27 +148,6 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
 })
 
 
-
-
-listsRouter.put('/putCustom2',  async (req, res) => {
-    const { customURL, listId } = req.body
-    
-    // console.log('customURL', customURL);
-    // console.log('listId', listId)
-    try{
-        
-        const resultant = await putCustom(listId, customURL)
-        res.status(200).json({message:'Put Custom Successfully', resultant})
-        
-    } catch (err) {
-        console.log('putcustom2 err', err)
-        res.status(500).json(err)
-    }
-})
-
-
-
-
 // change background color
 listsRouter.put('/setBg', restricted, async (req,res) => {
     const {listId, userId, backColor} = req.body
