@@ -225,7 +225,7 @@ module.exports = {
     },
 
     mostPop(){
-        return knex('pageViews').innerJoin('lists', 'pageViews.listId', 'lists.listId').select('pageViews.listId', 'lists.customURL').groupBy('lists.customURL').distinct('pageViews.listId').count().groupBy('pageViews.listId')
+        return knex('pageViews').innerJoin('lists', 'pageViews.listId', 'lists.listId').select('pageViews.listId', 'lists.customURL').groupBy('lists.customURL').distinct('pageViews.listId').count().limit(10).groupBy('pageViews.listId')
     },
 
     checkRecentlyAttempted(email){
