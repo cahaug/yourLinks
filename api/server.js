@@ -49,6 +49,8 @@ var allowedOrigins = [
                       'https://look-he.re',
                       'https://stream-he.re',
                       'https://watch-he.re',
+                      'https://pstd.at',
+                      'https://7zz.ch',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
