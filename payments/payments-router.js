@@ -11,11 +11,12 @@ const PUBLIC_KEY = process.env.PAD_PUB_KEY
 paymentsRouter.post('/in', async (req, res) => {
     try {
         console.log('req.headers.origin', req.headers.origin)
-        console.log('length of publickey', process.env.PAD_PUB_KEY.length)
+        console.log('length of publickey', process.env.PAD_PUB_KEY.len)
         // - NOT DONE - verify webhook signature  && req.method.toLowerCase() === 'post' && req.host == paddle.com or whatever
         if(req.body.p_signature && req.method.toLowerCase() === 'post'){
             const extractedSignatue = {p_signature:req.body.p_signature}
-            if (verifyPaddleWebhook(PUBLIC_KEY, extractedSignatue)) {
+            console.log('extracted', extractedSignatue, req.body)
+            if (verifyPaddleWebhook(PUBLIC_KEY, req.body)) {
                 console.log('Webhook is valid!');
                 // process the webhook
                 if(req.body.alert_name === 'subscription_created'){
