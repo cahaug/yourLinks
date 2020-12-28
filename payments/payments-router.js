@@ -19,8 +19,19 @@ paymentsRouter.post('/in', async (req, res) => {
             if (verifyPaddleWebhook(PUBLIC_KEY, req.body)) {
                 console.log('Webhook is valid!');
                 // process the webhook
+                // subscription processing action cases are here
                 if(req.body.alert_name === 'subscription_created'){
                     console.log('subscription creation webhook')
+                    // check this info with frontend
+                    // create user account
+                        // email, password, firstName, lastName, profilePictureURL, referredBy
+                    // create list
+                        // userId, backColor, txtColor, fontSelection
+                    // create standard 1st entry
+                        // userId, listId, referencingURL, description, linktitle, imgURL
+                    // create view for standard 1st entry
+                        //
+                    // send welcome email
                     res.sendStatus(200)
                 } 
                 if(req.body.alert_name === 'subscription_updated'){
@@ -31,7 +42,18 @@ paymentsRouter.post('/in', async (req, res) => {
                     console.log('subscription cancel webhook')
                     res.sendStatus(200)
                 }
-                // subscription processing action cases are here
+                if(req.body.alert_name === 'subscription_payment_succeeded'){
+                    console.log('recurring payment success webhook')
+                    res.sendStatus(200)
+                }
+                if(req.body.alert_name === 'subscription_payment_failed'){
+                    console.log('recurring payment failed webhook')
+                    res.sendStatus(200)
+                }
+                if(req.body.alert_name === 'subscription_payment_refunded'){
+                    console.log('recurring payment refunded webhook')
+                    res.sendStatus(200)
+                }
             } else {
                 console.log('webhook signature verification failed')
                 res.sendStatus(400)
