@@ -93,7 +93,7 @@ server.get('/', (req, res) => {
 
 // entries by userId (displayUserEntries on displayUserEntries /:id)
 server.get('/:listId', (req, res) => {
-    const { listId } = req.params;
+    const listId  = unescape(req.params.listId);
     const parsed = parseInt(listId,10);
     console.log('req.hostname', req.originalUrl, req.headers.origin)
     const fakeCustom = `${req.headers.origin}${req.originalUrl}`
