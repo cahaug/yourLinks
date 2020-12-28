@@ -81,6 +81,7 @@ listsRouter.get('/list4user/:userId', async (req, res) => {
 // return bool for whether a certain customURL is taken or not
 listsRouter.post('/checkCustom/', restricted, async (req, res) => {
     const { customURL } = req.body
+    console.log('checked customURL', customURL)
     return checkIfCustomURLAvailable(customURL)
     .then(result => {
         // console.log(res)
