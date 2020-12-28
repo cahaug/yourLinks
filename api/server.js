@@ -96,7 +96,7 @@ server.get('/:listId', (req, res) => {
     const listId  = unescape(req.params.listId);
     const parsed = parseInt(listId,10);
     console.log('req.hostname', req.originalUrl, req.headers.origin)
-    const fakeCustom = `${req.headers.origin}${unescape(req.originalUrl)}`
+    const fakeCustom = `${req.headers.origin}/${listId}`
     console.log('assembled fakecustom', fakeCustom)
     console.log('typeof listId', typeof listId)
     console.log('parsed', parsed)
