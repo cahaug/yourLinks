@@ -925,7 +925,7 @@ statsRouter.get('/steakSauce', async (req,res) => {
         for (var i = 0; i < timeline.length; i++) {
             timelineCounts[timeline[i]] = 1 + (timelineCounts[timeline[i]] || 0);
         }
-        const timelineArray = []
+        var timelineArray = []
         // console.log('timelineCounts',timelineCounts)
         let maxCount = 0
         const timelineUnorderedArray = Object.entries(timelineCounts)
