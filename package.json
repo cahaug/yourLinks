@@ -21,7 +21,7 @@
   "homepage": "https://github.com/cahaug/yourLinks#readme",
   "dependencies": {
     "@maxmind/geoip2-node": "^1.6.0",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "blob": "^0.1.0",
     "bowser": "^2.11.0",
