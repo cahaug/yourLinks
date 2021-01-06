@@ -74,6 +74,7 @@ paymentsRouter.post('/in', async (req, res) => {
                     const entry = {
                         userId: userId,
                         listId: listByUser[0].listId,
+                        creationDate:creationDate,
                         referencingURL:'https://link-in.bio/',
                         description:`Thank You for Choosing Link-In.bio/, Let's Get Started!  Click Add Entry to Add Your First Entry! You can delete this entry after you have added another one to your List. Click the button in the bottom-right corner if you have any questions.`,
                         linkTitle:'Welcome to Your List!',
