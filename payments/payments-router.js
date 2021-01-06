@@ -68,6 +68,10 @@ paymentsRouter.post('/in', async (req, res) => {
                     console.log('list var', list)
                     const insertedList = await createList(list)
                     console.log('insertedList', insertedList)
+
+                    res.sendStatus(200)
+                    console.log('early send status 200')
+                    
                     const listByUser = await getListByUser(userId)
                     console.log('listByUser', listByUser)
                     // create standard 1st entry
@@ -125,7 +129,6 @@ paymentsRouter.post('/in', async (req, res) => {
                             const infoResponse = info.response
                             console.log('Email Sent Successfully: ', info.response, token, email)
                             // send welcome email
-                            res.sendStatus(200)
                         }
                     })
                 } 
