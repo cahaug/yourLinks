@@ -304,6 +304,18 @@ module.exports = {
 
     getPreviousProfileShack(userId){
         return knex('users').where('userId', userId).select('shackImageId')
+    },
+
+    paidRegistration(registration){
+        return knex('registration').insert(registration)
+    },
+
+    verifyRegistration(token){
+        return knex('registration').where('token', token).select('email')
+    },
+
+    redeemRegistration(email){
+        return knex('registration').where('email', email).update({'redeemed':true})
     }
 
 }

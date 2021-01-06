@@ -37,6 +37,7 @@
     "imageshack": "^0.2.1",
     "ip2location-nodejs": "^8.4.0",
     "jest": "^25.1.0",
+    "js-sha512": "^0.8.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.4",
     "knex-cleaner": "^1.3.0",
