@@ -105,7 +105,7 @@ paymentsRouter.post('/in', async (req, res) => {
                         to: email,
                         subject: 'Link-in.Bio Account Created',
                         text:`Enter Your Token: ${token} & Your Email At https://Link-in.bio/finishMyRegistration to set your password, configure and use your account`,
-                        html:`<h1>Link-in.Bio/</h1>
+                        html:`<h1>Link-in.Bio Ltd</h1>
                             <h3>16605 E Avenue of the Fountains #19442</h3>
                             <h3>Fountain Hills, AZ 85269</h3>
                             <h3>+1-510-747-8482</h3>
