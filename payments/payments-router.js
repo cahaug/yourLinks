@@ -112,7 +112,7 @@ paymentsRouter.post('/in', async (req, res) => {
                             <br /><hr /><br />
                             <h2>Hello, ${email}!</h2>
                             <h2>Thank you for Choosing Link-in.Bio, a carbon-negative company.  You made a great choice.</h2>
-                            <p>Enter Your Token: ${token} & Your Email At https://Link-in.bio/finishMyRegistration to set your password, set up and use your account </p>
+                            <p>Enter Your Token: ${token} & Your Email At <a alt='https://Link-in.bio/finishMyRegistration' href='https://Link-in.bio/finishMyRegistration'>https://Link-in.bio/finishMyRegistration</a> to set your password, set up and use your account </p>
                             <h1>Welcome to <strong> The Family.</strong></h1>
                             <br /><hr /><br />`
                     }
