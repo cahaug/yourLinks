@@ -71,7 +71,7 @@ paymentsRouter.post('/in', async (req, res) => {
 
                     res.sendStatus(200)
                     console.log('early send status 200')
-                    
+
                     const listByUser = await getListByUser(userId)
                     console.log('listByUser', listByUser)
                     // create standard 1st entry
@@ -116,7 +116,7 @@ paymentsRouter.post('/in', async (req, res) => {
                             <h3>+1-510-747-8482</h3>
                             <br /><hr /><br />
                             <h2>Hello, ${email}!</h2>
-                            <h2>Thank you for Choosing Link-in.Bio, a carbon-negative company.  You made a great choice.</h2>
+                            <h2>Thank you for Choosing Link-in.Bio, a carbon-negative company.  <br /> You made a great choice.</h2>
                             <p>Enter Your Token: ${token} & Your Email At <a alt='https://Link-in.bio/finishMyRegistration' href='https://Link-in.bio/finishMyRegistration'>https://Link-in.bio/finishMyRegistration</a> to set your password, set up and use your account </p>
                             <h1>Welcome to <strong> The Family.</strong></h1>
                             <br /><hr /><br />`
