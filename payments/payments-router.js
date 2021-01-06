@@ -62,7 +62,7 @@ paymentsRouter.post('/in', async (req, res) => {
                     const backColor = '#ffffff'
                     const txtColor = '#000000'
                     const fontSelection = 'sigmarOne'
-                    const customURL = `https://link-in.bio/${sha512(userId)}`
+                    const customURL = `https://link-in.bio/${sha512(`${userId}`)}`
                     const list = { 'userId':userId, 'creationDate': creationDate, 'backColor':backColor, 'txtColor':txtColor, 'fontSelection':fontSelection, 'customURL':customURL }
                     console.log('list var', list)
                     const insertedList = await createList(list)
