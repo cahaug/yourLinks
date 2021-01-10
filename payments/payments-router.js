@@ -278,9 +278,11 @@ paymentsRouter.get('/out', restricted, async (req, res) => {
         const {userId} = req.body
         console.log('sub, userID', sub, userId)
         if(sub == userId){
-            const URLs = await getURLs(sub)
-            res.status(200).json(URLs)
+            const urls = await getURLs(sub)
+            console.log('urls', urls)
+            res.status(200).json(urls)
         }else{
+            console.log('else fired')
             res.sendStatus(400)
         }
     } catch(err){
