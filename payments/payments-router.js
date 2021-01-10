@@ -284,6 +284,7 @@ paymentsRouter.get('/out', restricted, async (req, res) => {
             res.sendStatus(400)
         }
     } catch(err){
+        console.log('get out error',err)
         res.sendStatus(400)
     }
 })
