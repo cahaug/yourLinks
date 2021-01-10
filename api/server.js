@@ -8,13 +8,14 @@ const listsRouter = require('../lists/lists-router.js');
 const entriesRouter = require('../entries/entries-router.js');
 const statsRouter = require('../stats/stats-router.js');
 const mailerRouter = require('../mail/mailer-router.js')
+const paymentsRouter = require('../payments/payments-router.js')
 
 const server = express();
 
 server.use(helmet());
 
 var allowedOrigins = [
-                    //   'http://localhost:3000',
+                      'http://localhost:3000',
                       'https://link-in.bio',
                       'https://this-links.to',
                       'https://bio-link.me',
@@ -48,6 +49,8 @@ var allowedOrigins = [
                       'https://look-he.re',
                       'https://stream-he.re',
                       'https://watch-he.re',
+                      'https://pstd.at',
+                      'https://7zz.ch',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
@@ -77,6 +80,7 @@ server.use('/l/', listsRouter);
 server.use('/e/', entriesRouter);
 server.use('/s/', statsRouter);
 server.use('/mailer/', mailerRouter)
+server.use('/numbers/', paymentsRouter)
 
 
 
@@ -89,10 +93,10 @@ server.get('/', (req, res) => {
 
 // entries by userId (displayUserEntries on displayUserEntries /:id)
 server.get('/:listId', (req, res) => {
-    const { listId } = req.params;
+    const listId  = unescape(req.params.listId);
     const parsed = parseInt(listId,10);
     console.log('req.hostname', req.originalUrl, req.headers.origin)
-    const fakeCustom = `${req.headers.origin}${req.originalUrl}`
+    const fakeCustom = `${req.headers.origin}/${listId}`
     console.log('assembled fakecustom', fakeCustom)
     console.log('typeof listId', typeof listId)
     console.log('parsed', parsed)

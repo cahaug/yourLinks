@@ -1,9 +1,10 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers, mostPopToday } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 // const fs = require('fs');
+const maxmind = require('maxmind')
 const axios = require('axios')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 // const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
@@ -20,7 +21,6 @@ const axios = require('axios')
 var ip2loc = require("ip2location-nodejs");
 // const Bowser = require("bowser")
 const parser = require("ua-parser-js");
-const { max } = require('../database/knex.js');
 
 const flagsDict = {
     'AF':'🇦🇫',
@@ -836,7 +836,11 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
 // homepage stats endpoint
 statsRouter.get('/steakSauce', async (req,res) => {
     try {
-        const mostPopular = []
+        const date = new Date().toISOString();
+        const dy = date.slice(8, 10)
+        const mo = date.slice(5, 7)
+        const yr = date.slice(0, 4)
+        const mostPopularToday = await mostPopToday(dy,mo,yr)
         const mostPupular = await mostPop()
         console.log('mostPupular', mostPupular)
         // mostPupular.map(x => {
@@ -925,7 +929,7 @@ statsRouter.get('/steakSauce', async (req,res) => {
         for (var i = 0; i < timeline.length; i++) {
             timelineCounts[timeline[i]] = 1 + (timelineCounts[timeline[i]] || 0);
         }
-        const timelineArray = []
+        var timelineArray = []
         // console.log('timelineCounts',timelineCounts)
         let maxCount = 0
         const timelineUnorderedArray = Object.entries(timelineCounts)
@@ -939,7 +943,7 @@ statsRouter.get('/steakSauce', async (req,res) => {
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular})
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday})
     
     }catch (err){
         console.log('elv err',err)
@@ -964,7 +968,15 @@ statsRouter.get('/locationTest', async (req, res) => {
         // const countryOfOrigin = ipLocResult.country_short
         // const province = ipLocResult.region
         ip2loc.IP2Location_close()
-        res.status(200).json({message:'location located', locationValueCountry: countryOfOrigin, locationValueRegion: province, uaData:uaData})
+        maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+            // console.log(lookup.get('66.6.44.4'));
+            const raw = lookup.get(userIP)
+            console.log('raw', raw)
+            const mmCi = raw.city.names.en
+            const mmCo = raw.country.iso_code
+            // console.log(lookup.getWithPrefixLength('66.6.44.4'));
+            res.status(200).json({message:'location located',mmCi:mmCi, mmCo:mmCo, locationValueCountry: countryOfOrigin, locationValueRegion: province, uaData:uaData})
+          });
     } catch (err){
         console.log('location err', err)
         res.status(400).json(err)

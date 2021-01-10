@@ -225,7 +225,11 @@ module.exports = {
     },
 
     mostPop(){
-        return knex('pageViews').distinct('pageViews.listId').count().groupBy('pageViews.listId').join('lists', 'pageViews.listId', 'lists.listId')
+        return knex('pageViews').innerJoin('lists', 'pageViews.listId', 'lists.listId').select('pageViews.listId', 'lists.customURL').groupBy('lists.customURL').distinct('pageViews.listId').count().limit(10).groupBy('pageViews.listId')
+    },
+
+    mostPopToday(dy, mo, yr){
+        return knex('pageViews').where({dy:dy, mo:mo, yr:yr}).innerJoin('lists', 'pageViews.listId', 'lists.listId').select('pageViews.listId', 'lists.customURL').groupBy('lists.customURL').distinct('pageViews.listId').count().limit(10).groupBy('pageViews.listId')
     },
 
     checkRecentlyAttempted(email){
@@ -300,6 +304,50 @@ module.exports = {
 
     getPreviousProfileShack(userId){
         return knex('users').where('userId', userId).select('shackImageId')
+    },
+
+    paidRegistration(registration){
+        return knex('registration').insert(registration)
+    },
+
+    verifyRegistration(token){
+        return knex('registration').where('token', token).select('email')
+    },
+
+    redeemRegistration(email){
+        return knex('registration').where('email', email).update({'redeemed':true})
+    },
+
+    userId4Email(email){
+        return knex('users').where('email', email).select('userId')
+    },
+
+    deleteAllEntriesfor(userId){
+        return knex('entries').where('userId', userId).del()
+    },
+
+    deleteListfor(userId){
+        return knex('lists').where('userId', userId).del()
+    },
+
+    deleteUserfor(userId){
+        return knex('users').where('userId', userId).del()
+    },
+
+    entriesWhereUserId(userId){
+        return knex('entries').where('userId', userId).select('shackImageId')
+    },
+
+    freshUpdateURLs(email, updateURL){
+        return knex('users').where('email', email).update({'updateURL':updateURL})
+    },
+
+    freshCancelURLs(email, cancelURL){
+        return knex('users').where('email', email).update({'cancelURL':cancelURL})
+    },
+
+    getURLs(userId){
+        return knex('users').where('userId', userId).select('updateURL','cancelURL')
     }
 
 }
