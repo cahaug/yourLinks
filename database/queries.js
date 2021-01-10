@@ -338,11 +338,12 @@ module.exports = {
         return knex('entries').where('userId', userId).select('shackImageId')
     },
 
-    updateURLs(email, updateURL, cancelURL){
-        return knex('users').where('email', email).update({
-            'updateURL':updateURL,
-            'cancelURL':cancelURL
-        })
+    freshUpdateURLs(email, updateURL){
+        return knex('users').where('email', email).update({'updateURL':updateURL})
+    },
+
+    freshCancelURLs(email, cancelURL){
+        return knex('users').where('email', email).update({'cancelURL':cancelURL})
     },
 
     getURLs(userId){

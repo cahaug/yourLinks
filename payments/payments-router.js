@@ -1,5 +1,5 @@
 const paymentsRouter = require('express').Router()
-const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor, updateURLs, getURLs, verifyRegistration, redeemRegistration, updatePassword } = require('../database/queries.js')
+const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor, freshCancelURLs, freshUpdateURLs, getURLs, verifyRegistration, redeemRegistration, updatePassword } = require('../database/queries.js')
 // const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
 require('dotenv').config()
@@ -146,8 +146,9 @@ paymentsRouter.post('/in', async (req, res) => {
                     const updateURL = req.body.update_url
                     const cancelURL = req.body.cancel_url
                     console.log('email, update, cancel', email, updateURL, cancelURL)
-                    const updatedURLs = updateURLs(email, updateURL, cancelURL)
-                    console.log('updatedURLs', updatedURLs)
+                    const updatedURLs = await freshUpdateURLs(email, updateURL)
+                    const cancelledURLs =  await freshCancelURLs(email, cancelURL)
+                    console.log('updatedURLs', updatedURLs, cancelledURLs)
                     res.sendStatus(200)
                 }
                 if(req.body.alert_name === 'subscription_cancelled'){
