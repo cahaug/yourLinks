@@ -1,12 +1,13 @@
 const paymentsRouter = require('express').Router()
-const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView } = require('../database/queries.js')
+const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId } = require('../database/queries.js')
 // const restricted = require('../middleware/restricted.js')
 // const axios = require('axios')
 require('dotenv').config()
 paymentsRouter.use(require('express').urlencoded({extended:'true'}));
 const {verifyPaddleWebhook} = require('verify-paddle-webhook');
 var sha512 = require('js-sha512');
-var nodemailer = require('nodemailer')
+var nodemailer = require('nodemailer');
+const imageshack = require('imageshack');
 
 
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
@@ -117,17 +118,17 @@ paymentsRouter.post('/in', async (req, res) => {
                             <br /><hr /><br />
                             <h2>Hello, ${email}!</h2>
                             <h2>Thank you for Choosing Link-in.Bio, a carbon-negative company.  <br /> You made a great choice.</h2>
-                            <p>Enter Your Token: ${token} & Your Email At <a alt='https://Link-in.bio/finishMyRegistration' href='https://Link-in.bio/finishMyRegistration'>https://Link-in.bio/finishMyRegistration</a> to set your password, set up and use your account </p>
+                            <p>Click this link to set your password, <a alt='https://Link-in.bio/finishMyRegistration' href='https://Link-in.bio/finishMyRegistration?to=${token}&em=${email}'>https://Link-in.bio/finishMyRegistration</a> , finish registering and use your account </p>
                             <h1>Welcome to <strong> The Family.</strong></h1>
                             <br /><hr /><br />`
                     }
                     transporter.sendMail(mailOptions, function(error, info){
                         if(error){
-                            console.log('error sending mail',error)
+                            console.log('error sending mail',error,email)
                             res.sendStatus(400)
                         } else {
                             const infoResponse = info.response
-                            console.log('Email Sent Successfully: ', info.response, token, email)
+                            console.log('Email Sent Successfully: ', infoResponse, token, email)
                             // send welcome email
                         }
                     })
@@ -139,7 +140,93 @@ paymentsRouter.post('/in', async (req, res) => {
                 }
                 if(req.body.alert_name === 'subscription_cancelled'){
                     console.log('subscription cancel webhook')
-                    res.sendStatus(200)
+                    const email = req.body.email
+                    const userId = await userId4Email(email)
+                    if(userId.length === 0){
+                        console.log('paddle user does not exist in LIB db :shiting-self-emoji:')
+                        res.sendStatus(400)
+                    }else{
+                        console.log('userId for cancelled email',userId)
+                        const listId = await getListByUser(userId[0].listId)
+                        console.log('listid for cancelled user', listId)
+                        // send ok response then delete all the shits
+                        res.sendStatus(200)
+                        //get all entries and check for shack image, delete where present
+                        // on entries
+                        const shacksForEntries = await entriesWhereUserId(userId)
+                        console.log('shacksForEntriesCancel Endpoint', shacksForEntries)
+                        var i 
+                        for(i=0;i<shacksForEntries.length;i++){
+                            if(shacksForEntries[i]){
+                                imageshack.del(`${shacksForEntries[i].shackImageId}`, function(err){
+                                    if(err){
+                                        console.log('shackEntryImageDeletionErr', err)
+                                    }else{
+                                        console.log('shackEntryPhotoDeletionSuccess')
+                                    }
+                                })
+                            }
+                        }
+                        
+                        // on lists
+                        const hasShackBackground = await getPreviousBackgroundShack(listId)
+                        console.log('hasShackBackground', hasShackBackground)
+                        if(hasShackBackground[0].listBackgroundImageId){
+                            imageshack.del(`${hasShackBackground[0].listBackgroundImageId}`,function(err){
+                                if(err){
+                                    console.log('shackBGDeletionError', err)
+                                }else{
+                                    console.log('shackBGDeletionsuccessful')
+                                }
+                            })
+                        }
+                        // on users
+                        const hasShackProfile = await getPreviousProfileShack(userId)
+                        console.log('hasShackProfilePic', hasShackProfile)
+                        if(hasShackProfile[0].shackImageId){
+                            imageshack.del(`${hasShackProfile[0].shackImageId}`, function(err){
+                                if(err){
+                                    console.log('shackPPDeletionError', err)
+                                }else{
+                                    console.log('shackPPDeletionSuccessful')
+                                }
+                            })
+                        }
+
+                        const deletedEntries = await deleteAllEntriesfor(userId)
+                        console.log('deletedEntries', deletedEntries)
+                        const deletedList = await deleteListfor(userId)
+                        console.log('deletedList', deletedList)
+                        const deletedUser = await deleteUserfor(userId)
+                        console.log('deletedUser', deletedUser)
+                        var mailOptions = {
+                            from: process.env.LIBEMAILFROM,
+                            to: email,
+                            subject: 'Link-in.Bio Account Deleted',
+                            text:`Sorry to see you go! We deleted all of your information.  Thank you for your patronage.`,
+                            html:`<h1>Link-in.Bio Ltd</h1>
+                                <h3>16605 E Avenue of the Fountains #19442</h3>
+                                <h3>Fountain Hills, AZ 85269</h3>
+                                <h3>+1-510-747-8482</h3>
+                                <br /><hr /><br />
+                                <h2>Hello, ${email}!</h2>
+                                <h2>Thank you for Choosing Link-in.Bio, a carbon-negative company.  <br /> You made a great choice.</h2>
+                                <p>This email marks the last correspondence you will receive from Link-in.Bio.  We deleted all of your stuff.  Thank you for your patronage. </p>
+                                <h1><strong>Sorry to See You Go.</strong></h1>
+                                <br /><hr /><br />`
+                        }
+                        transporter.sendMail(mailOptions, function(error, info){
+                            if(error){
+                                console.log('error sending mail',error,email)
+                                // res.sendStatus(400)
+                            } else {
+                                const infoResponse = info.response
+                                console.log('Email Sent Successfully: ', infoResponse, email)
+                                // send welcome email
+                            }
+                        })
+                    }
+                    
                 }
                 if(req.body.alert_name === 'subscription_payment_succeeded'){
                     console.log('recurring payment success webhook')

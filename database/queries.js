@@ -316,6 +316,26 @@ module.exports = {
 
     redeemRegistration(email){
         return knex('registration').where('email', email).update({'redeemed':true})
+    },
+
+    userId4Email(email){
+        return knex('users').where('email', email).select('userId')
+    },
+
+    deleteAllEntriesfor(userId){
+        return knex('entries').where('userId', userId).del()
+    },
+
+    deleteListfor(userId){
+        return knex('lists').where('userId', userId).del()
+    },
+
+    deleteUserfor(userId){
+        return knex('users').where('userId', userId).del()
+    },
+
+    entriesWhereUserId(userId){
+        return knex('entries').where('userId', userId).select('shackImageId')
     }
 
 }
