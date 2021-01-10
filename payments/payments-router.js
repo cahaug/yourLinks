@@ -278,7 +278,7 @@ paymentsRouter.get('/out', async (req, res) => {
         const {userId} = req.body
         // console.log('sub, userID', sub, userId)
         if(userId == userId){
-            const urlsContainer = await getURLs(sub)
+            const urlsContainer = await getURLs(userId)
             console.log('urlsContainer', urlsContainer)
             res.status(200).json(urlsContainer)
         }else{
