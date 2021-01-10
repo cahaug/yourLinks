@@ -7,8 +7,11 @@ paymentsRouter.use(require('express').urlencoded({extended:'true'}));
 const {verifyPaddleWebhook} = require('verify-paddle-webhook');
 var sha512 = require('js-sha512');
 var nodemailer = require('nodemailer');
-const imageshack = require('imageshack');
-
+var imageshack = require('imageshack')({
+    api_key: process.env.SHACK_API_KEY,
+    email: process.env.SHACK_EMAIL,
+    passwd: process.env.SHACK_PASS
+});
 
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
 
@@ -159,7 +162,7 @@ paymentsRouter.post('/in', async (req, res) => {
                         console.log('shacksForEntriesCancel Endpoint', shacksForEntries)
                         var i 
                         for(i=0;i<shacksForEntries.length;i++){
-                            if(shacksForEntries[i]){
+                            if(shacksForEntries[i].shackImageId !== null){
                                 imageshack.del(`${shacksForEntries[i].shackImageId}`, function(err){
                                     if(err){
                                         console.log('shackEntryImageDeletionErr', err)
@@ -173,7 +176,7 @@ paymentsRouter.post('/in', async (req, res) => {
                         // on lists
                         const hasShackBackground = await getPreviousBackgroundShack(listId)
                         console.log('hasShackBackground', hasShackBackground)
-                        if(hasShackBackground[0].listBackgroundImageId){
+                        if(hasShackBackground[0].listBackgroundImageId !== null){
                             imageshack.del(`${hasShackBackground[0].listBackgroundImageId}`,function(err){
                                 if(err){
                                     console.log('shackBGDeletionError', err)
@@ -185,7 +188,7 @@ paymentsRouter.post('/in', async (req, res) => {
                         // on users
                         const hasShackProfile = await getPreviousProfileShack(userId)
                         console.log('hasShackProfilePic', hasShackProfile)
-                        if(hasShackProfile[0].shackImageId){
+                        if(hasShackProfile[0].shackImageId !== null){
                             imageshack.del(`${hasShackProfile[0].shackImageId}`, function(err){
                                 if(err){
                                     console.log('shackPPDeletionError', err)
