@@ -303,7 +303,7 @@ paymentsRouter.post('/finish', async (req, res) => {
         if(isNotBot===true){
             const emailForToken = await verifyRegistration(tooken)
             console.log('emailfortoken', emailForToken)
-            if(emailForToken===email){
+            if(emailForToken[0].email===email){
                 const redeemsRegistration = await redeemRegistration(email)
                 console.log('redeemsRegistration', redeemsRegistration)
                 const hash = bcrypt.hashSync(password, 12); // 2 ^ n
