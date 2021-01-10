@@ -1,5 +1,5 @@
 const paymentsRouter = require('express').Router()
-const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor } = require('../database/queries.js')
+const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor, updateURLs } = require('../database/queries.js')
 // const restricted = require('../middleware/restricted.js')
 // const axios = require('axios')
 require('dotenv').config()
@@ -137,8 +137,14 @@ paymentsRouter.post('/in', async (req, res) => {
                     })
                 } 
                 if(req.body.alert_name === 'subscription_updated'){
-                    console.log('subscription update webhook')
+                    console.log('subscription updated webhook')
                     // put new cancelled and update paddle links
+                    const email = req.body.email
+                    const updateURL = req.body.update_url
+                    const cancelURL = req.body.cancel_url
+                    console.log('email, update, cancel', email, updateURL, cancelURL)
+                    const updatedURLs = updateURLs(email, updateURL, cancelURL)
+                    console.log('updatedURLs', updatedURLs)
                     res.sendStatus(200)
                 }
                 if(req.body.alert_name === 'subscription_cancelled'){

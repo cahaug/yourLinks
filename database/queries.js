@@ -336,6 +336,13 @@ module.exports = {
 
     entriesWhereUserId(userId){
         return knex('entries').where('userId', userId).select('shackImageId')
+    },
+
+    updateURLs(email, updateURL, cancelURL){
+        return knex('users').where('email', email).update({
+            'updateURL':updateURL,
+            'cancelURL':cancelURL
+        })
     }
 
 }
