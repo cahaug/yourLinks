@@ -141,13 +141,15 @@ paymentsRouter.post('/in', async (req, res) => {
                 if(req.body.alert_name === 'subscription_cancelled'){
                     console.log('subscription cancel webhook')
                     const email = req.body.email
-                    const userId = await userId4Email(email)
+                    const userIdContainer = await userId4Email(email)
+                    const userId = userIdContainer[0].userId
                     if(userId.length === 0){
                         console.log('paddle user does not exist in LIB db :shiting-self-emoji:')
                         res.sendStatus(400)
                     }else{
                         console.log('userId for cancelled email',userId)
-                        const listId = await getListByUser(userId[0].listId)
+                        const listIdContainer = await getListByUser(userId)
+                        const listId = listIdContainer[0].listId
                         console.log('listid for cancelled user', listId)
                         // send ok response then delete all the shits
                         res.sendStatus(200)
