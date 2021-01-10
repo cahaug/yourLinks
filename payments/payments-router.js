@@ -1,5 +1,5 @@
 const paymentsRouter = require('express').Router()
-const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor, updateURLs } = require('../database/queries.js')
+const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor, updateURLs, getURLs } = require('../database/queries.js')
 // const restricted = require('../middleware/restricted.js')
 // const axios = require('axios')
 require('dotenv').config()
@@ -7,6 +7,7 @@ paymentsRouter.use(require('express').urlencoded({extended:'true'}));
 const {verifyPaddleWebhook} = require('verify-paddle-webhook');
 var sha512 = require('js-sha512');
 var nodemailer = require('nodemailer');
+const restricted = require('../middleware/restricted.js');
 var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,
     email: process.env.SHACK_EMAIL,
@@ -268,6 +269,21 @@ paymentsRouter.post('/in', async (req, res) => {
     }
 })
 
+
+paymentsRouter.get('/out', restricted, async (req, res) => {
+    try{
+        const sub = req.body.decodedToken.sub
+        const userId = req.body.userId
+        if(sub == userId){
+            const URLs = await getURLs(sub)
+            res.status(200).json(URLs)
+        }else{
+            res.sendStatus(400)
+        }
+    } catch(err){
+        res.sendStatus(400)
+    }
+})
 
 // backend registration now closed, awaiting buildout of auxilary gigaregistration aio with paddle
 // authRouter.post('/register', async (req, res) => {

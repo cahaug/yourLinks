@@ -343,6 +343,10 @@ module.exports = {
             'updateURL':updateURL,
             'cancelURL':cancelURL
         })
+    },
+
+    getURLs(userId){
+        return knex('users').where(userId).select('updateURL','cancelURL')
     }
 
 }
