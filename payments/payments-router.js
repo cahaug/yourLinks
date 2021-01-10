@@ -274,7 +274,7 @@ paymentsRouter.post('/in', async (req, res) => {
 
 paymentsRouter.get('/out', restricted, async (req, res) => {
     try{
-        const sub = req.body.decodedToken.sub
+        const sub = req.decodedToken.sub
         const userId = req.body.userId
         if(sub == userId){
             const URLs = await getURLs(sub)
