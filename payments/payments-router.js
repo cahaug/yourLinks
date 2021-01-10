@@ -1,7 +1,7 @@
 const paymentsRouter = require('express').Router()
-const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor, updateURLs, getURLs } = require('../database/queries.js')
+const { createList, insertUser, singleUserForLogin, paidRegistration, getListByUser, newEntry, logAClick, logPageView, userId4Email, deleteListfor, deleteUserfor, getPreviousProfileShack, getPreviousBackgroundShack, entriesWhereUserId, deleteAllEntriesfor, updateURLs, getURLs, verifyRegistration, redeemRegistration, updatePassword } = require('../database/queries.js')
 // const restricted = require('../middleware/restricted.js')
-// const axios = require('axios')
+const axios = require('axios')
 require('dotenv').config()
 paymentsRouter.use(require('express').urlencoded({extended:'true'}));
 const {verifyPaddleWebhook} = require('verify-paddle-webhook');
@@ -13,6 +13,8 @@ var imageshack = require('imageshack')({
     email: process.env.SHACK_EMAIL,
     passwd: process.env.SHACK_PASS
 });
+const bcrypt = require('bcryptjs');
+const generateToken = require('../middleware/generateToken.js')
 
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
 
@@ -281,6 +283,40 @@ paymentsRouter.get('/out', restricted, async (req, res) => {
             res.sendStatus(400)
         }
     } catch(err){
+        res.sendStatus(400)
+    }
+})
+
+paymentsRouter.post('/finish', async (req, res) => {
+    const { token, email, tooken, password } = req.body
+    try{
+        // verify recaptcha
+        const checkToken = async (token) => {
+            const secret = process.env.RECAPTCHA_SECRET
+            const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
+            // console.log('gr', googleResponse)
+            // console.log('recaptcha data', googleResponse.data)
+            return await googleResponse.data.success
+        }
+        const isNotBot = await checkToken(token)
+
+        if(isNotBot===true){
+            const emailForToken = await verifyRegistration(tooken)
+            console.log('emailfortoken', emailForToken)
+            if(emailForToken===email){
+                const redeemsRegistration = await redeemRegistration(email)
+                console.log('redeemsRegistration', redeemsRegistration)
+                const hash = bcrypt.hashSync(password, 12); // 2 ^ n
+                const updatedPassword = await updatePassword(email, hash)
+                console.log('updatedPassword', updatedPassword)
+                res.sendStatus(200)
+            }
+        } else {
+            res.status(401).json({message:'You sound like a robot'})
+            return
+        }
+    } catch(err){
+        console.log('finishing numbers error', err)
         res.sendStatus(400)
     }
 })
