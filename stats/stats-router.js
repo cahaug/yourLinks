@@ -317,15 +317,26 @@ statsRouter.get('/', async (req, res) => {
         isMobileDevice = true
     }
     // ip2loc:
-    ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
-    // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-    // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
-    const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
-    const province = ip2loc.IP2Location_get_region(userIP)
-    // console.log('cool', countryOfOrigin0, 'provool', province0)
-    // const countryOfOrigin = ipLocResult.country_short
-    // const province = ipLocResult.region
-    ip2loc.IP2Location_close()
+    // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+    // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+    // // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+    // const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+    // const province = ip2loc.IP2Location_get_region(userIP)
+    // // console.log('cool', countryOfOrigin0, 'provool', province0)
+    // // const countryOfOrigin = ipLocResult.country_short
+    // // const province = ipLocResult.region
+    // ip2loc.IP2Location_close()
+    let countryOfOrigin = null
+    let province = null
+    maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+        // console.log(lookup.get('66.6.44.4'));
+        const raw = lookup.get(userIP)
+        console.log('maxmind lookup raw', raw)
+        province = raw.city.names.en
+        countryOfOrigin = raw.country.iso_code
+        // console.log(lookup.getWithPrefixLength('66.6.44.4'));
+    });
+
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
@@ -402,16 +413,27 @@ statsRouter.get('/hpA1', async (req, res) => {
     if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
         isMobileDevice = true
     }
+
+    let countryOfOrigin = null
+    let province = null
+    maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+        // console.log(lookup.get('66.6.44.4'));
+        const raw = lookup.get(userIP)
+        console.log('maxmind lookup raw', raw)
+        province = raw.city.names.en
+        countryOfOrigin = raw.country.iso_code
+        // console.log(lookup.getWithPrefixLength('66.6.44.4'));
+    });
     // ip2loc:
-    ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
-    // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-    // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
-    const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
-    const province = ip2loc.IP2Location_get_region(userIP)
-    // console.log('cool', countryOfOrigin0, 'provool', province0)
-    // const countryOfOrigin = ipLocResult.country_short
-    // const province = ipLocResult.region
-    ip2loc.IP2Location_close()
+    // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+    // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+    // // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+    // const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+    // const province = ip2loc.IP2Location_get_region(userIP)
+    // // console.log('cool', countryOfOrigin0, 'provool', province0)
+    // // const countryOfOrigin = ipLocResult.country_short
+    // // const province = ipLocResult.region
+    // ip2loc.IP2Location_close()
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
@@ -651,16 +673,25 @@ statsRouter.get('/ili/:listId', async (req, res) => {
             isMobileDevice = true
         }
         // ip2loc:
-        ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
-        // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-        // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
-        const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
-        const province = ip2loc.IP2Location_get_region(userIP)
-        // console.log('cool', countryOfOrigin0, 'provool', province0)
-        // const countryOfOrigin = ipLocResult.country_short
-        // const province = ipLocResult.region
-        ip2loc.IP2Location_close()
-        
+        // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+        // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+        // // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+        // const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+        // const province = ip2loc.IP2Location_get_region(userIP)
+        // // console.log('cool', countryOfOrigin0, 'provool', province0)
+        // // const countryOfOrigin = ipLocResult.country_short
+        // // const province = ipLocResult.region
+        // ip2loc.IP2Location_close()
+        let countryOfOrigin = null
+        let province = null
+        maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+            // console.log(lookup.get('66.6.44.4'));
+            const raw = lookup.get(userIP)
+            console.log('maxmind lookup raw', raw)
+            province = raw.city.names.en
+            countryOfOrigin = raw.country.iso_code
+            // console.log(lookup.getWithPrefixLength('66.6.44.4'));
+        });
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
         console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName)
         return logPageView(view)
