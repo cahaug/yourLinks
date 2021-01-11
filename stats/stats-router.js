@@ -326,16 +326,15 @@ statsRouter.get('/', async (req, res) => {
     // // const countryOfOrigin = ipLocResult.country_short
     // // const province = ipLocResult.region
     // ip2loc.IP2Location_close()
-    let countryOfOrigin = null
-    let province = null
-    maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+    const rawMindData = await maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
         // console.log(lookup.get('66.6.44.4'));
         const raw = lookup.get(userIP)
         console.log('maxmind lookup raw', raw)
-        province = raw.city.names.en
-        countryOfOrigin = raw.country.iso_code
+        return raw
         // console.log(lookup.getWithPrefixLength('66.6.44.4'));
     });
+    const countryOfOrigin = rawMindData.country.iso_code
+    const province = rawMindData.city.names.en
 
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
@@ -681,16 +680,15 @@ statsRouter.get('/ili/:listId', async (req, res) => {
         // // const countryOfOrigin = ipLocResult.country_short
         // // const province = ipLocResult.region
         // ip2loc.IP2Location_close()
-        let countryOfOrigin = null
-        let province = null
-        maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+        const rawMindData = await maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
             // console.log(lookup.get('66.6.44.4'));
             const raw = lookup.get(userIP)
             console.log('maxmind lookup raw', raw)
-            province = raw.city.names.en
-            countryOfOrigin = raw.country.iso_code
+            return raw
             // console.log(lookup.getWithPrefixLength('66.6.44.4'));
         });
+        const countryOfOrigin = rawMindData.country.iso_code
+        const province = rawMindData.city.names.en
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
         console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName)
         return logPageView(view)
