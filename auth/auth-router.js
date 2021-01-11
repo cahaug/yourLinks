@@ -6,6 +6,8 @@ const axios = require('axios')
 const queries = require('../database/queries.js');
 const { insertUser, singleUserForLogin, customByListId, getListId, updatePassword } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
+const crypto = require('crypto')
+const intercomSecretKey = process.env.ISK
 
 // authRouter.get('/', (req, res) => {
 //     queries.getAllUsers().then((users) => {
@@ -71,6 +73,7 @@ authRouter.post('/login', async (req, res) => {
       .then(async user => {
         if (user && bcrypt.compareSync(password, user.password)) {
           const token = generateToken(user);
+          const userHash = crypto.createHmac('sha256', intercomSecretKey).update(user.email).digest('base64')
           const userListID = await getListId(user.userId)
           res.status(200).json({
             email: `${user.email}`,
@@ -79,6 +82,7 @@ authRouter.post('/login', async (req, res) => {
             userId:`${user.userId}`,
             listId:`${userListID[0].listId}`,
             customURL:`${userListID[0].customURL}`,
+            userHash:`${userHash}`,
             token
           });
         } else {
