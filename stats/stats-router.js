@@ -421,8 +421,8 @@ statsRouter.get('/hpA1', async (req, res) => {
         // console.log(lookup.getWithPrefixLength('66.6.44.4'));
     });
     console.log('rawMindData', rawMindData)
-    const countryOfOrigin = rawMindData[0].country.iso_code
-    const province = rawMindData[0].city.names.en
+    const countryOfOrigin = rawMindData.country.iso_code
+    const province = rawMindData.city.names.en
     // ip2loc:
     // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
     // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
