@@ -422,7 +422,9 @@ statsRouter.get('/hpA1', async (req, res) => {
     });
     console.log('rawMindData', rawMindData)
     const countryOfOrigin = rawMindData.country.iso_code
-    const province = rawMindData.city.names.en
+    let zone = rawMindData.location.time_zone.split('/')
+    console.log('zone loc', zone[zone.length-1])
+    const province = rawMindData.city.names.en || zone[zone.length-1]
     // ip2loc:
     // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
     // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
