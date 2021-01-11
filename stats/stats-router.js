@@ -414,19 +414,15 @@ statsRouter.get('/hpA1', async (req, res) => {
         isMobileDevice = true
     }
 
-    let countryOfOrigin = null
-    let province = null
-    maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+    const rawMindData = await maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
         // console.log(lookup.get('66.6.44.4'));
         const raw = lookup.get(userIP)
         console.log('maxmind lookup raw', raw)
-        return function(raw){
-            countryOfOrigin = raw.country.iso_code
-            province = raw.city.names.en
-            console.log('inneraction fired cool prov', countryOfOrigin, province )
-        }
+        return raw
         // console.log(lookup.getWithPrefixLength('66.6.44.4'));
     });
+    const countryOfOrigin = rawMindData.country.iso_code
+    const province = rawMindData.city.names.en
     // ip2loc:
     // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
     // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
