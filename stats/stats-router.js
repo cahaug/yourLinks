@@ -420,8 +420,11 @@ statsRouter.get('/hpA1', async (req, res) => {
         // console.log(lookup.get('66.6.44.4'));
         const raw = lookup.get(userIP)
         console.log('maxmind lookup raw', raw)
-        province = raw.city.names.en
-        countryOfOrigin = raw.country.iso_code
+        return function(raw){
+            countryOfOrigin = raw.country.iso_code
+            province = raw.city.names.en
+            console.log('inneraction fired cool prov', countryOfOrigin, province )
+        }
         // console.log(lookup.getWithPrefixLength('66.6.44.4'));
     });
     // ip2loc:
