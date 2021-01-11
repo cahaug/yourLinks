@@ -774,7 +774,7 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
             const regions = []
             const provinceListCount = await provinceCounts(listId)
             provinceListCount.map(x => {
-                if(x.province !== null){
+                if(x.province !== null && x.province.indexOf('?') === -1){
                     regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
                 }
             })
@@ -889,7 +889,7 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const regions = []
         const provinceListCount = await homepageprovinceCounts()
         provinceListCount.map(x => {
-            if(x.province !== null){
+            if(x.province !== null && x.province.indexOf('?') === -1){
                 regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
             }
         })
