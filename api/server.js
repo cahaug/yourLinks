@@ -72,7 +72,7 @@ server.use(cors({
 }));
 server.use(express.json());
 const { listByNumber, listByCustomURL, } = require('../database/queries.js');
-
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 
 
 // server.use('/blank/', blankRouter) go here
@@ -85,7 +85,7 @@ server.use('/numbers/', paymentsRouter)
 
 
 
-server.get('/', (req, res) => {
+server.get('/', hostNameGuard, (req, res) => {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
     res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
@@ -93,7 +93,7 @@ server.get('/', (req, res) => {
 });
 
 // entries by userId (displayUserEntries on displayUserEntries /:id)
-server.get('/:listId', (req, res) => {
+server.get('/:listId', hostNameGuard, (req, res) => {
     const listId  = unescape(req.params.listId);
     const parsed = parseInt(listId,10);
     console.log('req.hostname', req.originalUrl, req.headers.origin)
