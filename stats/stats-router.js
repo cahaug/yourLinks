@@ -1,6 +1,7 @@
 const statsRouter = require('express').Router();
 const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers, mostPopToday } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 // const fs = require('fs');
@@ -272,7 +273,7 @@ const flagsDict = {
 }
 
 
-statsRouter.get('/', async (req, res) => {
+statsRouter.get('/', hostNameGuard,async (req, res) => {
     const date = new Date().toISOString();
     const maxTouch = req.query.mt
     const dy = date.slice(8, 10)
@@ -373,7 +374,7 @@ statsRouter.get('/', async (req, res) => {
     });
 });
 
-statsRouter.get('/hpA1', async (req, res) => {
+statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
     const date = new Date().toISOString();
     const maxTouch = req.query.mt
     const dy = date.slice(8, 10)
@@ -541,7 +542,7 @@ statsRouter.get('/hpA1', async (req, res) => {
 // })
 
 // needs to be secured w sub verification - complete
-statsRouter.post('/pieGraph', restricted, async (req, res) => {
+statsRouter.post('/pieGraph', hostNameGuard, restricted, async (req, res) => {
     const { userId } = req.body
     const {sub} = req.decodedToken
     // const titleAdder = async (data) => {
@@ -584,7 +585,7 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
 })
 
 // aio stats and links
-statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
+statsRouter.get('/aio/:userId', hostNameGuard, restricted, (req, res, next) => {
     const { userId } = req.params;
     const { sub } = req.decodedToken
     // console.log('userId == sub', userId==sub)
@@ -637,7 +638,7 @@ statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
 // })
 
 // new increment listViews
-statsRouter.get('/ili/:listId', async (req, res) => {
+statsRouter.get('/ili/:listId', hostNameGuard, async (req, res) => {
     try {
         const { listId } = req.params
         const maxTouch = req.query.mt
@@ -714,7 +715,7 @@ statsRouter.get('/ili/:listId', async (req, res) => {
 });
 
 // return listviews for given list
-statsRouter.get('/listViews/:listId', restricted, async (req, res) => {
+statsRouter.get('/listViews/:listId', hostNameGuard, restricted, async (req, res) => {
     try {
         const { listId } = req.params
         const {sub} = req.decodedToken
@@ -751,7 +752,7 @@ statsRouter.get('/listViews/:listId', restricted, async (req, res) => {
 
 // })
 
-statsRouter.get('/elv/:listId', restricted, async (req,res) => {
+statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
     try {
         const {sub} = req.decodedToken
         let { listId } = req.params
@@ -868,7 +869,7 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
 })
 
 // homepage stats endpoint
-statsRouter.get('/steakSauce', async (req,res) => {
+statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
     try {
         const date = new Date().toISOString();
         const dy = date.slice(8, 10)

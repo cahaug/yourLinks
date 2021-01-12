@@ -1,6 +1,7 @@
 const mailerRouter = require('express').Router()
 const { checkRecentlyAttempted, insertPWReset, singleUserForLogin, updatePassword, deleteFromResetDb, incrementResetCodeAttempts, incrementResetSendAttempts, lockoutAccount, putNewCode } = require('../database/queries.js')
 const restricted = require('../middleware/restricted.js')
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 var nodemailer = require('nodemailer')
 const bcrypt = require('bcryptjs')
 require('dotenv').config();
@@ -8,7 +9,7 @@ require('dotenv').config();
 
 
 
-mailerRouter.post('/resetPW', async (req, res) => {
+mailerRouter.post('/resetPW', hostNameGuard, async (req, res) => {
     var transporter = nodemailer.createTransport({
         service:process.env.TRANSPORTERSERVICE,
         auth: {
@@ -138,7 +139,7 @@ mailerRouter.post('/resetPW', async (req, res) => {
     }
 })
 
-mailerRouter.post('/checkCode', async (req, res) => {
+mailerRouter.post('/checkCode', hostNameGuard, async (req, res) => {
     var transporter = nodemailer.createTransport({
         service:process.env.TRANSPORTERSERVICE,
         auth: {
