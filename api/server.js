@@ -107,9 +107,9 @@ server.get('/:listId', (req, res) => {
         console.log('parsed is number, acting')
         return listByNumber(listId)
         .then(entries => {
-            res.header('Access-Control-Allow-Origin', '*')
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            // res.header('Access-Control-Allow-Origin', '*')
+            // res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            // res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(200).json(entries)
         })
         .catch(err => {console.log(err); res.status(500).json(err)})
@@ -122,9 +122,9 @@ server.get('/:listId', (req, res) => {
         console.log('yo custom', fakeCustom)
         return listByCustomURL(customURL)
         .then(entries => {
-            res.header('Access-Control-Allow-Origin', '*')
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            // res.header('Access-Control-Allow-Origin', '*')
+            // res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            // res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(200).json(entries)
         })
         .catch(err => {console.log(err); res.status(500).json(err)});
