@@ -73,7 +73,7 @@ authRouter.post('/login', async (req, res) => {
       .then(async user => {
         if (user && bcrypt.compareSync(password, user.password)) {
           const token = generateToken(user);
-          const userHash = crypto.createHmac('sha256', intercomSecretKey).update(`${user.email}`)
+          const userHash = crypto.createHmac('sha256', intercomSecretKey).update(`${user.email}`).digest('hex')
           const userListID = await getListId(user.userId)
           res.status(200).json({
             email: `${user.email}`,
