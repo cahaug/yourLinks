@@ -52,6 +52,7 @@ var allowedOrigins = [
                       'https://pstd.at',
                       'https://7zz.ch',
                       'https://down.af',
+                      'https://this.af',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
