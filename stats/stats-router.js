@@ -337,7 +337,8 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
     const countryOfOrigin = rawMindData.country.iso_code
     let zone = rawMindData.location.time_zone.split('/')
     console.log('zone loc', zone[zone.length-1])
-    const province = rawMindData.city.names.en | zone[zone.length-1]
+    let province = ''
+    if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
@@ -426,7 +427,8 @@ statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
     const countryOfOrigin = rawMindData.country.iso_code
     let zone = rawMindData.location.time_zone.split('/')
     console.log('zone loc', zone[zone.length-1])
-    const province = rawMindData.city.names.en | zone[zone.length-1]
+    let province = ''
+    if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
     // ip2loc:
     // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
     // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
@@ -695,7 +697,8 @@ statsRouter.get('/ili/:listId', hostNameGuard, async (req, res) => {
         const countryOfOrigin = rawMindData.country.iso_code
         let zone = rawMindData.location.time_zone.split('/')
         console.log('zone loc', zone[zone.length-1])
-        const province = rawMindData.city.names.en | zone[zone.length-1]
+        let province = ''
+        if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}        
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
         console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName)
         return logPageView(view)
