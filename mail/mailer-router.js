@@ -11,10 +11,10 @@ require('dotenv').config();
 
 mailerRouter.post('/resetPW', hostNameGuard, async (req, res) => {
     var transporter = nodemailer.createTransport({
-        service:process.env.TRANSPORTERSERVICE,
+        service:process.env.LIBSERVICE,
         auth: {
-            user: process.env.CONTACTEMAIL,
-            pass: process.env.CONTACTPASSWORD
+            user: process.env.LIBEMAIL,
+            pass: process.env.LIBPASSWORD
         }
     })
     const { email } = req.body
@@ -51,7 +51,7 @@ mailerRouter.post('/resetPW', hostNameGuard, async (req, res) => {
         // send email with resetCode if successfully inserted into db
         if (resultant.rowCount>0){
             var mailOptions = {
-                from: process.env.CONTACTEMAILFROM,
+                from: process.env.LIBEMAILFROM,
                 to: email,
                 subject: 'Link-in.Bio Password Reset Code Requested',
                 text:`Here is your code: ${resetCode}`,
@@ -102,7 +102,7 @@ mailerRouter.post('/resetPW', hostNameGuard, async (req, res) => {
                         // successfully did put new code
                         // send new reset email
                         var mailOptions = {
-                            from: process.env.CONTACTEMAILFROM,
+                            from: process.env.LIBEMAILFROM,
                             to: email,
                             subject: 'Link-in.Bio Second Password Reset Code Requested',
                             html:`<h1>Link-in.Bio/</h1>
@@ -141,10 +141,10 @@ mailerRouter.post('/resetPW', hostNameGuard, async (req, res) => {
 
 mailerRouter.post('/checkCode', hostNameGuard, async (req, res) => {
     var transporter = nodemailer.createTransport({
-        service:process.env.TRANSPORTERSERVICE,
+        service:process.env.LIBSERVICE,
         auth: {
-            user: process.env.CONTACTEMAIL,
-            pass: process.env.CONTACTPASSWORD
+            user: process.env.LIBEMAIL,
+            pass: process.env.LIBPASSWORD
         }
     })
     
@@ -172,7 +172,7 @@ mailerRouter.post('/checkCode', hostNameGuard, async (req, res) => {
             if (pwUdpateResponse>0){
                 const successfulDeletion = await deleteFromResetDb(dbValue[0].pwResetId)
                 var mailOptions = {
-                    from: process.env.CONTACTEMAILFROM,
+                    from: process.env.LIBEMAILFROM,
                     to: email,
                     subject: 'Link-in.Bio Password Changed',
                     text:`Your Link-in.Bio Account Password was Changed`,
@@ -216,7 +216,7 @@ mailerRouter.post('/checkCode', hostNameGuard, async (req, res) => {
 })
 
 // var mailOptions = {
-//     from: process.env.CONTACTEMAIL,
+//     from: process.env.LIBEMAIL,
 //     to: email,
 //     subject: 'Link-in.Bio Password Reset Code Requested',
 //     html:`<h1>Link-in.Bio/</h1><h2>Hello, ${email}!</h2><h2>Here is your Password Reset Code</h2><p>Code: <br /> <span>${resetCode}</span></p><p>It's only valid for ten minutes so click here to return and use it fast!</p>`
