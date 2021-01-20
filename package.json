@@ -50,7 +50,7 @@
     "pg": "^7.18.2",
     "querystring": "^0.2.0",
     "sqlite3": "^5.0.1",
-    "stripe": "^8.92.0",
+    "stripe": "^8.129.0",
     "supertest": "^4.0.2",
     "ua-parser-js": "^0.7.23",
     "verify-paddle-webhook": "^1.0.0",
