@@ -1,6 +1,7 @@
 const statsRouter = require('express').Router();
 const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers, mostPopToday } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 // const fs = require('fs');
@@ -272,7 +273,7 @@ const flagsDict = {
 }
 
 
-statsRouter.get('/', async (req, res) => {
+statsRouter.get('/', hostNameGuard,async (req, res) => {
     const date = new Date().toISOString();
     const maxTouch = req.query.mt
     const dy = date.slice(8, 10)
@@ -317,15 +318,27 @@ statsRouter.get('/', async (req, res) => {
         isMobileDevice = true
     }
     // ip2loc:
-    ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
-    // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-    // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
-    const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
-    const province = ip2loc.IP2Location_get_region(userIP)
-    // console.log('cool', countryOfOrigin0, 'provool', province0)
-    // const countryOfOrigin = ipLocResult.country_short
-    // const province = ipLocResult.region
-    ip2loc.IP2Location_close()
+    // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+    // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+    // // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+    // const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+    // const province = ip2loc.IP2Location_get_region(userIP)
+    // // console.log('cool', countryOfOrigin0, 'provool', province0)
+    // // const countryOfOrigin = ipLocResult.country_short
+    // // const province = ipLocResult.region
+    // ip2loc.IP2Location_close()
+    const rawMindData = await maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+        // console.log(lookup.get('66.6.44.4'));
+        const raw = lookup.get(userIP)
+        console.log('maxmind lookup raw', raw)
+        return raw
+        // console.log(lookup.getWithPrefixLength('66.6.44.4'));
+    });
+    const countryOfOrigin = rawMindData.country.iso_code
+    let zone = rawMindData.location.time_zone.split('/')
+    console.log('zone loc', zone[zone.length-1])
+    let province = ''
+    if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
@@ -362,7 +375,7 @@ statsRouter.get('/', async (req, res) => {
     });
 });
 
-statsRouter.get('/hpA1', async (req, res) => {
+statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
     const date = new Date().toISOString();
     const maxTouch = req.query.mt
     const dy = date.slice(8, 10)
@@ -402,16 +415,30 @@ statsRouter.get('/hpA1', async (req, res) => {
     if(uaData.device.type === 'mobile' || uaData.device.type === 'tablet'){
         isMobileDevice = true
     }
+
+    const rawMindData = await maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+        // console.log(lookup.get('66.6.44.4'));
+        const raw = lookup.get(userIP)
+        console.log('maxmind lookup raw', raw)
+        return raw
+        // console.log(lookup.getWithPrefixLength('66.6.44.4'));
+    });
+    console.log('rawMindData', rawMindData)
+    const countryOfOrigin = rawMindData.country.iso_code
+    let zone = rawMindData.location.time_zone.split('/')
+    console.log('zone loc', zone[zone.length-1])
+    let province = ''
+    if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
     // ip2loc:
-    ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
-    // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-    // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
-    const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
-    const province = ip2loc.IP2Location_get_region(userIP)
-    // console.log('cool', countryOfOrigin0, 'provool', province0)
-    // const countryOfOrigin = ipLocResult.country_short
-    // const province = ipLocResult.region
-    ip2loc.IP2Location_close()
+    // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+    // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+    // // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+    // const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+    // const province = ip2loc.IP2Location_get_region(userIP)
+    // // console.log('cool', countryOfOrigin0, 'provool', province0)
+    // // const countryOfOrigin = ipLocResult.country_short
+    // // const province = ipLocResult.region
+    // ip2loc.IP2Location_close()
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
@@ -517,7 +544,7 @@ statsRouter.get('/hpA1', async (req, res) => {
 // })
 
 // needs to be secured w sub verification - complete
-statsRouter.post('/pieGraph', restricted, async (req, res) => {
+statsRouter.post('/pieGraph', hostNameGuard, restricted, async (req, res) => {
     const { userId } = req.body
     const {sub} = req.decodedToken
     // const titleAdder = async (data) => {
@@ -560,7 +587,7 @@ statsRouter.post('/pieGraph', restricted, async (req, res) => {
 })
 
 // aio stats and links
-statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
+statsRouter.get('/aio/:userId', hostNameGuard, restricted, (req, res, next) => {
     const { userId } = req.params;
     const { sub } = req.decodedToken
     // console.log('userId == sub', userId==sub)
@@ -613,7 +640,7 @@ statsRouter.get('/aio/:userId', restricted, (req, res, next) => {
 // })
 
 // new increment listViews
-statsRouter.get('/ili/:listId', async (req, res) => {
+statsRouter.get('/ili/:listId', hostNameGuard, async (req, res) => {
     try {
         const { listId } = req.params
         const maxTouch = req.query.mt
@@ -651,16 +678,27 @@ statsRouter.get('/ili/:listId', async (req, res) => {
             isMobileDevice = true
         }
         // ip2loc:
-        ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
-        // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
-        // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
-        const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
-        const province = ip2loc.IP2Location_get_region(userIP)
-        // console.log('cool', countryOfOrigin0, 'provool', province0)
-        // const countryOfOrigin = ipLocResult.country_short
-        // const province = ipLocResult.region
-        ip2loc.IP2Location_close()
-        
+        // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
+        // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
+        // // for(var key in ipLocResult){console.log(key+': '+ ipLocResult[key])}
+        // const countryOfOrigin = ip2loc.IP2Location_get_country_short(userIP)
+        // const province = ip2loc.IP2Location_get_region(userIP)
+        // // console.log('cool', countryOfOrigin0, 'provool', province0)
+        // // const countryOfOrigin = ipLocResult.country_short
+        // // const province = ipLocResult.region
+        // ip2loc.IP2Location_close()
+        const rawMindData = await maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
+            // console.log(lookup.get('66.6.44.4'));
+            const raw = lookup.get(userIP)
+            console.log('maxmind lookup raw', raw)
+            return raw
+            // console.log(lookup.getWithPrefixLength('66.6.44.4'));
+        });
+        const countryOfOrigin = rawMindData.country.iso_code
+        let zone = rawMindData.location.time_zone.split('/')
+        console.log('zone loc', zone[zone.length-1])
+        let province = ''
+        if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}        
         const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
         console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName)
         return logPageView(view)
@@ -680,7 +718,7 @@ statsRouter.get('/ili/:listId', async (req, res) => {
 });
 
 // return listviews for given list
-statsRouter.get('/listViews/:listId', restricted, async (req, res) => {
+statsRouter.get('/listViews/:listId', hostNameGuard, restricted, async (req, res) => {
     try {
         const { listId } = req.params
         const {sub} = req.decodedToken
@@ -717,7 +755,7 @@ statsRouter.get('/listViews/:listId', restricted, async (req, res) => {
 
 // })
 
-statsRouter.get('/elv/:listId', restricted, async (req,res) => {
+statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
     try {
         const {sub} = req.decodedToken
         let { listId } = req.params
@@ -736,14 +774,14 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
             const countryListCount = []
             const countryList = await countryCounts(listId)
             countryList.map(x => {
-                if(x.countryOfOrigin !== null){
+                if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                     countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
                 }
             })
             const regions = []
             const provinceListCount = await provinceCounts(listId)
             provinceListCount.map(x => {
-                if(x.province !== null){
+                if(x.province !== null && x.province.indexOf('?') === -1){
                     regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
                 }
             })
@@ -834,7 +872,7 @@ statsRouter.get('/elv/:listId', restricted, async (req,res) => {
 })
 
 // homepage stats endpoint
-statsRouter.get('/steakSauce', async (req,res) => {
+statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
     try {
         const date = new Date().toISOString();
         const dy = date.slice(8, 10)
@@ -851,14 +889,14 @@ statsRouter.get('/steakSauce', async (req,res) => {
         const countryListCount = []
         const countryList = await homepagecountryCounts()
         countryList.map(x => {
-            if(x.countryOfOrigin !== null){
+            if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
             }
         })
         const regions = []
         const provinceListCount = await homepageprovinceCounts()
         provinceListCount.map(x => {
-            if(x.province !== null){
+            if(x.province !== null && x.province.indexOf('?') === -1){
                 regions.push({province:`${x.province}`, count:parseInt(x.count,10) })
             }
         })

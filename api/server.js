@@ -51,6 +51,8 @@ var allowedOrigins = [
                       'https://watch-he.re',
                       'https://pstd.at',
                       'https://7zz.ch',
+                      'https://down.af',
+                      'https://this.af',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
@@ -71,7 +73,7 @@ server.use(cors({
 }));
 server.use(express.json());
 const { listByNumber, listByCustomURL, } = require('../database/queries.js');
-
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 
 
 // server.use('/blank/', blankRouter) go here
@@ -84,7 +86,7 @@ server.use('/numbers/', paymentsRouter)
 
 
 
-server.get('/', (req, res) => {
+server.get('/', hostNameGuard, (req, res) => {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
     res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
@@ -92,7 +94,7 @@ server.get('/', (req, res) => {
 });
 
 // entries by userId (displayUserEntries on displayUserEntries /:id)
-server.get('/:listId', (req, res) => {
+server.get('/:listId', hostNameGuard, (req, res) => {
     const listId  = unescape(req.params.listId);
     const parsed = parseInt(listId,10);
     console.log('req.hostname', req.originalUrl, req.headers.origin)
@@ -106,9 +108,9 @@ server.get('/:listId', (req, res) => {
         console.log('parsed is number, acting')
         return listByNumber(listId)
         .then(entries => {
-            res.header('Access-Control-Allow-Origin', '*')
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            // res.header('Access-Control-Allow-Origin', '*')
+            // res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            // res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(200).json(entries)
         })
         .catch(err => {console.log(err); res.status(500).json(err)})
@@ -121,9 +123,9 @@ server.get('/:listId', (req, res) => {
         console.log('yo custom', fakeCustom)
         return listByCustomURL(customURL)
         .then(entries => {
-            res.header('Access-Control-Allow-Origin', '*')
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
-            res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
+            // res.header('Access-Control-Allow-Origin', '*')
+            // res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
+            // res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(200).json(entries)
         })
         .catch(err => {console.log(err); res.status(500).json(err)});

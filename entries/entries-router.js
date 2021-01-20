@@ -1,6 +1,7 @@
 const entriesRouter = require('express').Router();
 const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry, nullPhoto } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
 require('dotenv').config();
 
@@ -10,7 +11,7 @@ require('dotenv').config();
 //     next();
 // });
 
-entriesRouter.post('/new', restricted, async (req, res) => {
+entriesRouter.post('/new', hostNameGuard, restricted, async (req, res) => {
     try {
         const date = new Date();
         const creationDate = date;
@@ -52,7 +53,7 @@ entriesRouter.post('/new', restricted, async (req, res) => {
 
 // SECURE THIS ENDPOINT ASAP
 // get single entry by entryId -  need to secure i think
-entriesRouter.post('/editEntry/:entryId', restricted, async (req, res) => {
+entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, async (req, res) => {
     try {
         const entryId = req.params.entryId
         const sub = req.decodedToken.sub
@@ -101,7 +102,7 @@ entriesRouter.post('/editEntry/:entryId', restricted, async (req, res) => {
 // })
 
 // edit referencingUrl, description and title aka edit entry production
-entriesRouter.put('/replaceEntry', restricted, async (req, res) => {
+entriesRouter.put('/replaceEntry', hostNameGuard,restricted, async (req, res) => {
     try {
         const {sub} = req.decodedToken
         const { entryId, referencingURL, description, linkTitle, imgURL, listId } = req.body;
@@ -137,7 +138,7 @@ var imageshack = require('imageshack')({
 });
 
 // delete entry production
-entriesRouter.post('/deleteEntry', restricted, async (req, res) => {
+entriesRouter.post('/deleteEntry', hostNameGuard, restricted, async (req, res) => {
     // console.log(req.body)
     const {sub} = req.decodedToken
     const { userId, listId, entryId } = req.body
@@ -172,7 +173,7 @@ entriesRouter.post('/deleteEntry', restricted, async (req, res) => {
     }
 });
 
-entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
+entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const userId = parseInt(req.params.userId, 10)
@@ -206,7 +207,7 @@ entriesRouter.post('/uploadPhoto/:userId', restricted, async (req, res) => {
     }
 })
 
-entriesRouter.post('/deleteImage', restricted, async (req, res) => {
+entriesRouter.post('/deleteImage', hostNameGuard,restricted, async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const {shackImageId, listId, userId, entryId} = req.body

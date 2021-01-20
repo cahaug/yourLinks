@@ -1,6 +1,7 @@
 const listsRouter = require('express').Router();
 const { createList, getListByUser, listByCustomURL, checkIfCustomURLAvailable, getListId, putCustom, deleteList, putBackground, putFont, putTColor, customByListId, changeProfilePictureShack, setDisplayName, getPreviousProfileShack, getPreviousBackgroundShack, changeBgImgShack } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
 require('dotenv').config();
 
@@ -14,7 +15,7 @@ require('dotenv').config();
 
 
 // displays user's list
-listsRouter.get('/:userId', async (req, res) => {
+listsRouter.get('/:userId', hostNameGuard, async (req, res) => {
     return getListByUser(req.params.userId)
     .then(list => {
         res.header('Access-Control-Allow-Origin', '*')
@@ -25,7 +26,7 @@ listsRouter.get('/:userId', async (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-listsRouter.get('/list4user/:userId', async (req, res) => {
+listsRouter.get('/list4user/:userId', hostNameGuard, async (req, res) => {
     return getListId(req.params.userId)
     .then(id => {
         res.header('Access-Control-Allow-Origin', '*')
@@ -79,7 +80,7 @@ listsRouter.get('/list4user/:userId', async (req, res) => {
 // })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCustom/', restricted, async (req, res) => {
+listsRouter.post('/checkCustom/', hostNameGuard, restricted, async (req, res) => {
     const { customURL } = req.body
     console.log('checked customURL', customURL)
     return checkIfCustomURLAvailable(customURL)
@@ -91,7 +92,7 @@ listsRouter.post('/checkCustom/', restricted, async (req, res) => {
 })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCHomepage/', async (req, res) => {
+listsRouter.post('/checkCHomepage/', hostNameGuard, async (req, res) => {
     const { customURL, token } = req.body
     try {
         // verify recaptcha
@@ -122,7 +123,7 @@ listsRouter.post('/checkCHomepage/', async (req, res) => {
 })
 
 // assign a user a customURL
-listsRouter.put('/putCustom', restricted, async (req, res) => {
+listsRouter.put('/putCustom', hostNameGuard, restricted, async (req, res) => {
     const { customURL, listId, userId } = req.body
     const {sub} = req.decodedToken
     // console.log('customURL', customURL);
@@ -150,7 +151,7 @@ listsRouter.put('/putCustom', restricted, async (req, res) => {
 
 
 // change background color
-listsRouter.put('/setBg', restricted, async (req,res) => {
+listsRouter.put('/setBg', hostNameGuard ,restricted, async (req,res) => {
     const {listId, userId, backColor} = req.body
     const {sub} = req.decodedToken
     // console.log('sub',sub)
@@ -185,7 +186,7 @@ var imageshack = require('imageshack')({
 });
 
 
-listsRouter.put('/uploadListBackgroundPhoto/:listId', restricted, async (req, res) => {
+listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted, async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const listId = parseInt(req.params.listId, 10)
@@ -233,7 +234,7 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', restricted, async (req, re
     }
 })
 
-listsRouter.put('/deleteListBackground', restricted, async (req, res) => {
+listsRouter.put('/deleteListBackground', hostNameGuard, restricted, async (req, res) => {
     try{
         const sub = req.decodedToken.sub
         const {listId} = req.body
@@ -267,7 +268,7 @@ listsRouter.put('/deleteListBackground', restricted, async (req, res) => {
 })
 
 // change text color - lightmode
-listsRouter.put('/setText', restricted, async (req,res) => {
+listsRouter.put('/setText', hostNameGuard, restricted, async (req,res) => {
     const {listId, userId, fontSelection} = req.body
     const {sub} = req.decodedToken
     // console.log('req.body setFont', req.body)
@@ -289,7 +290,7 @@ listsRouter.put('/setText', restricted, async (req,res) => {
 })
 
 // change font selection - lightmode
-listsRouter.put('/setTcolor', restricted, async (req,res) => {
+listsRouter.put('/setTcolor', hostNameGuard, restricted, async (req,res) => {
     const {listId, userId, txtColor} = req.body
     const {sub} = req.decodedToken
     // console.log('sub',req.decodedToken.sub, sub)
@@ -313,7 +314,7 @@ listsRouter.put('/setTcolor', restricted, async (req,res) => {
 })
 
 // return customURL for listId (if present)
-listsRouter.post('/resolveCustom', restricted, async (req,res) => {
+listsRouter.post('/resolveCustom', hostNameGuard, restricted, async (req,res) => {
     const {listId} = req.body
     // console.log('resolveCustom listId', listId)
     try {
@@ -328,7 +329,7 @@ listsRouter.post('/resolveCustom', restricted, async (req,res) => {
 
 
 // change user profilepictureURL
-listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
+listsRouter.put('/changeProfilePicture', hostNameGuard, restricted, async (req, res) => {
     try {
         let {profilePictureURL, shackImageId} = req.body
         const sub = req.decodedToken.sub
@@ -361,7 +362,7 @@ listsRouter.put('/changeProfilePicture', restricted, async (req, res) => {
     }
 })
 
-listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) => {
+listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, async (req, res) => {
 // listsRouter.put('/uploadProfilePicture/:userId', async (req, res) => {
     try {
         const sub = req.decodedToken.sub
@@ -419,7 +420,7 @@ listsRouter.put('/uploadProfilePicture/:userId', restricted, async (req, res) =>
     }
 })
 
-listsRouter.put('/setDisplayName', restricted, async (req, res) => {
+listsRouter.put('/setDisplayName', hostNameGuard, restricted, async (req, res) => {
     const { displayName, listId, userId } = req.body
     const {sub} = req.decodedToken
 

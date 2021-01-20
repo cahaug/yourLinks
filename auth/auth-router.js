@@ -6,6 +6,9 @@ const axios = require('axios')
 const queries = require('../database/queries.js');
 const { insertUser, singleUserForLogin, customByListId, getListId, updatePassword } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
+const hostNameGuard = require('../middleware/hostNameGuard.js')
+const crypto = require('crypto')
+const intercomSecretKey = process.env.ISK
 
 // authRouter.get('/', (req, res) => {
 //     queries.getAllUsers().then((users) => {
@@ -56,7 +59,7 @@ const restricted = require('../middleware/restricted.js');
 
 
 
-authRouter.post('/login', async (req, res) => {
+authRouter.post('/login', hostNameGuard ,async (req, res) => {
   let { email, password, token } = req.body;
 
   const checkToken = async (token) => {
@@ -71,6 +74,7 @@ authRouter.post('/login', async (req, res) => {
       .then(async user => {
         if (user && bcrypt.compareSync(password, user.password)) {
           const token = generateToken(user);
+          const userHash = crypto.createHmac('sha256', intercomSecretKey).update(`${user.email}`).digest('hex')
           const userListID = await getListId(user.userId)
           res.status(200).json({
             email: `${user.email}`,
@@ -79,6 +83,7 @@ authRouter.post('/login', async (req, res) => {
             userId:`${user.userId}`,
             listId:`${userListID[0].listId}`,
             customURL:`${userListID[0].customURL}`,
+            userHash:`${userHash}`,
             token
           });
         } else {
@@ -95,7 +100,7 @@ authRouter.post('/login', async (req, res) => {
     }
   });
 
-  authRouter.put('/SettingsCPW', restricted,  async (req, res) => {
+  authRouter.put('/SettingsCPW',hostNameGuard, restricted,  async (req, res) => {
     const { email, password, newPassword } = req.body
     const {sub} = req.decodedToken
     try{
@@ -113,7 +118,7 @@ authRouter.post('/login', async (req, res) => {
     }
   })
 
-  authRouter.post('/verifyValidToken', restricted, async (req, res) => {
+  authRouter.post('/verifyValidToken',hostNameGuard, restricted, async (req, res) => {
     const { userId } = req.body
     const { sub } = req.decodedToken
     if(sub==userId){

@@ -15,6 +15,7 @@ var imageshack = require('imageshack')({
 });
 const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
+const hostNameGuard = require('../middleware/hostNameGuard.js')
 
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
 
@@ -273,7 +274,7 @@ paymentsRouter.post('/in', async (req, res) => {
 })
 
 
-paymentsRouter.post('/out', restricted, async (req, res) => {
+paymentsRouter.post('/out', hostNameGuard, restricted, async (req, res) => {
     try{
         const {sub} = req.decodedToken
         const {userId} = req.body
@@ -292,7 +293,7 @@ paymentsRouter.post('/out', restricted, async (req, res) => {
     }
 })
 
-paymentsRouter.post('/finish', async (req, res) => {
+paymentsRouter.post('/finish', hostNameGuard, async (req, res) => {
     const { token, email, tooken, password } = req.body
     try{
         // verify recaptcha
