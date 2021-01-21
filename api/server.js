@@ -49,6 +49,7 @@ var allowedOrigins = [
                       'https://look-he.re',
                       'https://stream-he.re',
                       'https://watch-he.re',
+                      'https://resumelink.me',
                       'https://pstd.at',
                       'https://7zz.ch',
                       'https://down.af',
