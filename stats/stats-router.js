@@ -777,7 +777,7 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
             countryList.map(x => {
                 if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                     countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
-                    mapCountries.push({countryOfOrigin:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
+                    mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
                 }
             })
             const regions = []
@@ -894,7 +894,7 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         countryList.map(x => {
             if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
-                mapCountries.push({countryOfOrigin:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
+                mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
             }
         })
         const regions = []
