@@ -772,10 +772,12 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
             //     }
             // })
             const countryListCount = []
+            const mapCountries = []
             const countryList = await countryCounts(listId)
             countryList.map(x => {
                 if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                     countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+                    mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
                 }
             })
             const regions = []
@@ -860,7 +862,7 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
                 timelineArray.push(valobj)
             }
             // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount })
+            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount, mapCountries:mapCountries })
     } else {
         console.log(`elv security verification error userId : ${sub}`)
         res.status(401).json({message:'No Peeping'})
@@ -887,10 +889,12 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         //     }
         // })
         const countryListCount = []
+        const mapCountries = []
         const countryList = await homepagecountryCounts()
         countryList.map(x => {
             if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+                mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
             }
         })
         const regions = []
@@ -981,7 +985,7 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday})
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday, mapCountries:mapCountries})
     
     }catch (err){
         console.log('elv err',err)
