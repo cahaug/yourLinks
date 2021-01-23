@@ -339,6 +339,10 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
     console.log('zone loc', zone[zone.length-1])
     let province = ''
     if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
+    let latitude = ''
+    let longitude = ''
+    if(rawMindData.location.latitude){latitude = rawMindData.location.latitude}
+    if(rawMindData.location.longitude){longitude = rawMindData.location.longitude}
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
@@ -353,7 +357,7 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
     // const browserName = uaDataScrape.data.browser.name
     // const browserVersionMajor = uaDataScrape.data.browser.version_major
     // const userIP = req.headers['x-forwarded-for'];
-    const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+    const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
     console.log('stat', stat)
     return logAClick(stat)
     .then(result => {
@@ -429,6 +433,10 @@ statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
     console.log('zone loc', zone[zone.length-1])
     let province = ''
     if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
+    let latitude = ''
+    let longitude = ''
+    if(rawMindData.location.latitude){latitude = rawMindData.location.latitude}
+    if(rawMindData.location.longitude){longitude = rawMindData.location.longitude}
     // ip2loc:
     // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
     // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
@@ -453,7 +461,7 @@ statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
     // const browserName = uaDataScrape.data.browser.name
     // const browserVersionMajor = uaDataScrape.data.browser.version_major
     // const userIP = req.headers['x-forwarded-for'];
-    const stat = { dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+    const stat = { dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
     console.log('stat', stat)
     return logHomepageView(stat)
     .then(result => {
@@ -698,9 +706,13 @@ statsRouter.get('/ili/:listId', hostNameGuard, async (req, res) => {
         let zone = rawMindData.location.time_zone.split('/')
         console.log('zone loc', zone[zone.length-1])
         let province = ''
-        if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}        
-        const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
-        console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName)
+        if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}  
+        let latitude = ''
+        let longitude = ''
+        if(rawMindData.location.latitude){latitude = rawMindData.location.latitude}
+        if(rawMindData.location.longitude){longitude = rawMindData.location.longitude}
+        const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
+        console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName, view.longitude, view.latitude)
         return logPageView(view)
         .then(result => {
             // console.log('add pageview result', result)
@@ -772,10 +784,12 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
             //     }
             // })
             const countryListCount = []
+            const mapCountries = []
             const countryList = await countryCounts(listId)
             countryList.map(x => {
                 if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                     countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+                    mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
                 }
             })
             const regions = []
@@ -860,7 +874,7 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
                 timelineArray.push(valobj)
             }
             // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount })
+            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount, mapCountries:mapCountries })
     } else {
         console.log(`elv security verification error userId : ${sub}`)
         res.status(401).json({message:'No Peeping'})
@@ -887,10 +901,12 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         //     }
         // })
         const countryListCount = []
+        const mapCountries = []
         const countryList = await homepagecountryCounts()
         countryList.map(x => {
             if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+                mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
             }
         })
         const regions = []
@@ -981,7 +997,7 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday})
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday, mapCountries:mapCountries})
     
     }catch (err){
         console.log('elv err',err)

@@ -36,6 +36,7 @@ module.exports = (req, res, next) => {
         'https://look-he.re':true,
         'https://stream-he.re':true,
         'https://watch-he.re':true,
+        'https://resumelink.me':true,
         'https://pstd.at':true,
         'https://7zz.ch':true,
         'https://down.af':true,
