@@ -74,7 +74,8 @@ server.use(cors({
 }));
 server.use(express.json());
 const { listByNumber, listByCustomURL, } = require('../database/queries.js');
-const hostNameGuard = require('../middleware/hostNameGuard.js')
+const hostNameGuard = require('../middleware/hostNameGuard.js');
+const { check } = require('express-validator');
 
 
 // server.use('/blank/', blankRouter) go here
@@ -95,7 +96,7 @@ server.get('/', hostNameGuard, (req, res) => {
 });
 
 // entries by userId (displayUserEntries on displayUserEntries /:id)
-server.get('/:listId', hostNameGuard, (req, res) => {
+server.get('/:listId', hostNameGuard, check('listId').notEmpty().isString(), (req, res) => {
     const listId  = unescape(req.params.listId);
     const parsed = parseInt(listId,10);
     console.log('req.hostname', req.originalUrl, req.headers.origin)

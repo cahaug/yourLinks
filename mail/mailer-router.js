@@ -4,12 +4,13 @@ const restricted = require('../middleware/restricted.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 var nodemailer = require('nodemailer')
 const bcrypt = require('bcryptjs')
+const { body } = require('express-validator')
 require('dotenv').config();
 
 
 
 
-mailerRouter.post('/resetPW', hostNameGuard, async (req, res) => {
+mailerRouter.post('/resetPW', hostNameGuard, body('email').notEmpty().bail().isEmail().normalizeEmail(), async (req, res) => {
     var transporter = nodemailer.createTransport({
         service:process.env.LIBSERVICE,
         auth: {
@@ -139,7 +140,7 @@ mailerRouter.post('/resetPW', hostNameGuard, async (req, res) => {
     }
 })
 
-mailerRouter.post('/checkCode', hostNameGuard, async (req, res) => {
+mailerRouter.post('/checkCode', hostNameGuard, body('email').notEmpty().bail().isEmail().normalizeEmail(), body('resetCode').notEmpty().isNumeric(),body('password').notEmpty().isString().isLength({ min:8 }), async (req, res) => {
     var transporter = nodemailer.createTransport({
         service:process.env.LIBSERVICE,
         auth: {

@@ -16,10 +16,11 @@ var imageshack = require('imageshack')({
 const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
+const { body } = require('express-validator')
 
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
 
-paymentsRouter.post('/in', async (req, res) => {
+paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), body('p_signature').notEmpty().isString().isLength({ min:12 }), async (req, res) => {
     try {
         var transporter = nodemailer.createTransport({
             service:process.env.LIBSERVICE,
@@ -273,8 +274,8 @@ paymentsRouter.post('/in', async (req, res) => {
     }
 })
 
-
-paymentsRouter.post('/out', hostNameGuard, restricted, async (req, res) => {
+// deliver cancel and update urls to frontend settings panel
+paymentsRouter.post('/out', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), async (req, res) => {
     try{
         const {sub} = req.decodedToken
         const {userId} = req.body
@@ -293,7 +294,7 @@ paymentsRouter.post('/out', hostNameGuard, restricted, async (req, res) => {
     }
 })
 
-paymentsRouter.post('/finish', hostNameGuard, async (req, res) => {
+paymentsRouter.post('/finish', hostNameGuard, body('token').notEmpty().isString(), body('email').notEmpty().isEmail().normalizeEmail(), body('tooken').notEmpty().isString(), body('password').notEmpty().isString().isLength({ min:8 }), async (req, res) => {
     const { token, email, tooken, password } = req.body
     try{
         // verify recaptcha
