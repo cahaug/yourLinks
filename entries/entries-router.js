@@ -12,7 +12,7 @@ const { body, check } = require('express-validator')
 //     next();
 // });
 
-entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), body('listId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }).escape(), body('description').isString().isLength({ min:1 }).escape(), body('linkTitle').isString().isLength({ min:1 }).escape(), async (req, res) => {
+entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), body('listId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), async (req, res) => {
     try {
         const date = new Date();
         const creationDate = date;
@@ -103,7 +103,7 @@ entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listI
 // })
 
 // edit referencingUrl, description and title aka edit entry production
-entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }).escape(), body('description').isString().isLength({ min:1 }).escape(), body('linkTitle').isString().isLength({ min:1 }).escape(), body('listId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric(), async (req, res) => {
     try {
         const {sub} = req.decodedToken
         const { entryId, referencingURL, description, linkTitle, imgURL, listId } = req.body;
