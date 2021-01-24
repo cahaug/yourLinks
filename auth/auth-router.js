@@ -7,7 +7,8 @@ const queries = require('../database/queries.js');
 const { insertUser, singleUserForLogin, customByListId, getListId, updatePassword } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
 const hostNameGuard = require('../middleware/hostNameGuard.js')
-const crypto = require('crypto')
+const crypto = require('crypto');
+const { body } = require('express-validator');
 const intercomSecretKey = process.env.ISK
 
 // authRouter.get('/', (req, res) => {
@@ -59,7 +60,7 @@ const intercomSecretKey = process.env.ISK
 
 
 
-authRouter.post('/login', hostNameGuard ,async (req, res) => {
+authRouter.post('/login', hostNameGuard, body('email').notEmpty().bail().isEmail().bail().normalizeEmail(), body('password').notEmpty().bail().isString().bail().isLength({ min:8 }), body('token').notEmpty().isString() , async (req, res) => {
   let { email, password, token } = req.body;
 
   const checkToken = async (token) => {
@@ -100,7 +101,7 @@ authRouter.post('/login', hostNameGuard ,async (req, res) => {
     }
   });
 
-  authRouter.put('/SettingsCPW',hostNameGuard, restricted,  async (req, res) => {
+  authRouter.put('/SettingsCPW',hostNameGuard, restricted, body('email').notEmpty().bail().isEmail().bail().normalizeEmail(), body('password').notEmpty().isString().isLength({ min:8 }), body('newPassword').notEmpty().isString().isLength({ min:8 }), async (req, res) => {
     const { email, password, newPassword } = req.body
     const {sub} = req.decodedToken
     try{
@@ -118,7 +119,7 @@ authRouter.post('/login', hostNameGuard ,async (req, res) => {
     }
   })
 
-  authRouter.post('/verifyValidToken',hostNameGuard, restricted, async (req, res) => {
+  authRouter.post('/verifyValidToken',hostNameGuard, body('userId').notEmpty().isNumeric(), restricted, async (req, res) => {
     const { userId } = req.body
     const { sub } = req.decodedToken
     if(sub==userId){
