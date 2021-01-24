@@ -12,7 +12,7 @@ const { body, check } = require('express-validator')
 //     next();
 // });
 
-entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), body('listId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), async (req, res) => {
+entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().isNumeric({ no_symbols:true }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), async (req, res) => {
     try {
         const date = new Date();
         const creationDate = date;
@@ -54,7 +54,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
 
 // SECURE THIS ENDPOINT ASAP
 // get single entry by entryId -  need to secure i think
-entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listId').notEmpty().isNumeric(), check('entryId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), check('entryId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const entryId = req.params.entryId
         const sub = req.decodedToken.sub
@@ -103,7 +103,7 @@ entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listI
 // })
 
 // edit referencingUrl, description and title aka edit entry production
-entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').notEmpty().isNumeric({ no_symbols:true }), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const {sub} = req.decodedToken
         const { entryId, referencingURL, description, linkTitle, imgURL, listId } = req.body;
@@ -140,7 +140,7 @@ var imageshack = require('imageshack')({
 });
 
 // delete entry production
-entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), body('listId').notEmpty().isNumeric(), body('entryId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').notEmpty().isNumeric({ no_symbols:true }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('entryId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     // console.log(req.body)
     const {sub} = req.decodedToken
     const { userId, listId, entryId } = req.body
@@ -175,7 +175,7 @@ entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').not
     }
 });
 
-entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const userId = parseInt(req.params.userId, 10)
@@ -209,7 +209,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
     }
 })
 
-entriesRouter.post('/deleteImage', hostNameGuard, restricted, body('shackImageId').notEmpty().isString().isLength({ min: 5 }), body('listId').notEmpty().isNumeric(), body('userId').notEmpty().isNumeric(), body('entryId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/deleteImage', hostNameGuard, restricted, body('shackImageId').notEmpty().isString().isLength({ min: 5 }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), body('entryId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const {shackImageId, listId, userId, entryId} = req.body
