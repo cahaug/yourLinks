@@ -81,7 +81,7 @@ listsRouter.get('/list4user/:userId', hostNameGuard, check('userId').notEmpty().
 // })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCustom/', hostNameGuard, body('customURL').notEmpty().bail().isString().bail(), restricted, async (req, res) => {
+listsRouter.post('/checkCustom/', hostNameGuard, body('customURL').notEmpty().bail().isString().bail().escape(), restricted, async (req, res) => {
     const { customURL } = req.body
     console.log('checked customURL', customURL)
     return checkIfCustomURLAvailable(customURL)
@@ -93,7 +93,7 @@ listsRouter.post('/checkCustom/', hostNameGuard, body('customURL').notEmpty().ba
 })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCHomepage/', hostNameGuard, body('customURL').notEmpty().bail().isString().bail(), body('token').isString().notEmpty(), async (req, res) => {
+listsRouter.post('/checkCHomepage/', hostNameGuard, body('customURL').notEmpty().bail().isString().bail().escape(), body('token').isString().notEmpty(), async (req, res) => {
     const { customURL, token } = req.body
     try {
         // verify recaptcha
@@ -124,7 +124,7 @@ listsRouter.post('/checkCHomepage/', hostNameGuard, body('customURL').notEmpty()
 })
 
 // assign a user a customURL
-listsRouter.put('/putCustom', hostNameGuard, body('customURL').notEmpty().bail().isString().bail(), body('userId').isNumeric().notEmpty(), body('listId').isNumeric().notEmpty(), restricted, async (req, res) => {
+listsRouter.put('/putCustom', hostNameGuard, body('customURL').notEmpty().bail().isString().bail().escape(), body('userId').isNumeric().notEmpty(), body('listId').isNumeric().notEmpty(), restricted, async (req, res) => {
     const { customURL, listId, userId } = req.body
     const {sub} = req.decodedToken
     // console.log('customURL', customURL);
@@ -421,7 +421,7 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, chec
     }
 })
 
-listsRouter.put('/setDisplayName', hostNameGuard, restricted, body('displayName').notEmpty(), body('listId').notEmpty().isNumeric(), body('userId').notEmpty().isNumeric(), async (req, res) => {
+listsRouter.put('/setDisplayName', hostNameGuard, restricted, body('displayName').notEmpty().isLength({ min:1 }).escape(), body('listId').notEmpty().isNumeric(), body('userId').notEmpty().isNumeric(), async (req, res) => {
     const { displayName, listId, userId } = req.body
     const {sub} = req.decodedToken
 
