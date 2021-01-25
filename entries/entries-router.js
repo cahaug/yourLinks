@@ -23,7 +23,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
         const checkedListId = await getListId(sub)
         if(sub === parsedUserId && checkedListId[0].listId == listId){
             // const safeURLCheck = await axios.post('https://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
-            const safeURLCheck = await axios.post(`https://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             if(safeURLCheck.malicious!==false){
                 return res.status(400).json({message:'malicious URL detected'})
             }
@@ -116,7 +116,7 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
         const checkedListId = await getListId(sub)
         if(checkedListId[0].listId == listId){
             // const safeURLCheck = await axios.post('https://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
-            const safeURLCheck = await axios.post(`https://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             if(safeURLCheck.malicious!==false){
                 return res.status(400).json({message:'malicious URL detected'})
             }
