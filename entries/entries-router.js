@@ -25,7 +25,16 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             // const safeURLCheck = await axios.post('https://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             console.log('safeURLCheck', safeURLCheck)
-            if(safeURLCheck.data.malicious!==false){
+            // if imageURL not self hosted, check the url through mw-im.pro api
+            let isImgMalicious = null
+            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
+                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
+                isImgMalicious = safeImageCheck.data.malicious
+            } else {
+                //isnotmalicious=false
+                isImgMalicious = false
+            }
+            if(safeURLCheck.data.malicious!==false || isImgMalicious!==false){
                 return res.status(400).json({message:'malicious URL detected'})
             }
             return newEntry(entry)
@@ -119,7 +128,16 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
             const safeURLCheck = await axios.post('http://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             // const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             console.log('safeURLCheck',safeURLCheck)
-            if(safeURLCheck.data.malicious!==false){
+            // if imageURL not self hosted, check the url through mw-im.pro api
+            let isImgMalicious = null
+            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
+                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
+                isImgMalicious = safeImageCheck.data.malicious
+            } else {
+                //isnotmalicious=false
+                isImgMalicious = false
+            }
+            if(safeURLCheck.data.malicious!==false || isImgMalicious!==false){
                 return res.status(400).json({message:'malicious URL detected'})
             }
             return updateEntry(entryId, referencingURL, description, linkTitle, imgURL)
