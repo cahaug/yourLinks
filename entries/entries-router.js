@@ -233,7 +233,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
         if(sub === userId){
             console.log('req.file', req.files.myImage)
             const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-            const cleanImage = axios.post(`http://${process.env.MWIMIP}/i/processThis`, {secret:process.env.GIRLSECRET, myImage:req.files.myImage}, {headers:{'Content-Type':'multipart/form-data'}})
+            const cleanImage = axios.post(`http://${process.env.MWIMIP}/i/processThis`, {secret:process.env.GIRLSECRET, myImage:req.files.myImage}, {headers:{'Content-Type':'multipart/form-data;'}})
             console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
             const cleanedmyimage = fs.createReadStream(cleanImage.data)
