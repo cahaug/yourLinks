@@ -237,7 +237,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             var formData = new FormData()
             const girlSecret = process.env.GIRLSECRET
             formData.append('secret', girlSecret)
-            formData.append('myImage', fs.createWriteStream(req.files.myImage.tempFilePath))
+            formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath))
             const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData)
             console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
