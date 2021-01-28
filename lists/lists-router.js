@@ -178,7 +178,7 @@ listsRouter.put('/setBg', hostNameGuard ,restricted, body('backColor').isString(
 
 const fs = require("fs");
 const fileUpload = require('express-fileupload');
-listsRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+listsRouter.use(fileUpload({ safeFileNames:true, abortOnLimit:true, limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
 
 var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,

@@ -183,7 +183,7 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
 
 const fs = require("fs");
 const fileUpload = require('express-fileupload');
-entriesRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+entriesRouter.use(fileUpload({ safeFileNames:true, abortOnLimit:true, limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
 
 var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,
@@ -237,7 +237,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             var formData = new FormData()
             const girlSecret = process.env.GIRLSECRET
             formData.append('secret', girlSecret)
-            formData.append('myImage', fs.createWriteStream(req.files.myImage.data))
+            formData.append('myImage', fs.createWriteStream(req.files.myImage.tempFilePath))
             const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData)
             console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
@@ -257,6 +257,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
                     const pictureURL = `https://${filejson.link}`
                     const shackImageId = filejson.id
                     console.log('shackImageId', shackImageId, pictureURL)
+                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
                     res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
                 }
             });
