@@ -4,6 +4,7 @@ const restricted = require('../middleware/restricted.js');
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
 require('dotenv').config();
+var FormData = require('form-data')
 const { body, check } = require('express-validator')
 
 // entriesRouter.use(function(req, res, next) {
@@ -263,6 +264,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             return
         }
     } catch(err){
+        console.log('addimg_err',err)
         res.status(500).json({message:'Error Adding Photo'})
     }
 })
