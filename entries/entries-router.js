@@ -234,15 +234,16 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
         if(sub === userId){
             console.log('req.file', req.files.myImage)
             const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-            var formData = new FormData()
-            const girlSecret = process.env.GIRLSECRET
-            formData.append('secret', girlSecret)
-            formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath))
-            const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData)
-            console.log('cleanImage.data',cleanImage.data)
-            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
-            const cleanedmyimage = fs.createReadStream(cleanImage.data)
-            imageshack.upload(cleanedmyimage, async function(err, filejson){
+            const formData = new FormData()
+            // const girlSecret = process.env.GIRLSECRET
+            // formData.append('secret', girlSecret)
+            // formData.append('myImage', myimage)
+            
+            // const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData, {headers:{'Content-Type':'multipart/form-data', 'Content-Length':`${formData.getLength()}`}})
+            // console.log('cleanImage.data',cleanImage.data)
+            // console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
+            // const cleanedmyimage = fs.createReadStream(cleanImage.data)
+            imageshack.upload(myimage, async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{

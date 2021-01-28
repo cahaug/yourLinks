@@ -206,6 +206,7 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted,
                     }
                    */
                     console.log(filejson);
+                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
                     const listBackgroundURL = `https://${filejson.link}`
                     const listBackgroundImageId = filejson.id
                     console.log('shackImageId bg', listBackgroundImageId, listBackgroundURL)
@@ -388,6 +389,7 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, chec
                     id: 'newtsep'
                 }
                */
+                fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
                 console.log(filejson);
                 const profilePictureURL = `https://${filejson.link}`
                 const shackImageId = filejson.id
