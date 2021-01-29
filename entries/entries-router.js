@@ -237,7 +237,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             const formData = new FormData()
             const girlSecret = process.env.GIRLSECRET
             formData.append('secret', girlSecret)
-            formData.append('myImage', myimage)
+            formData.append('myImage', myimage, `${req.files.myImage.name}`)
             
             const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData, {headers:{'secret':'TBD','Content-Type':'multipart/form-data', 'Content-Type':`${req.files.myImage.mimetype}`}})
             console.log('cleanImage.data',cleanImage.data)
