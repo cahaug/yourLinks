@@ -244,17 +244,17 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             //     return new Blob([new Uint8Array(array)], {type: `${req.files.myImage.mimetype}`});
             // }
             // const myImageActual = fs.createReadStream(myFile)
-            const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-            // const formData = new FormData()
-            // const girlSecret = process.env.GIRLSECRET
-            // formData.append('secret', girlSecret)
-            // formData.append('myImage', myImageActual, `${req.files.myImage.name}`)
+            // const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
+            const formData = new FormData()
+            const girlSecret = process.env.GIRLSECRET
+            formData.append('secret', girlSecret)
+            formData.append('myImage', req.files.myImage, `${req.files.myImage.name}`)
             
-            // const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData, formData.getHeaders())
-            // console.log('cleanImage.data',cleanImage.data)
-            // console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
-            // const cleanedmyimage = fs.createReadStream(cleanImage.data)
-            imageshack.upload(myimage, async function(err, filejson){
+            const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData, formData.getHeaders())
+            console.log('cleanImage.data',cleanImage.data)
+            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
+            const cleanedmyimage = fs.createReadStream(cleanImage.data.myImage)
+            imageshack.upload(cleanedmyimage, async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
