@@ -233,17 +233,27 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
         const userId = parseInt(req.params.userId, 10)
         if(sub === userId){
             console.log('req.file', req.files.myImage)
+
+            // function dataURItoBlob(dataURI) {
+            //     var binary = atob(dataURI.split(',')[1]);
+            //     var array = [];
+            //     for(var i = 0; i < binary.length; i++) {
+            //         array.push(binary.charCodeAt(i));
+            //     }
+            //     return new Blob([new Uint8Array(array)], {type: `${req.files.myImage.mimetype}`});
+            // }
+            // const myImageActual = fs.createReadStream(dataURItoBlob(req.files.myImage.data))
             const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-            const formData = new FormData()
-            const girlSecret = process.env.GIRLSECRET
-            formData.append('secret', girlSecret)
-            formData.append('myImage', myimage, `${req.files.myImage.name}`)
+            // const formData = new FormData()
+            // const girlSecret = process.env.GIRLSECRET
+            // formData.append('secret', girlSecret)
+            // formData.append('myImage', myImageActual, `${req.files.myImage.name}`)
             
-            const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData, formData.getHeaders())
-            console.log('cleanImage.data',cleanImage.data)
-            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
-            const cleanedmyimage = fs.createReadStream(cleanImage.data)
-            imageshack.upload(cleanedmyimage, async function(err, filejson){
+            // const cleanImage = await axios.post('http://mw-im.pro/i/processThis', formData, formData.getHeaders())
+            // console.log('cleanImage.data',cleanImage.data)
+            // console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
+            // const cleanedmyimage = fs.createReadStream(cleanImage.data)
+            imageshack.upload(myimage, async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
