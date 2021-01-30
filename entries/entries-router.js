@@ -278,7 +278,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             // const contLen = util.promisify(formData2.getLength.bind(formData2))
             // const actualLen = await contLen()
             console.log('lengths', mycleanimage.readableLength)
-            const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`}})
+            const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`, 'Content-Length':`${parseInt(mycleanimage.readableLength,10)+596}`}})
             console.log('imageshackReturn', imageshackReturn.data)
             const pictureURL = `https://${imageshackReturn.data.result.images[0].direct_link}`
             const shackImageId = imageshackReturn.data.result.images[0].id
