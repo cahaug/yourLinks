@@ -265,7 +265,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             // const cleanedmyimage = Readable.from(cleanImage.data)
             const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
             const newFilename = Date.now()
-            fs.writeFileSync(`/tmp/${newFilename}.png`, mycleanimage)
+            fs.writeFileSync(`/tmp/${newFilename}.png`, cleanImage.data)
             console.log('rightbefore shackup', mycleanimage)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
 
