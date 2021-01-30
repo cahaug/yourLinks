@@ -273,10 +273,11 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             formData2.append('file', mycleanimage)
             formData2.append('api_key', `${shackAPIKey}`)
             formData2.append('auth_token', `${shackAuthToken}`)
-            const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images'}, formData2.getHeaders())
+            formData2.append("public","false")
+            const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
             console.log('imageshackReturn', imageshackReturn.data)
-            const pictureURL = `https://${imageshackReturn.data[0].link}`
-            const shackImageId = filejson.id
+            const pictureURL = `https://${imageshackReturn.data.result.images[0].direct_link}`
+            const shackImageId = imageshackReturn.data.result.images[0].id
             console.log('shackImageId', shackImageId, pictureURL)
             fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
             res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})
