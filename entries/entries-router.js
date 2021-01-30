@@ -251,10 +251,10 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
             
             const cleanImage = await axios({method:'post',url:'http://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
-            console.log('cleanImage.data',cleanImage.data)
-            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length)
-            const cleanedmyimage = fs.createReadStream(cleanImage.data.myImage)
-            imageshack.upload(cleanedmyimage, async function(err, filejson){
+            // console.log('cleanImage.data',cleanImage.data)
+            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
+            // const cleanedmyimage = fs.createReadStream(cleanImage.data.myImage)
+            imageshack.upload(cleanImage.data, async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
