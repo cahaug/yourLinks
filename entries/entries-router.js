@@ -7,6 +7,7 @@ require('dotenv').config();
 var FormData = require('form-data')
 const { body, check } = require('express-validator')
 const {Duplex} = require('stream')
+const util = require('util')
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -274,7 +275,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             formData2.append('api_key', shackAPIKey)
             formData2.append('auth_token', shackAuthToken)
             formData2.append("public","false")
-            const contLen = await formData2.getLength().bind(formData2)
+            const contLen = util.promisify(formData2.getLength().bind(formData2))
             console.log('lengths', mycleanimage.readableLength)
             const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`, 'Content-Length':contLen}})
             console.log('imageshackReturn', imageshackReturn.data)
