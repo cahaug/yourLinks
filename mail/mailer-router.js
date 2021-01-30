@@ -140,7 +140,7 @@ mailerRouter.post('/resetPW', hostNameGuard, body('email').notEmpty().bail().isE
     }
 })
 
-mailerRouter.post('/checkCode', hostNameGuard, body('email').notEmpty().bail().isEmail().normalizeEmail(), body('resetCode').notEmpty().isNumeric(),body('password').notEmpty().isString().isLength({ min:8 }), async (req, res) => {
+mailerRouter.post('/checkCode', hostNameGuard, body('email').notEmpty().bail().isEmail().normalizeEmail(), body('resetCode').notEmpty().isNumeric({ no_symbols:true }),body('password').notEmpty().isString().isLength({ min:8 }), async (req, res) => {
     var transporter = nodemailer.createTransport({
         service:process.env.LIBSERVICE,
         auth: {
