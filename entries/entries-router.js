@@ -262,8 +262,8 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             // console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
             // const cleanedmyimage = Readable.from(cleanImage.data)
-            const mycleanimage = bufferToStream(cleanImage.data)
-            console.log('rightbefore shackup')
+            const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
+            console.log('rightbefore shackup', mycleanimage)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
             imageshack.upload(mycleanimage, async function(err, filejson){
                 if(err){
