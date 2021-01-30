@@ -6,6 +6,7 @@ const axios = require('axios')
 require('dotenv').config();
 var FormData = require('form-data')
 const { body, check } = require('express-validator')
+import { Readable } from 'stream'
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -253,7 +254,8 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'http://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
             // console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
-            const cleanedmyimage = fs.createReadStream(cleanImage.data)
+            const cleanedmyimage = Readable.from(cleanImage.data)
+            // const cleanedmyimage = fs.createReadStream(cleanImage.data)
             imageshack.upload(cleanedmyimage, async function(err, filejson){
                 if(err){
                     console.log(err);
