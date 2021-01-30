@@ -264,46 +264,50 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
             // const cleanedmyimage = Readable.from(cleanImage.data)
             const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
+            const newFilename = Date.now()
+            fs.writeFileSync(`/tmp/${newFilename}.png`, mycleanimage)
             console.log('rightbefore shackup', mycleanimage)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
 
             //shack upload
-            var formData2 = new FormData()
-            const shackAPIKey = process.env.SHACK_API_KEY
-            const shackAuthToken = process.env.SHACK_AUTH_TOKEN
-            formData2.append('api_key', shackAPIKey)
-            formData2.append('auth_token', shackAuthToken)
-            formData2.append("public","false")
-            formData2.append('file', mycleanimage)
+            // var formData2 = new FormData()
+            // const shackAPIKey = process.env.SHACK_API_KEY
+            // const shackAuthToken = process.env.SHACK_AUTH_TOKEN
+            // formData2.append('api_key', shackAPIKey)
+            // formData2.append('auth_token', shackAuthToken)
+            // formData2.append("public","false")
+            // formData2.append('file', fs.createReadStream(`/tmp/${newFilename}.png`))
             // const contLen = util.promisify(formData2.getLength.bind(formData2))
             // const actualLen = await contLen()
             console.log('lengths', mycleanimage.readableLength)
-            const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`, 'Content-Length':parseInt(mycleanimage.readableLength,10)+596}})
-            console.log('imageshackReturn', imageshackReturn.data)
-            const pictureURL = `https://${imageshackReturn.data.result.images[0].direct_link}`
-            const shackImageId = imageshackReturn.data.result.images[0].id
-            console.log('shackImageId', shackImageId, pictureURL)
-            fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
-            res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})
-            // imageshack.upload(mycleanimage, async function(err, filejson){
-            //     if(err){
-            //         console.log(err);
-            //     }else{
-            //         /* filejson is a json with:
-            //         {
-            //             original_filename: 'image.png',
-            //             link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
-            //             id: 'newtsep'
-            //         }
-            //        */
-            //         console.log(filejson);
-            //         const pictureURL = `https://${filejson.link}`
-            //         const shackImageId = filejson.id
-            //         console.log('shackImageId', shackImageId, pictureURL)
-            //         fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
-            //         res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
-            //     }
-            // });
+            // const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`}})
+            // const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`, 'Content-Length':parseInt(mycleanimage.readableLength,10)+596}})
+            // console.log('imageshackReturn', imageshackReturn.data)
+            // const pictureURL = `https://${imageshackReturn.data.result.images[0].direct_link}`
+            // const shackImageId = imageshackReturn.data.result.images[0].id
+            // console.log('shackImageId', shackImageId, pictureURL)
+            // fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
+            // res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})
+            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.png`), async function(err, filejson){
+                if(err){
+                    console.log(err);
+                }else{
+                    /* filejson is a json with:
+                    {
+                        original_filename: 'image.png',
+                        link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
+                        id: 'newtsep'
+                    }
+                    */
+                   console.log(filejson);
+                   const pictureURL = `https://${filejson.link}`
+                   const shackImageId = filejson.id
+                   console.log('shackImageId', shackImageId, pictureURL)
+                   fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
+                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
+                    res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
+                }
+            });
         } else {
             res.status(400).json({message:'Paid User Can Upload Photos to their own account.'})
             return
