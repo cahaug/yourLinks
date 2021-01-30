@@ -6,7 +6,7 @@ const axios = require('axios')
 require('dotenv').config();
 var FormData = require('form-data')
 const { body, check } = require('express-validator')
-var { Readable } = require('stream')
+var Readable = require('stream')
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
