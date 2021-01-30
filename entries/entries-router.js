@@ -6,7 +6,7 @@ const axios = require('axios')
 require('dotenv').config();
 var FormData = require('form-data')
 const { body, check } = require('express-validator')
-const {Readable} = require('stream')
+const {Duplex} = require('stream')
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -186,6 +186,13 @@ const fs = require("fs");
 const fileUpload = require('express-fileupload');
 entriesRouter.use(fileUpload({ safeFileNames:true, abortOnLimit:true, limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
 
+function bufferToStream(myBuuffer) {
+    let tmp = new Duplex();
+    tmp.push(myBuuffer);
+    tmp.push(null);
+    return tmp;
+}
+
 var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,
     email: process.env.SHACK_EMAIL,
@@ -254,13 +261,11 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'http://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
             // console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
-            const readable = new Readable()
             // const cleanedmyimage = Readable.from(cleanImage.data)
-            // readable._read = () => {} //essential
-            readable.push(cleanImage.data)
-            readable.push(null)
+            const mycleanimage = bufferToStream(cleanImage.data)
+            console.log('rightbefore shackup')
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
-            imageshack.upload(readable, async function(err, filejson){
+            imageshack.upload(mycleanimage, async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
