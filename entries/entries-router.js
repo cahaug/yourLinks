@@ -265,25 +265,40 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
             console.log('rightbefore shackup', mycleanimage)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
-            imageshack.upload(mycleanimage, async function(err, filejson){
-                if(err){
-                    console.log(err);
-                }else{
-                    /* filejson is a json with:
-                    {
-                        original_filename: 'image.png',
-                        link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
-                        id: 'newtsep'
-                    }
-                   */
-                    console.log(filejson);
-                    const pictureURL = `https://${filejson.link}`
-                    const shackImageId = filejson.id
-                    console.log('shackImageId', shackImageId, pictureURL)
-                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
-                    res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
-                }
-            });
+
+            //shack upload
+            var formData2 = new FormData()
+            const shackAPIKey = process.env.SHACK_API_KEY
+            const shackAuthToken = process.env.SHACK_AUTH_TOKEN
+            formData2.append('file', mycleanimage)
+            formData2.append('api_key', `${shackAPIKey}`)
+            formData2.append('auth_token', `${shackAuthToken}`)
+            const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images'}, formData2.getHeaders())
+            console.log('imageshackReturn', imageshackReturn.data)
+            const pictureURL = `https://${imageshackReturn.data[0].link}`
+            const shackImageId = filejson.id
+            console.log('shackImageId', shackImageId, pictureURL)
+            fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
+            res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})
+            // imageshack.upload(mycleanimage, async function(err, filejson){
+            //     if(err){
+            //         console.log(err);
+            //     }else{
+            //         /* filejson is a json with:
+            //         {
+            //             original_filename: 'image.png',
+            //             link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
+            //             id: 'newtsep'
+            //         }
+            //        */
+            //         console.log(filejson);
+            //         const pictureURL = `https://${filejson.link}`
+            //         const shackImageId = filejson.id
+            //         console.log('shackImageId', shackImageId, pictureURL)
+            //         fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
+            //         res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
+            //     }
+            // });
         } else {
             res.status(400).json({message:'Paid User Can Upload Photos to their own account.'})
             return
