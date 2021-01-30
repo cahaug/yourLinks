@@ -271,8 +271,8 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             const shackAPIKey = process.env.SHACK_API_KEY
             const shackAuthToken = process.env.SHACK_AUTH_TOKEN
             formData2.append('file', mycleanimage)
-            formData2.append('api_key', `${shackAPIKey}`)
-            formData2.append('auth_token', `${shackAuthToken}`)
+            formData2.append('api_key', shackAPIKey)
+            formData2.append('auth_token', shackAuthToken)
             formData2.append("public","false")
             const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
             console.log('imageshackReturn', imageshackReturn.data)
