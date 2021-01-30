@@ -6,7 +6,7 @@ const axios = require('axios')
 require('dotenv').config();
 var FormData = require('form-data')
 const { body, check } = require('express-validator')
-var Readable = require('stream')
+const {Readable} = require('stream')
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -255,6 +255,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             // console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
             const cleanedmyimage = Readable.from(cleanImage.data)
+            cleanedmyimage._read = () => {} //essential
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
             imageshack.upload(cleanedmyimage, async function(err, filejson){
                 if(err){
