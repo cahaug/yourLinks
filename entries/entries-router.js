@@ -254,10 +254,13 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'http://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
             // console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
-            const cleanedmyimage = Readable.from(cleanImage.data)
-            cleanedmyimage._read = () => {} //essential
+            const readable = new Readable()
+            // const cleanedmyimage = Readable.from(cleanImage.data)
+            readable._read = () => {} //essential
+            readable.push(cleanImage.data)
+            readable.push(null)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
-            imageshack.upload(cleanedmyimage, async function(err, filejson){
+            imageshack.upload(readable, async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
