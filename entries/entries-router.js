@@ -256,7 +256,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
             const readable = new Readable()
             // const cleanedmyimage = Readable.from(cleanImage.data)
-            readable._read = () => {} //essential
+            // readable._read = () => {} //essential
             readable.push(cleanImage.data)
             readable.push(null)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
