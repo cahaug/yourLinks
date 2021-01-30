@@ -271,10 +271,10 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             var formData2 = new FormData()
             const shackAPIKey = process.env.SHACK_API_KEY
             const shackAuthToken = process.env.SHACK_AUTH_TOKEN
-            formData2.append('file', mycleanimage)
             formData2.append('api_key', shackAPIKey)
             formData2.append('auth_token', shackAuthToken)
             formData2.append("public","false")
+            formData2.append('file', mycleanimage)
             // const contLen = util.promisify(formData2.getLength.bind(formData2))
             // const actualLen = await contLen()
             console.log('lengths', mycleanimage.readableLength)
