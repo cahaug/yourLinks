@@ -4,7 +4,10 @@ const restricted = require('../middleware/restricted.js');
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
 require('dotenv').config();
+var FormData = require('form-data')
 const { body, check } = require('express-validator')
+const {Duplex} = require('stream')
+const util = require('util')
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -12,7 +15,7 @@ const { body, check } = require('express-validator')
 //     next();
 // });
 
-entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), body('listId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), async (req, res) => {
+entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().isNumeric({ no_symbols:true }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), async (req, res) => {
     try {
         const date = new Date();
         const creationDate = date;
@@ -22,8 +25,34 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
         const parsedUserId = parseInt(userId, 10)
         const checkedListId = await getListId(sub)
         if(sub === parsedUserId && checkedListId[0].listId == listId){
+            // const safeURLCheck = await axios.post('https://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            // const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            // console.log('safeURLCheck', safeURLCheck)
+            // if its a url, run that shit thru the gang af mw-im.pro api
+            // oh how nice to be just a droplet in the digital ocean *music emoji*
+            let isURLmalicious = null
+            if(referencingURL != null && referencingURL.trim().indexOf('http') == 0){
+                const safeURLCheck = await axios.post(`http://mw-im.pro/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+                isURLmalicious = safeURLCheck.data.malicious
+            } else {
+                //isnotmalicious=false
+                isURLmalicious = false
+            } 
+            // if imageURL not self hosted, check the url through mw-im.pro api
+            let isImgMalicious = null
+            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
+                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
+                isImgMalicious = safeImageCheck.data.malicious
+            } else {
+                //isnotmalicious=false
+                isImgMalicious = false
+            }
+            if(isURLmalicious!==false || isImgMalicious!==false){
+                return res.status(400).json({message:'malicious URL detected'})
+            }
             return newEntry(entry)
             .then(result => {
+                console.log('added entry', entry)
                 res.header('Access-Control-Allow-Origin', '*')
                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
@@ -54,7 +83,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
 
 // SECURE THIS ENDPOINT ASAP
 // get single entry by entryId -  need to secure i think
-entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listId').notEmpty().isNumeric(), check('entryId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), check('entryId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const entryId = req.params.entryId
         const sub = req.decodedToken.sub
@@ -103,13 +132,38 @@ entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listI
 // })
 
 // edit referencingUrl, description and title aka edit entry production
-entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').notEmpty().isNumeric(), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').notEmpty().isNumeric({ no_symbols:true }), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const {sub} = req.decodedToken
         const { entryId, referencingURL, description, linkTitle, imgURL, listId } = req.body;
         
         const checkedListId = await getListId(sub)
         if(checkedListId[0].listId == listId){
+            // const safeURLCheck = await axios.post('http://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            // const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            // console.log('safeURLCheck',safeURLCheck)
+            // if its a url, run that shit thru the gang af mw-im.pro api
+            // oh how nice to be just a droplet in the digital ocean *music emoji*
+            let isURLmalicious = null
+            if(referencingURL != null && referencingURL.trim().indexOf('http') == 0){
+                const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+                isURLmalicious = safeURLCheck.data.malicious
+            } else {
+                //isnotmalicious=false
+                isURLmalicious = false
+            } 
+            // if imageURL not self hosted, check the url through mw-im.pro api
+            let isImgMalicious = null
+            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
+                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
+                isImgMalicious = safeImageCheck.data.malicious
+            } else {
+                //isnotmalicious=false
+                isImgMalicious = false
+            }
+            if(safeURLCheck.data.malicious!==false || isImgMalicious!==false){
+                return res.status(400).json({message:'malicious URL detected'})
+            }
             return updateEntry(entryId, referencingURL, description, linkTitle, imgURL)
             .then(result => {
                 res.header('Access-Control-Allow-Origin', '*')
@@ -131,7 +185,14 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
 
 const fs = require("fs");
 const fileUpload = require('express-fileupload');
-entriesRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+entriesRouter.use(fileUpload({ safeFileNames:true, abortOnLimit:true, limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+
+function bufferToStream(myBuuffer) {
+    let tmp = new Duplex();
+    tmp.push(myBuuffer);
+    tmp.push(null);
+    return tmp;
+}
 
 var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,
@@ -140,7 +201,7 @@ var imageshack = require('imageshack')({
 });
 
 // delete entry production
-entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), body('listId').notEmpty().isNumeric(), body('entryId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').notEmpty().isNumeric({ no_symbols:true }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('entryId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     // console.log(req.body)
     const {sub} = req.decodedToken
     const { userId, listId, entryId } = req.body
@@ -175,14 +236,59 @@ entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').not
     }
 });
 
-entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const userId = parseInt(req.params.userId, 10)
         if(sub === userId){
             console.log('req.file', req.files.myImage)
-            const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-            imageshack.upload(myimage, async function(err, filejson){
+            // const myFile = new File({buffer: req.files.myImage.data, name:req.files.myImage.name, type:req.files.myImage.mimetype})
+            // console.log('file', myFile)
+            // function dataURItoBlob(dataURI) {
+            //     var binary = atob(dataURI.split(',')[1]);
+            //     var array = [];
+            //     for(var i = 0; i < binary.length; i++) {
+            //         array.push(binary.charCodeAt(i));
+            //     }
+            //     return new Blob([new Uint8Array(array)], {type: `${req.files.myImage.mimetype}`});
+            // }
+            // const myImageActual = fs.createReadStream(myFile)
+            // const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
+            const formData = new FormData()
+            const girlSecret = process.env.GIRLSECRET
+            formData.append('secret', `${girlSecret}`)
+            formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
+            
+            const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'http://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
+            // console.log('cleanImage.data',cleanImage.data)
+            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
+            // const cleanedmyimage = Readable.from(cleanImage.data)
+            const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
+            const newFilename = Date.now()
+            fs.writeFileSync(`/tmp/${newFilename}.png`, cleanImage.data)
+            console.log('rightbefore shackup', mycleanimage)
+            // const cleanedmyimage = fs.createReadStream(cleanImage.data)
+
+            //shack upload
+            // var formData2 = new FormData()
+            // const shackAPIKey = process.env.SHACK_API_KEY
+            // const shackAuthToken = process.env.SHACK_AUTH_TOKEN
+            // formData2.append('api_key', shackAPIKey)
+            // formData2.append('auth_token', shackAuthToken)
+            // formData2.append("public","false")
+            // formData2.append('file', fs.createReadStream(`/tmp/${newFilename}.png`))
+            // const contLen = util.promisify(formData2.getLength.bind(formData2))
+            // const actualLen = await contLen()
+            console.log('lengths', mycleanimage.readableLength)
+            // const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`}})
+            // const imageshackReturn = await axios({method:'post', url:'https://api.imageshack.com/v2/images', data:formData2, headers:{'Content-Type':`multipart/form-data; boundary=${formData2._boundary}`, 'Content-Length':parseInt(mycleanimage.readableLength,10)+596}})
+            // console.log('imageshackReturn', imageshackReturn.data)
+            // const pictureURL = `https://${imageshackReturn.data.result.images[0].direct_link}`
+            // const shackImageId = imageshackReturn.data.result.images[0].id
+            // console.log('shackImageId', shackImageId, pictureURL)
+            // fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
+            // res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})
+            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.png`), async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
@@ -192,11 +298,13 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
                         link: 'http://imagizer.imageshack.us/a/img842/4034/221.png',
                         id: 'newtsep'
                     }
-                   */
-                    console.log(filejson);
-                    const pictureURL = `https://${filejson.link}`
-                    const shackImageId = filejson.id
-                    console.log('shackImageId', shackImageId, pictureURL)
+                    */
+                   console.log(filejson);
+                   const pictureURL = `https://${filejson.link}`
+                   const shackImageId = filejson.id
+                   console.log('shackImageId', shackImageId, pictureURL)
+                   fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
+                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
                     res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
                 }
             });
@@ -205,11 +313,12 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             return
         }
     } catch(err){
+        console.log('addimg_err',err)
         res.status(500).json({message:'Error Adding Photo'})
     }
 })
 
-entriesRouter.post('/deleteImage', hostNameGuard, restricted, body('shackImageId').notEmpty().isString().isLength({ min: 5 }), body('listId').notEmpty().isNumeric(), body('userId').notEmpty().isNumeric(), body('entryId').notEmpty().isNumeric(), async (req, res) => {
+entriesRouter.post('/deleteImage', hostNameGuard, restricted, body('shackImageId').notEmpty().isString().isLength({ min: 5 }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), body('entryId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const {shackImageId, listId, userId, entryId} = req.body

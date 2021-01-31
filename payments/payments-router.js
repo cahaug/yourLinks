@@ -275,7 +275,7 @@ paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), 
 })
 
 // deliver cancel and update urls to frontend settings panel
-paymentsRouter.post('/out', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), async (req, res) => {
+paymentsRouter.post('/out', hostNameGuard, restricted, body('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try{
         const {sub} = req.decodedToken
         const {userId} = req.body

@@ -119,7 +119,7 @@ authRouter.post('/login', hostNameGuard, body('email').notEmpty().bail().isEmail
     }
   })
 
-  authRouter.post('/verifyValidToken',hostNameGuard, body('userId').notEmpty().isNumeric(), restricted, async (req, res) => {
+  authRouter.post('/verifyValidToken',hostNameGuard, body('userId').notEmpty().isNumeric({ no_symbols:true }), restricted, async (req, res) => {
     const { userId } = req.body
     const { sub } = req.decodedToken
     if(sub==userId){

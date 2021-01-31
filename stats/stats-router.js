@@ -274,7 +274,7 @@ const flagsDict = {
 }
 
 
-statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric(), check('eid').notEmpty().isNumeric(), check('red').notEmpty().isString(), async (req, res) => {
+statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), check('eid').notEmpty().isNumeric({ no_symbols:true }), check('red').notEmpty().isString(), async (req, res) => {
     const date = new Date().toISOString();
     const maxTouch = req.query.mt
     const dy = date.slice(8, 10)
@@ -380,7 +380,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric(), check('e
     });
 });
 
-statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric(), async (req, res) => {
+statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const date = new Date().toISOString();
     const maxTouch = req.query.mt
     const dy = date.slice(8, 10)
@@ -553,7 +553,7 @@ statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric(), asyn
 // })
 
 // needs to be secured w sub verification - complete
-statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty().isNumeric(), async (req, res) => {
+statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const { userId } = req.body
     const {sub} = req.decodedToken
     // const titleAdder = async (data) => {
@@ -596,7 +596,7 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty
 })
 
 // aio stats and links
-statsRouter.get('/aio/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric(), (req, res, next) => {
+statsRouter.get('/aio/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric({ no_symbols:true }), (req, res, next) => {
     const { userId } = req.params;
     const { sub } = req.decodedToken
     // console.log('userId == sub', userId==sub)
@@ -649,7 +649,7 @@ statsRouter.get('/aio/:userId', hostNameGuard, restricted, check('userId').notEm
 // })
 
 // new increment listViews
-statsRouter.get('/ili/:listId', hostNameGuard, check('listId').notEmpty().isNumeric(), check('mt').notEmpty().isNumeric(), async (req, res) => {
+statsRouter.get('/ili/:listId', hostNameGuard, check('listId').notEmpty().isNumeric({ no_symbols:true }), check('mt').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const { listId } = req.params
         const maxTouch = req.query.mt
@@ -731,7 +731,7 @@ statsRouter.get('/ili/:listId', hostNameGuard, check('listId').notEmpty().isNume
 });
 
 // return listviews for given list
-statsRouter.get('/listViews/:listId', hostNameGuard, restricted, check('listId').notEmpty().isNumeric(), async (req, res) => {
+statsRouter.get('/listViews/:listId', hostNameGuard, restricted, check('listId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const { listId } = req.params
         const {sub} = req.decodedToken
@@ -768,7 +768,7 @@ statsRouter.get('/listViews/:listId', hostNameGuard, restricted, check('listId')
 
 // })
 
-statsRouter.get('/elv/:listId', hostNameGuard, restricted, check('listId').notEmpty().isNumeric(), async (req,res) => {
+statsRouter.get('/elv/:listId', hostNameGuard, restricted, check('listId').notEmpty().isNumeric({ no_symbols:true }), async (req,res) => {
     try {
         const {sub} = req.decodedToken
         let { listId } = req.params
