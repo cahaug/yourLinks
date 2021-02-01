@@ -42,7 +42,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             } 
             // if imageURL not self hosted, check the url through mw-im.pro api
             let isImgMalicious = null
-            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
+            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') != 8){
                 const safeImageCheck = await axios.post(`http://10.124.0.2/h/a`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
                 isImgMalicious = safeImageCheck.data.malicious
             } else {
