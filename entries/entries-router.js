@@ -32,7 +32,9 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             // oh how nice to be just a droplet in the digital ocean *music emoji*
             let isURLmalicious = null
             if(referencingURL != null && referencingURL.trim().indexOf('http') == 0){
+
                 const safeURLCheck = await axios.post('https://10.124.0.2/h/a', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+
                 isURLmalicious = safeURLCheck.data.malicious
             } else {
                 //isnotmalicious=false
