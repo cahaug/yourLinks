@@ -54,6 +54,7 @@ var allowedOrigins = [
                       'https://7zz.ch',
                       'https://down.af',
                       'https://this.af',
+                      'https://what-i.lv',
                       'https://mw-im.pro',
                       'http://10.124.0.2/h/a',
                       'https://mw-im.pro/i/processThis',
