@@ -30,6 +30,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             // console.log('safeURLCheck', safeURLCheck)
             // if its a url, run that shit thru the gang af mw-im.pro api
             // oh how nice to be just a droplet in the digital ocean *music emoji*
+            if(referencingURL.indexOf('data:') != -1 || imgURL.indexOf('data:') != -1){return res.sendStatus(400).end()}
             if(referencingURL.trim().indexOf('http') == -1 && referencingURL.trim().length > 0){return res.sendStatus(400).end()}
             if(imgURL != null && imgURL.trim().indexOf('http') == -1){return res.sendStatus(400).end()}
             let isURLmalicious = null
@@ -148,6 +149,7 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
             // console.log('safeURLCheck',safeURLCheck)
             // if its a url, run that shit thru the gang af mw-im.pro api
             // oh how nice to be just a droplet in the digital ocean *music emoji*
+            if(referencingURL.indexOf('data:') != -1 || imgURL.indexOf('data:') != -1){return res.sendStatus(400).end()}
             if(referencingURL.trim().indexOf('http') == -1 && referencingURL.trim().length > 0){return res.sendStatus(400).end()}
             if(imgURL != null && imgURL.trim().indexOf('http') == -1){return res.sendStatus(400).end()}
             let isURLmalicious = null
