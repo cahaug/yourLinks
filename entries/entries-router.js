@@ -32,7 +32,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             // oh how nice to be just a droplet in the digital ocean *music emoji*
             let isURLmalicious = null
             if(referencingURL != null && referencingURL.trim().indexOf('http') == 0){
-                const safeURLCheck = await axios.post(`https://mw-im.pro/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+                const safeURLCheck = await axios.post('https://mw-im.pro/h/a', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
                 isURLmalicious = safeURLCheck.data.malicious
             } else {
                 //isnotmalicious=false
@@ -41,7 +41,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             // if imageURL not self hosted, check the url through mw-im.pro api
             let isImgMalicious = null
             if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
-                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
+                const safeImageCheck = await axios.post(`https://mw-im.pro/h/a`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
                 isImgMalicious = safeImageCheck.data.malicious
             } else {
                 //isnotmalicious=false
