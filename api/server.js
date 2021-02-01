@@ -55,7 +55,7 @@ var allowedOrigins = [
                       'https://down.af',
                       'https://this.af',
                       'https://mw-im.pro',
-                      'http://10.124.0.2:4200/h/a',
+                      'http://10.124.0.2/h/a',
                       'https://mw-im.pro/i/processThis',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
