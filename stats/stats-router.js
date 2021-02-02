@@ -576,18 +576,16 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty
             const withTitle = pieData.forEach(async value => {
                 const title = await getSingleEntry(value.entryId)
                 // console.log('title ret', title)
-                let obp
-                console.log('obptitle0', title[0])
-                if(!title[0].linkTitle){
-                    obp = {linkTitle:' ', entryId:value.entryId, count:parseInt(value.count,10)}
-                } else {
-                    obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
-                }
-                console.log('obp', obp)
-                newArray.push(obp)
-                if(newArray.length==pieData.length){
-                    console.log('criteria met', newArray)
-                    res.status(200).json(newArray)                    
+                // let obp
+                // console.log('obptitle0', title[0])
+                if(title[0]){
+                    const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
+                    console.log('obp', obp)
+                    newArray.push(obp)
+                    if(newArray.length==pieData.length){
+                        console.log('criteria met', newArray)
+                        res.status(200).json(newArray)                    
+                    }
                 }
                 // console.log('newArray Inner', newArray)
             })
