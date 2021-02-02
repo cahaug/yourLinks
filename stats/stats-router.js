@@ -277,7 +277,7 @@ const flagsDict = {
 
 statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), check('eid').notEmpty().isNumeric({ no_symbols:true }), check('red').notEmpty().isString(), async (req, res) => {
     const date = new Date().toISOString();
-    const maxTouch = req.query.mt
+    const maxTouch = escape(req.query.mt)
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
@@ -285,9 +285,9 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
     const mn = date.slice(14, 16)
     const sc = date.slice(17, 19)
     const doNotTrack = !!req.headers.dnt
-    const refURL = req.query.ref
-    const entryId = req.query.eid
-    const redirect = req.query.red
+    const refURL = escape(req.query.ref)
+    const entryId = escape(req.query.eid)
+    const redirect = escape(req.query.red)
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
     // ua-parser-js
@@ -372,7 +372,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
             res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(201).json(result)
         } else {
-            return res.redirect(`${refURL}`)
+            return res.redirect(`${unescape(refURL)}`)
         }
     })
     .catch(err => {
@@ -383,7 +383,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
 
 statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const date = new Date().toISOString();
-    const maxTouch = req.query.mt
+    const maxTouch = ecape(req.query.mt)
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
