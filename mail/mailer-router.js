@@ -3,6 +3,7 @@ const { checkRecentlyAttempted, insertPWReset, singleUserForLogin, updatePasswor
 const restricted = require('../middleware/restricted.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 var nodemailer = require('nodemailer')
+const axios = require('axios')
 const bcrypt = require('bcryptjs')
 const { body } = require('express-validator')
 require('dotenv').config();
