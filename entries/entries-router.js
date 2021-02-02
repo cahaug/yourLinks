@@ -67,6 +67,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
                 const isMobileDevice = false
                 const deviceType = null
                 const deviceBrandName = null
+                const deviceOwnName = null
                 const osName = '10'
                 const osFamily = 'Windows'
                 const browserName = 'Chrome'
