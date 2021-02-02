@@ -6,6 +6,8 @@ const axios = require('axios')
 require('dotenv').config();
 const { body, check } = require('express-validator')
 const {Duplex} = require('stream')
+var FormData = require('form-data')
+
 
 
 
