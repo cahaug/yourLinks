@@ -273,7 +273,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             // const cleanedmyimage = Readable.from(cleanImage.data)
             const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
             const newFilename = Date.now()
-            fs.writeFileSync(`/tmp/${newFilename}.png`, cleanImage.data)
+            fs.writeFileSync(`/tmp/${newFilename}.jpg`, cleanImage.data)
             console.log('rightbefore shackup', mycleanimage)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
 
@@ -296,7 +296,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             // console.log('shackImageId', shackImageId, pictureURL)
             // fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
             // res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})
-            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.png`), async function(err, filejson){
+            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.jpg`), async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
