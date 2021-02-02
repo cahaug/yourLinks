@@ -5,6 +5,7 @@ const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
 require('dotenv').config();
 const { body, check } = require('express-validator')
+const {Duplex} = require('stream')
 
 
 
@@ -180,6 +181,14 @@ const fs = require("fs");
 const fileUpload = require('express-fileupload');
 listsRouter.use(fileUpload({ safeFileNames:true, abortOnLimit:true, limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
 
+function bufferToStream(myBuuffer) {
+    let tmp = new Duplex();
+    tmp.push(myBuuffer);
+    tmp.push(null);
+    return tmp;
+}
+
+
 var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,
     email: process.env.SHACK_EMAIL,
@@ -193,8 +202,20 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted,
         const listId = parseInt(req.params.listId, 10)
         const checkedListId = await getListId(sub)
         if(checkedListId[0].listId == listId){
-            const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-            imageshack.upload(myimage, async function(err, filejson){
+            const formData = new FormData()
+            const girlSecret = process.env.GIRLSECRET
+            formData.append('secret', `${girlSecret}`)
+            formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
+            const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'https://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
+            // console.log('cleanImage.data',cleanImage.data)
+            console.log('lengths', mycleanimage.readableLength)
+            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
+            // const cleanedmyimage = Readable.from(cleanImage.data)
+            const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
+            const newFilename = Date.now()
+            fs.writeFileSync(`/tmp/${newFilename}.jpg`, cleanImage.data)
+            console.log('rightbefore shackup', mycleanimage)            
+            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.jpg`), async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
@@ -206,7 +227,8 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted,
                     }
                    */
                     console.log(filejson);
-                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
+                    fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
+                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})                    
                     const listBackgroundURL = `https://${filejson.link}`
                     const listBackgroundImageId = filejson.id
                     console.log('shackImageId bg', listBackgroundImageId, listBackgroundURL)
@@ -373,12 +395,22 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, chec
         console.log(hasShackAlready)
         console.log('sub', sub, typeof sub,'userId', userId, typeof userId)
         if(sub !== userId){
-            res.status(400).json({message:'You may only modify your own list.'})
-            return 
+            return res.status(400).json({message:'You may only modify your own list.'}).end()
         }
+        const formData = new FormData()
+        const girlSecret = process.env.GIRLSECRET
+        formData.append('secret', `${girlSecret}`)
+        formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
+        const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'https://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
+        // console.log('cleanImage.data',cleanImage.data)
+        console.log('lengths', mycleanimage.readableLength)
+        console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
+        // const cleanedmyimage = Readable.from(cleanImage.data)
+        const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
+        const newFilename = Date.now()
+        fs.writeFileSync(`/tmp/${newFilename}.jpg`, cleanImage.data)
         console.log('req.file', req.files.myImage)
-        const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-        imageshack.upload(myimage, async function(err, filejson){
+        imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.jpg`), async function(err, filejson){
             if(err){
                 console.log(err);
             }else{
@@ -389,8 +421,9 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, chec
                     id: 'newtsep'
                 }
                */
-                fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
+                fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})                
                 console.log(filejson);
+                fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
                 const profilePictureURL = `https://${filejson.link}`
                 const shackImageId = filejson.id
                 console.log('shackImageId', shackImageId, profilePictureURL)
