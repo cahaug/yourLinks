@@ -23,6 +23,7 @@ const { body, check } = require('express-validator')
 var ip2loc = require("ip2location-nodejs");
 // const Bowser = require("bowser")
 const parser = require("ua-parser-js");
+const { link } = require('fs');
 
 const flagsDict = {
     'AF':'🇦🇫',
@@ -276,7 +277,7 @@ const flagsDict = {
 
 statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), check('eid').notEmpty().isNumeric({ no_symbols:true }), check('red').notEmpty().isString(), async (req, res) => {
     const date = new Date().toISOString();
-    const maxTouch = req.query.mt
+    const maxTouch = escape(req.query.mt)
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
@@ -284,9 +285,9 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
     const mn = date.slice(14, 16)
     const sc = date.slice(17, 19)
     const doNotTrack = !!req.headers.dnt
-    const refURL = req.query.ref
-    const entryId = req.query.eid
-    const redirect = req.query.red
+    const refURL = escape(req.query.ref)
+    const entryId = escape(req.query.eid)
+    const redirect = escape(req.query.red)
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
     // ua-parser-js
@@ -371,7 +372,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
             res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(201).json(result)
         } else {
-            return res.redirect(`${refURL}`)
+            return res.redirect(`${unescape(refURL)}`)
         }
     })
     .catch(err => {
@@ -382,7 +383,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
 
 statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const date = new Date().toISOString();
-    const maxTouch = req.query.mt
+    const maxTouch = ecape(req.query.mt)
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
@@ -575,12 +576,16 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty
             const withTitle = pieData.forEach(async value => {
                 const title = await getSingleEntry(value.entryId)
                 // console.log('title ret', title)
-                const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
-                console.log('obp', obp)
-                newArray.push(obp)
-                if(newArray.length==pieData.length){
-                    console.log('criteria met', newArray)
-                    res.status(200).json(newArray)                    
+                // let obp
+                // console.log('obptitle0', title[0])
+                if(title[0]){
+                    const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
+                    console.log('obp', obp)
+                    newArray.push(obp)
+                    if(newArray.length==pieData.length){
+                        console.log('criteria met', newArray)
+                        res.status(200).json(newArray)                    
+                    }
                 }
                 // console.log('newArray Inner', newArray)
             })

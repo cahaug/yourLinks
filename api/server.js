@@ -54,8 +54,10 @@ var allowedOrigins = [
                       'https://7zz.ch',
                       'https://down.af',
                       'https://this.af',
-                      'http://mw-im.pro',
-                      'http://mw-im.pro/i/processThis',
+                      'https://what-i.lv',
+                      'https://mw-im.pro',
+                      'http://10.124.0.2/h/a',
+                      'https://mw-im.pro/i/processThis',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',

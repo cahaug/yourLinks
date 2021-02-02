@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry, nullPhoto } = require('../database/queries.js');
+const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry, nullPhoto, logAClick } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
@@ -25,14 +25,19 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
         const parsedUserId = parseInt(userId, 10)
         const checkedListId = await getListId(sub)
         if(sub === parsedUserId && checkedListId[0].listId == listId){
-            // const safeURLCheck = await axios.post('https://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            // const safeURLCheck = await axios.post('http://10.124.0.2/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             // const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             // console.log('safeURLCheck', safeURLCheck)
             // if its a url, run that shit thru the gang af mw-im.pro api
             // oh how nice to be just a droplet in the digital ocean *music emoji*
+            if(referencingURL.indexOf('data:') != -1 || (imgURL!=null && imgURL.indexOf('data:') != -1)){return res.sendStatus(400).end()}
+            if(referencingURL.trim().indexOf('http') == -1 && referencingURL.trim().length > 0){return res.sendStatus(400).end()}
+            if(imgURL != null && imgURL.trim().indexOf('http') == -1){return res.sendStatus(400).end()}
             let isURLmalicious = null
             if(referencingURL != null && referencingURL.trim().indexOf('http') == 0){
-                const safeURLCheck = await axios.post(`http://mw-im.pro/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+
+                const safeURLCheck = await axios.post('http://10.124.0.2/h/a', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+
                 isURLmalicious = safeURLCheck.data.malicious
             } else {
                 //isnotmalicious=false
@@ -40,8 +45,8 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             } 
             // if imageURL not self hosted, check the url through mw-im.pro api
             let isImgMalicious = null
-            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
-                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
+            if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') != 8){
+                const safeImageCheck = await axios.post(`http://10.124.0.2/h/a`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
                 isImgMalicious = safeImageCheck.data.malicious
             } else {
                 //isnotmalicious=false
@@ -51,8 +56,28 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
                 return res.status(400).json({message:'malicious URL detected'})
             }
             return newEntry(entry)
-            .then(result => {
-                console.log('added entry', entry)
+            .then(async result => {
+                const entryId = result[0].entryId
+                console.log('added entry', entry, result)
+                const date = new Date().toISOString(); const dy = date.slice(8, 10); const mo = date.slice(5, 7); const yr = date.slice(0, 4); const hr = date.slice(11, 13); const mn = date.slice(14, 16); const sc = date.slice(17, 19)
+                const doNotTrack = false
+                const userIP = '192.168.1.1'
+                const countryOfOrigin = 'US'
+                const province = 'Scottsdale'
+                const isMobileDevice = false
+                const deviceType = null
+                const deviceBrandName = null
+                const deviceOwnName = null
+                const osName = '10'
+                const osFamily = 'Windows'
+                const browserName = 'Chrome'
+                const browserVersionMajor = '88'
+                const latitude = 33.5892
+                const longitude = -111.8379
+                const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'
+                const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
+                const addedstat = await logAClick(stat)
+                console.log('added stat after entry', addedstat)
                 res.header('Access-Control-Allow-Origin', '*')
                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
@@ -139,14 +164,17 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
         
         const checkedListId = await getListId(sub)
         if(checkedListId[0].listId == listId){
-            // const safeURLCheck = await axios.post('http://mw-im.pro/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+            // const safeURLCheck = await axios.post('http://10.124.0.2/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             // const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
             // console.log('safeURLCheck',safeURLCheck)
             // if its a url, run that shit thru the gang af mw-im.pro api
             // oh how nice to be just a droplet in the digital ocean *music emoji*
+            if(referencingURL.indexOf('data:') != -1 || (imgURL!=null && imgURL.indexOf('data:') != -1)){return res.sendStatus(400).end()}
+            if(referencingURL.trim().indexOf('http') == -1 && referencingURL.trim().length > 0){return res.sendStatus(400).end()}
+            if(imgURL != null && imgURL.trim().indexOf('http') == -1){return res.sendStatus(400).end()}
             let isURLmalicious = null
             if(referencingURL != null && referencingURL.trim().indexOf('http') == 0){
-                const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
+                const safeURLCheck = await axios.post(`http://${process.env.MWIMIP}/h/a`, { referencingURL:referencingURL, secret:process.env.BOYSECRET })
                 isURLmalicious = safeURLCheck.data.malicious
             } else {
                 //isnotmalicious=false
@@ -155,13 +183,13 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
             // if imageURL not self hosted, check the url through mw-im.pro api
             let isImgMalicious = null
             if(imgURL != null && imgURL.indexOf('imagizer.imageshack.com') !== 8){
-                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
+                const safeImageCheck = await axios.post(`http://${process.env.MWIMIP}/h/a`, { referencingURL:imgURL, secret:process.env.BOYSECRET })
                 isImgMalicious = safeImageCheck.data.malicious
             } else {
                 //isnotmalicious=false
                 isImgMalicious = false
             }
-            if(safeURLCheck.data.malicious!==false || isImgMalicious!==false){
+            if(isURLmalicious!==false || isImgMalicious!==false){
                 return res.status(400).json({message:'malicious URL detected'})
             }
             return updateEntry(entryId, referencingURL, description, linkTitle, imgURL)
@@ -212,7 +240,7 @@ entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').not
         if(sub == userId && checkedListId[0].listId == listId){
             return deleteEntry(entryId)
             .then(result => {
-                if(singleEntry[0].shackImageId !== null){
+                if(singleEntry[0] != null && singleEntry[0].shackImageId != null){
                     imageshack.del(`${singleEntry[0].shackImageId}`, async function(err){
                         if(err){
                             console.log('deletelist inner shack err',err);
@@ -259,13 +287,13 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             formData.append('secret', `${girlSecret}`)
             formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
             
-            const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'http://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
+            const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'https://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
             // console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
             // const cleanedmyimage = Readable.from(cleanImage.data)
             const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
             const newFilename = Date.now()
-            fs.writeFileSync(`/tmp/${newFilename}.png`, cleanImage.data)
+            fs.writeFileSync(`/tmp/${newFilename}.jpg`, cleanImage.data)
             console.log('rightbefore shackup', mycleanimage)
             // const cleanedmyimage = fs.createReadStream(cleanImage.data)
 
@@ -288,7 +316,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             // console.log('shackImageId', shackImageId, pictureURL)
             // fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
             // res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})
-            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.png`), async function(err, filejson){
+            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.jpg`), async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
