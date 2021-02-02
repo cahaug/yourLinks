@@ -56,7 +56,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
                 return res.status(400).json({message:'malicious URL detected'})
             }
             return newEntry(entry)
-            .then(result => {
+            .then(async result => {
                 const entryId = result[0].entryId
                 console.log('added entry', entry, result)
                 const date = new Date().toISOString(); const dy = date.slice(8, 10); const mo = date.slice(5, 7); const yr = date.slice(0, 4); const hr = date.slice(11, 13); const mn = date.slice(14, 16); const sc = date.slice(17, 19)
