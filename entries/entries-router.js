@@ -240,7 +240,7 @@ entriesRouter.post('/deleteEntry', hostNameGuard, restricted, body('userId').not
         if(sub == userId && checkedListId[0].listId == listId){
             return deleteEntry(entryId)
             .then(result => {
-                if(singleEntry[0].shackImageId !== null){
+                if(singleEntry[0] != null && singleEntry[0].shackImageId != null){
                     imageshack.del(`${singleEntry[0].shackImageId}`, async function(err){
                         if(err){
                             console.log('deletelist inner shack err',err);
