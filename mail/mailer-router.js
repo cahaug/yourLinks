@@ -223,4 +223,38 @@ mailerRouter.post('/checkCode', hostNameGuard, body('email').notEmpty().bail().i
 //     html:`<h1>Link-in.Bio/</h1><h2>Hello, ${email}!</h2><h2>Here is your Password Reset Code</h2><p>Code: <br /> <span>${resetCode}</span></p><p>It's only valid for ten minutes so click here to return and use it fast!</p>`
 // }
 
+mailerRouter.post('/checkValid', hostNameGuard, async (req,res) => {
+    try{
+        const { email, token } = req.body
+        const checkToken = async (token) => {
+            const secret = process.env.RECAPTCHA_SECRET
+            const googleResponse = await axios.post(`https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`)
+            // console.log('gr', googleResponse)
+            // console.log('recaptcha data', googleResponse.data)
+            return await googleResponse.data.success
+        }
+        const isNotBot = await checkToken(token)
+        if(isNotBot===true){
+            const alreadyInDb = await singleUserForLogin(email)
+            if(alreadyInDb.length>0){
+                console.log('registration - duplicate email tried')
+                return res.sendStatus(400).end()
+            } else if (alreadyInDb.length === 0){
+                console.log('valid email for reg')
+                return res.sendStatus(200).json({message:'valid'}).end()
+            } else {
+                console.log('check email registration inner err')
+                return res.sendStatus(400).end()
+            }
+        }else{
+            console.log('bot intrustion halted')
+            return res.sendStatus(400).end()
+        }
+
+    } catch(err){
+        console.log('checkValidEmailError', err)
+        res.sendStatus(400).end()
+    }
+})
+
 module.exports = mailerRouter
