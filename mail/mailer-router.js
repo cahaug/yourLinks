@@ -237,12 +237,14 @@ mailerRouter.post('/checkValid', hostNameGuard, async (req,res) => {
         const isNotBot = await checkToken(token)
         if(isNotBot===true){
             const alreadyInDb = await singleUserForLogin(email)
-            if(alreadyInDb.length>0){
+            //console.log('alreadyindb', alreadyInDb)
+	    if(alreadyInDb.length>0){
                 console.log('registration - duplicate email tried')
                 return res.sendStatus(400).end()
-            } else if (alreadyInDb.length === 0){
+            }
+	    if (alreadyInDb.length === 0){
                 console.log('valid email for reg')
-                return res.sendStatus(200).json({message:'valid'}).end()
+                return res.status(200).json({message:'valid'}).end()
             } else {
                 console.log('check email registration inner err')
                 return res.sendStatus(400).end()

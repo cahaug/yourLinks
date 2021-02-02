@@ -3,7 +3,8 @@ module.exports = (req, res, next) => {
     // see if its in the list
     const hostName = req.headers.origin
     let mySet = {
-        'https://link-in.bio':true,
+        //undefined:true,
+	'https://link-in.bio':true,
         'https://this-links.to':true,
         'https://bio-link.me':true,
         'https://i-am.so':true,
