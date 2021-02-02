@@ -23,6 +23,7 @@ const { body, check } = require('express-validator')
 var ip2loc = require("ip2location-nodejs");
 // const Bowser = require("bowser")
 const parser = require("ua-parser-js");
+const { link } = require('fs');
 
 const flagsDict = {
     'AF':'🇦🇫',
@@ -575,7 +576,12 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty
             const withTitle = pieData.forEach(async value => {
                 const title = await getSingleEntry(value.entryId)
                 // console.log('title ret', title)
-                const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
+                let obp
+                if(title[0].linkTitle==null){
+                    obp = {linkTitle:' ', entryId:value.entryId, count:parseInt(value.count,10)}
+                } else {
+                    obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
+                }
                 console.log('obp', obp)
                 newArray.push(obp)
                 if(newArray.length==pieData.length){
