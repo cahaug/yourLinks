@@ -1,5 +1,5 @@
 const entriesRouter = require('express').Router();
-const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry, nullPhoto } = require('../database/queries.js');
+const { getListId, newEntry, getAllEntries, modifyEntryURl, updateDescription, getSingleEntry, updateEntry, deleteEntry, nullPhoto, logAClick } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
@@ -57,7 +57,26 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             }
             return newEntry(entry)
             .then(result => {
+                const entryId = result[0].entryId
                 console.log('added entry', entry, result)
+                const date = new Date().toISOString(); const dy = date.slice(8, 10); const mo = date.slice(5, 7); const yr = date.slice(0, 4); const hr = date.slice(11, 13); const mn = date.slice(14, 16); const sc = date.slice(17, 19)
+                const doNotTrack = false
+                const userIP = '192.168.1.1'
+                const countryOfOrigin = 'US'
+                const province = 'Scottsdale'
+                const isMobileDevice = false
+                const deviceType = null
+                const deviceBrandName = null
+                const osName = '10'
+                const osFamily = 'Windows'
+                const browserName = 'Chrome'
+                const browserVersionMajor = '88'
+                const latitude = 33.5892
+                const longitude = -111.8379
+                const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'
+                const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
+                const addedstat = await logAClick(stat)
+                console.log('added stat after entry', addedstat)
                 res.header('Access-Control-Allow-Origin', '*')
                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
