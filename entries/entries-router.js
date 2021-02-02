@@ -57,7 +57,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             }
             return newEntry(entry)
             .then(result => {
-                console.log('added entry', entry)
+                console.log('added entry', entry, result)
                 res.header('Access-Control-Allow-Origin', '*')
                 res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
                 res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
