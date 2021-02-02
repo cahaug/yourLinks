@@ -169,7 +169,7 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
                 //isnotmalicious=false
                 isImgMalicious = false
             }
-            if(safeURLCheck.data.malicious!==false || isImgMalicious!==false){
+            if(isURLmalicious!==false || isImgMalicious!==false){
                 return res.status(400).json({message:'malicious URL detected'})
             }
             return updateEntry(entryId, referencingURL, description, linkTitle, imgURL)
