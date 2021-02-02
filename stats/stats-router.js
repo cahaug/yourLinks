@@ -577,6 +577,7 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty
                 const title = await getSingleEntry(value.entryId)
                 // console.log('title ret', title)
                 let obp
+                console.log('obptitle0', title[0])
                 if(!title[0].linkTitle){
                     obp = {linkTitle:' ', entryId:value.entryId, count:parseInt(value.count,10)}
                 } else {
