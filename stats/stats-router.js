@@ -383,7 +383,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
 
 statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const date = new Date().toISOString();
-    const maxTouch = ecape(req.query.mt)
+    const maxTouch = escape(req.query.mt)
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
