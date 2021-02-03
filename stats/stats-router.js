@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers, mostPopToday } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers, mostPopToday, homepageLatLon } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
@@ -900,6 +900,7 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         const yr = date.slice(0, 4)
         const mostPopularToday = await mostPopToday(dy,mo,yr)
         const mostPupular = await mostPop()
+        const mapPoints = await homepageLatLon()
         console.log('mostPupular', mostPupular)
         // mostPupular.map(x => {
         //     if(x.customURL !== null){
@@ -1003,7 +1004,7 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday, mapCountries:mapCountries})
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday, mapCountries:mapCountries, mapPoints:mapPoints})
     
     }catch (err){
         console.log('elv err',err)

@@ -224,6 +224,10 @@ module.exports = {
         return knex('homepageViews').distinct('deviceOwnName').count().groupBy('deviceOwnName')
     },
 
+    homepageLatLon(){
+        return knex('homepageViews').orderBy('homepageViewId', 'desc').limit(50).select('latitude', 'longitude')
+    },
+
     mostPop(){
         return knex('pageViews').innerJoin('lists', 'pageViews.listId', 'lists.listId').select('pageViews.listId', 'lists.customURL').groupBy('lists.customURL').distinct('pageViews.listId').count().limit(10).groupBy('pageViews.listId')
     },
