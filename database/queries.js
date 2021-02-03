@@ -228,6 +228,10 @@ module.exports = {
         return knex('homepageViews').groupBy('homepageViews.homepageViewId').orderBy('homepageViews.homepageViewId', 'desc').limit(100).select('homepageViews.province','homepageViews.latitude', 'homepageViews.longitude')
     },
 
+    latLonForListId(listId){
+        return knex('pageViews').where('listId', listId).groupBy('pageViews.pageViewId').orderBy('pageViews.pageViewId', 'desc').limit(100).select('pageViews.province','pageViews.latitude', 'pageViews.longitude')
+    },
+
     mostPop(){
         return knex('pageViews').innerJoin('lists', 'pageViews.listId', 'lists.listId').select('pageViews.listId', 'lists.customURL').groupBy('lists.customURL').distinct('pageViews.listId').count().limit(10).groupBy('pageViews.listId')
     },
