@@ -900,7 +900,8 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         const yr = date.slice(0, 4)
         const mostPopularToday = await mostPopToday(dy,mo,yr)
         const mostPupular = await mostPop()
-        const mapPoints = await homepageLatLon()
+        const mapPoints = await homepageLatLon().catch(err => {console.log('maperr',err)})
+	console.log('mapPoints', mapPoints)
         console.log('mostPupular', mostPupular)
         // mostPupular.map(x => {
         //     if(x.customURL !== null){

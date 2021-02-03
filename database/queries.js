@@ -225,7 +225,7 @@ module.exports = {
     },
 
     homepageLatLon(){
-        return knex('homepageViews').orderBy('homepageViewId', 'desc').limit(50).select('latitude', 'longitude')
+        return knex('homepageViews').groupBy('homepageViews.homepageViewId').orderBy('homepageViews.homepageViewId', 'desc').limit(100).select('homepageViews.homepageViewId','homepageViews.latitude', 'homepageViews.longitude')
     },
 
     mostPop(){
