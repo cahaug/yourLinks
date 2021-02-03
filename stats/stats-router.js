@@ -790,6 +790,16 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, check('listId').notEm
             //     }
             // })
             const mapPoints = await latLonForListId(listId)
+            const properMapPoints = []
+            mapPoints.map(x=>{
+                if(x.latitude!=null && x.province.length > 1){
+                    if(Math.random()>=0.498){
+                        properMapPoints.push({markerOffset:-15, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    } else{
+                        properMapPoints.push({markerOffset:25, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    }
+                }
+            })
             const countryListCount = []
             const mapCountries = []
             const countryList = await countryCounts(listId)
@@ -881,7 +891,7 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, check('listId').notEm
                 timelineArray.push(valobj)
             }
             // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount, mapCountries:mapCountries, mapPoints:mapPoints })
+            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount, mapCountries:mapCountries, mapPoints:properMapPoints })
     } else {
         console.log(`elv security verification error userId : ${sub}`)
         res.status(401).json({message:'No Peeping'})
@@ -901,8 +911,18 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         const yr = date.slice(0, 4)
         const mostPopularToday = await mostPopToday(dy,mo,yr)
         const mostPupular = await mostPop()
-        const mapPoints = await homepageLatLon().catch(err => {console.log('maperr',err)})
-	console.log('mapPoints', mapPoints)
+        const mapPoints = await homepageLatLon()
+        const properMapPoints = []
+            mapPoints.map(x=>{
+                if(x.latitude!=null && x.province.length > 1){
+                    if(Math.random()>=0.498){
+                        properMapPoints.push({markerOffset:-15, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    } else{
+                        properMapPoints.push({markerOffset:25, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    }
+                }
+            })
+	    console.log('mapPoints', mapPoints, properMapPoints)
         console.log('mostPupular', mostPupular)
         // mostPupular.map(x => {
         //     if(x.customURL !== null){
@@ -1006,7 +1026,7 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday, mapCountries:mapCountries, mapPoints:mapPoints})
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday, mapCountries:mapCountries, mapPoints:properMapPoints})
     
     }catch (err){
         console.log('elv err',err)
