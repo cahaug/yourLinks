@@ -93,7 +93,7 @@ paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), 
                         referencingURL:'https://link-in.bio/',
                         description:`Thank You for Choosing Link-In.bio/, Let's Get Started!  Click Add Entry to Add Your First Entry! You can delete this entry after you have added another one to your List. Click the button in the bottom-right corner if you have any questions.`,
                         linkTitle:'Welcome to Your List!',
-                        imgURL:'https://link-in.bio/static/media/libIMG.a76f653d.png',
+                        imgURL:'https://imagizer.imageshack.com/img922/6752/nN0O0F.jpg',
                     }
                     const insertedEntry = await newEntry(entry)
                     console.log('insertedEntry', insertedEntry)

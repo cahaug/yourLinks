@@ -150,10 +150,11 @@ server.use(function(req, res, next) {
 server.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.json({ 
-        message: err.message,
-        error: err
-        // change this back before final deployment!!! -unchanged-
-        // error: req.server.get('env') === 'development' ? err : {}
+        message: {},
+        // error: err
+        // change this back before final deployment!!! -changed-
+        // error: req.server.get('env') === 'development' ? 
+        err : {}
         
     });
 });
