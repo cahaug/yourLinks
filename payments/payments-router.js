@@ -3,7 +3,7 @@ const { createList, insertUser, singleUserForLogin, paidRegistration, getListByU
 // const restricted = require('../middleware/restricted.js')
 const axios = require('axios')
 require('dotenv').config()
-paymentsRouter.use(require('express').urlencoded({extended:'true'}));
+paymentsRouter.use(require('express').urlencoded({extended:'false'}));
 const {verifyPaddleWebhook} = require('verify-paddle-webhook');
 var sha512 = require('js-sha512');
 var nodemailer = require('nodemailer');
@@ -19,6 +19,7 @@ const hostNameGuard = require('../middleware/hostNameGuard.js')
 const { body } = require('express-validator')
 
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
+const {paddlePublicKey} = require('./publicKey')
 
 paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), body('p_signature').notEmpty().isString().isLength({ min:12 }), async (req, res) => {
     try {
@@ -29,13 +30,13 @@ paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), 
                 pass: process.env.LIBPASSWORD
             }
         })
-        console.log('req.headers.origin', req.headers.origin)
+        console.log('req.headers.origin', req.headers.origin, PUBLIC_KEY)
         console.log('length of publickey', process.env.PAD_PUB_KEY.len)
         // - NOT DONE - verify webhook signature  && req.method.toLowerCase() === 'post' && req.host == paddle.com or whatever
-        if(req.body.p_signature && req.method.toLowerCase() === 'post'){
-            const extractedSignatue = {p_signature:req.body.p_signature}
-            console.log('extracted', extractedSignatue, req.body)
-            if (verifyPaddleWebhook(PUBLIC_KEY, req.body)) {
+        if(req.body.p_signature && req.method.toLowerCase() == 'post'){
+            //const extractedSignatue = {p_signature:req.body.p_signature}
+            //console.log('extracted', extractedSignatue, req.body)
+            if (verifyPaddleWebhook(paddlePublicKey, req.body)){
                 console.log('Webhook is valid!');
                 // process the webhook
                 // subscription processing action cases are here
@@ -68,8 +69,8 @@ paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), 
                     console.log('insertedRegistration', insertRegistration)
                     // create list
                         // userId, backColor, txtColor, fontSelection, customURL
-                    const backColor = '#ffffff'
-                    const txtColor = '#000000'
+                    const backColor = '#808080'
+                    const txtColor = '#808080'
                     const fontSelection = 'sigmarOne'
                     const generatedCustom = sha512(email)
                     const customURL = `https://link-in.bio/${generatedCustom.slice(92)}`
