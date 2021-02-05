@@ -52,7 +52,7 @@
     "querystring": "^0.2.0",
     "snyk": "^1.437.4",
     "sqlite3": "^5.0.1",
-    "stripe": "^8.130.0",
+    "stripe": "^8.131.0",
     "stream": "0.0.2",
     "stripe": "^8.129.0",
     "supertest": "^4.0.2",
