@@ -49,10 +49,15 @@ var allowedOrigins = [
                       'https://look-he.re',
                       'https://stream-he.re',
                       'https://watch-he.re',
+                      'https://resumelink.me',
                       'https://pstd.at',
                       'https://7zz.ch',
                       'https://down.af',
                       'https://this.af',
+                      'https://what-i.lv',
+                      'https://mw-im.pro',
+                      'http://10.124.0.2/h/a',
+                      'https://mw-im.pro/i/processThis',
                       'https://link-in-bio.herokuapp.com/auth/login',
                       'https://link-in-bio.herokuapp.com/auth/register',];
 // var allowedOrigins = ['https://link-in.bio',
@@ -73,7 +78,8 @@ server.use(cors({
 }));
 server.use(express.json());
 const { listByNumber, listByCustomURL, } = require('../database/queries.js');
-const hostNameGuard = require('../middleware/hostNameGuard.js')
+const hostNameGuard = require('../middleware/hostNameGuard.js');
+const { check } = require('express-validator');
 
 
 // server.use('/blank/', blankRouter) go here
@@ -94,7 +100,7 @@ server.get('/', hostNameGuard, (req, res) => {
 });
 
 // entries by userId (displayUserEntries on displayUserEntries /:id)
-server.get('/:listId', hostNameGuard, (req, res) => {
+server.get('/:listId', hostNameGuard, check('listId').notEmpty().isString(), (req, res) => {
     const listId  = unescape(req.params.listId);
     const parsed = parseInt(listId,10);
     console.log('req.hostname', req.originalUrl, req.headers.origin)
@@ -144,10 +150,11 @@ server.use(function(req, res, next) {
 server.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.json({ 
-        message: err.message,
-        error: err
-        // change this back before final deployment!!! -unchanged-
-        // error: req.server.get('env') === 'development' ? err : {}
+        message: {},
+        // error: err
+        // change this back before final deployment!!! -changed-
+        // error: req.server.get('env') === 'development' ? 
+        err : {}
         
     });
 });
