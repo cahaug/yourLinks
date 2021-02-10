@@ -370,7 +370,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type')
             res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
-            res.status(201).json(result)
+            res.status(201).json({message:'Visit Successfully Logged :) Thank You!'})
         } else {
             return res.redirect(`${unescape(refURL)}`)
         }
@@ -722,7 +722,7 @@ statsRouter.get('/ili/:listId', hostNameGuard, check('listId').notEmpty().isNume
         return logPageView(view)
         .then(result => {
             // console.log('add pageview result', result)
-            res.status(201).json(result)
+            res.status(201).json({message:'Visit Successfully Logged :) Thank You!'})
             
         })
         .catch(err => {
