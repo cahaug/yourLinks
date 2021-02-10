@@ -794,9 +794,9 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, check('listId').notEm
             mapPoints.map(x=>{
                 if(x.latitude!=null && x.province.length > 1){
                     if(Math.random()>=0.498){
-                        properMapPoints.push({markerOffset:-15, name:x.province, coordinates:[x.longitude, x.latitude]})
+                        properMapPoints.push({markerOffset:-7, name:x.province, coordinates:[x.longitude, x.latitude]})
                     } else{
-                        properMapPoints.push({markerOffset:25, name:x.province, coordinates:[x.longitude, x.latitude]})
+                        properMapPoints.push({markerOffset:17, name:x.province, coordinates:[x.longitude, x.latitude]})
                     }
                 }
             })
@@ -916,9 +916,9 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
             mapPoints.map(x=>{
                 if(x.latitude!=null && x.province.length > 1){
                     if(Math.random()>=0.498){
-                        properMapPoints.push({markerOffset:-15, name:x.province, coordinates:[x.longitude, x.latitude]})
+                        properMapPoints.push({markerOffset:-7, name:x.province, coordinates:[x.longitude, x.latitude]})
                     } else{
-                        properMapPoints.push({markerOffset:25, name:x.province, coordinates:[x.longitude, x.latitude]})
+                        properMapPoints.push({markerOffset:17, name:x.province, coordinates:[x.longitude, x.latitude]})
                     }
                 }
             })
