@@ -2,7 +2,7 @@ const authRouter = require('express').Router();
 const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
 const axios = require('axios')
-
+var nodemailer = require('nodemailer');
 const queries = require('../database/queries.js');
 const { insertUser, singleUserForLogin, customByListId, getListId, updatePassword } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js');
@@ -101,15 +101,50 @@ authRouter.post('/login', hostNameGuard, body('email').notEmpty().bail().isEmail
     }
   });
 
+
+
   authRouter.put('/SettingsCPW',hostNameGuard, restricted, body('email').notEmpty().bail().isEmail().bail().normalizeEmail(), body('password').notEmpty().isString().isLength({ min:8 }), body('newPassword').notEmpty().isString().isLength({ min:8 }), async (req, res) => {
     const { email, password, newPassword } = req.body
     const {sub} = req.decodedToken
     try{
+      var transporter = nodemailer.createTransport({
+        service:process.env.LIBSERVICE,
+        auth: {
+            user: process.env.LIBEMAIL,
+            pass: process.env.LIBPASSWORD
+        }
+      })
       const user = await singleUserForLogin(email)
       if(user[0].userId == sub && bcrypt.compareSync(password, user[0].password)){
         const hash = bcrypt.hashSync(newPassword, 12)
         const updatedPassword = await updatePassword(email, hash)
-        res.status(200).json({message:'successful password change', updatedPassword:updatedPassword})
+        var mailOptions = {
+          from: process.env.LIBEMAILFROM,
+          to: email,
+          subject: 'Link-in.Bio Password Changed',
+          text:`The password for your Link-In Bio account was changed.  If this was not you, please reset your password and contact support.`,
+          html:`<h1>Link-in.Bio Ltd</h1>
+              <h3>16605 E Avenue of the Fountains #19442</h3>
+              <h3>Fountain Hills, AZ 85269</h3>
+              <h3>+1-510-747-8482</h3>
+              <br /><hr /><br />
+              <h2>Hello, ${email}!</h2>
+              <h2>Thank you for Choosing Link-in.Bio, a carbon-negative company.  <br /> You made a great choice.</h2>
+              <p>The Password for your Link-In Bio Account was just changed.  If this was you, thank you again for remaining a customer.  If this change was not authorized, please contact Link-In Bio Support. </p>
+              <br /><p>Thank You,</p><br />
+              <h1><strong>Link-In Bio Ltd.</strong></h1>
+              <br /><hr /><br />`
+        }
+        transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+              console.log('error sending mail',error,email)
+              res.sendStatus(400)
+          } else {
+              const infoResponse = info.response
+              console.log('Email Sent Successfully: ', infoResponse, token, email)
+              res.status(200).json({message:'successful password change', updatedPassword:updatedPassword})
+          }
+        })
       } else {
         res.status(401).json({message:'unable to verify credentials'})
       }

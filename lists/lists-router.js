@@ -87,6 +87,8 @@ listsRouter.get('/list4user/:userId', hostNameGuard, check('userId').notEmpty().
 listsRouter.post('/checkCustom/', hostNameGuard, body('customURL').notEmpty().bail().isString().bail(), restricted, async (req, res) => {
     const { customURL } = req.body
     console.log('checked customURL', customURL)
+    if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+    if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
     return checkIfCustomURLAvailable(customURL)
     .then(result => {
         // console.log(res)
@@ -110,6 +112,8 @@ listsRouter.post('/checkCHomepage/', hostNameGuard, body('customURL').notEmpty()
         const isNotBot = await checkToken(token)
 
         if(isNotBot===true){
+            if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             return checkIfCustomURLAvailable(customURL)
             .then(result => {
                 // console.log(res)
@@ -137,12 +141,14 @@ listsRouter.put('/putCustom', hostNameGuard, body('customURL').notEmpty().bail()
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putCustom(listId, customURL)
             res.status(200).json({message:'Put Custom Successfully', resultant})
-        } else if(sub !==userId && checkedListId[0].listId !==listId && req.body.administrating == true) {
-            // console.log('special condition')
-            const resultantA = await putCustom(listId, customURL)
-            res.status(200).json({message:'admin changed customURL', resultantA})
+        // } else if(sub !==userId && checkedListId[0].listId !==listId && req.body.administrating == true) {
+        //     // console.log('special condition')
+        //     const resultantA = await putCustom(listId, customURL)
+        //     res.status(200).json({message:'admin changed customURL', resultantA})
         } else {
             // console.log('putcustom security verification error')
             res.status(401).json({message:'Error Verifying User Security Permissions'})
@@ -165,6 +171,8 @@ listsRouter.put('/setBg', hostNameGuard ,restricted, body('backColor').isString(
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(backColor.indexOf(`<`)!=-1 || backColor.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(backColor.indexOf(`/`)!=-1 || backColor.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putBackground(listId, backColor)
             res.status(200).json({message:'Background Set Successfully', resultant})
         } else {
@@ -303,6 +311,8 @@ listsRouter.put('/setText', hostNameGuard, restricted, body('listId').notEmpty()
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(fontSelection.indexOf(`<`)!=-1 || fontSelection.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(fontSelection.indexOf(`/`)!=-1 || fontSelection.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putFont(listId, fontSelection)
             res.status(200).json({message:'Font Set Successfully', resultant})
         } else {
@@ -327,6 +337,8 @@ listsRouter.put('/setTcolor', hostNameGuard, restricted, body('listId').notEmpty
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(txtColor.indexOf(`<`)!=-1 || txtColor.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(txtColor.indexOf(`/`)!=-1 || txtColor.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putTColor(listId, txtColor)
             res.status(200).json({message:'Text Color Set Successfully', resultant})
         } else {
@@ -358,6 +370,10 @@ listsRouter.post('/resolveCustom', hostNameGuard, restricted, body('listId').not
 listsRouter.put('/changeProfilePicture', hostNameGuard, restricted, body('profilePictureURL').notEmpty().isString(), body('shackImageId').notEmpty().isString(), async (req, res) => {
     try {
         let {profilePictureURL, shackImageId} = req.body
+        if(shackImageId.indexOf(`<`)!=-1 || shackImageId.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+        if(shackImageId.indexOf(`/`)!=-1 || shackImageId.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+        if(profilePictureURL.indexOf(`<`)!=-1 || profilePictureURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+        if(profilePictureURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
         const sub = req.decodedToken.sub
         const userId = parseInt(req.body.userId,10)
         const hasShackAlready = await getPreviousProfileShack(sub)
@@ -467,6 +483,8 @@ listsRouter.put('/setDisplayName', hostNameGuard, restricted, body('displayName'
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(displayName.indexOf(`<`)!=-1 || displayName.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(displayName.indexOf(`/`)!=-1 || displayName.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await setDisplayName(listId, displayName)
             res.status(200).json({message:'Set Display Name Successfully', resultant})
         } else {
