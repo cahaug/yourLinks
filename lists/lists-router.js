@@ -4,6 +4,10 @@ const restricted = require('../middleware/restricted.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 const axios = require('axios')
 require('dotenv').config();
+const { body, check } = require('express-validator')
+const {Duplex} = require('stream')
+var FormData = require('form-data')
+
 
 
 
@@ -15,7 +19,7 @@ require('dotenv').config();
 
 
 // displays user's list
-listsRouter.get('/:userId', hostNameGuard, async (req, res) => {
+listsRouter.get('/:userId', hostNameGuard, check('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     return getListByUser(req.params.userId)
     .then(list => {
         res.header('Access-Control-Allow-Origin', '*')
@@ -26,7 +30,7 @@ listsRouter.get('/:userId', hostNameGuard, async (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-listsRouter.get('/list4user/:userId', hostNameGuard, async (req, res) => {
+listsRouter.get('/list4user/:userId', hostNameGuard, check('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     return getListId(req.params.userId)
     .then(id => {
         res.header('Access-Control-Allow-Origin', '*')
@@ -80,9 +84,11 @@ listsRouter.get('/list4user/:userId', hostNameGuard, async (req, res) => {
 // })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCustom/', hostNameGuard, restricted, async (req, res) => {
+listsRouter.post('/checkCustom/', hostNameGuard, body('customURL').notEmpty().bail().isString().bail(), restricted, async (req, res) => {
     const { customURL } = req.body
     console.log('checked customURL', customURL)
+    if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+    if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
     return checkIfCustomURLAvailable(customURL)
     .then(result => {
         // console.log(res)
@@ -92,7 +98,7 @@ listsRouter.post('/checkCustom/', hostNameGuard, restricted, async (req, res) =>
 })
 
 // return bool for whether a certain customURL is taken or not
-listsRouter.post('/checkCHomepage/', hostNameGuard, async (req, res) => {
+listsRouter.post('/checkCHomepage/', hostNameGuard, body('customURL').notEmpty().bail().isString().bail(), body('token').isString().notEmpty(), async (req, res) => {
     const { customURL, token } = req.body
     try {
         // verify recaptcha
@@ -106,6 +112,8 @@ listsRouter.post('/checkCHomepage/', hostNameGuard, async (req, res) => {
         const isNotBot = await checkToken(token)
 
         if(isNotBot===true){
+            if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             return checkIfCustomURLAvailable(customURL)
             .then(result => {
                 // console.log(res)
@@ -123,7 +131,7 @@ listsRouter.post('/checkCHomepage/', hostNameGuard, async (req, res) => {
 })
 
 // assign a user a customURL
-listsRouter.put('/putCustom', hostNameGuard, restricted, async (req, res) => {
+listsRouter.put('/putCustom', hostNameGuard, body('customURL').notEmpty().bail().isString().bail(), body('userId').isNumeric({ no_symbols:true }).notEmpty(), body('listId').isNumeric({ no_symbols:true }).notEmpty(), restricted, async (req, res) => {
     const { customURL, listId, userId } = req.body
     const {sub} = req.decodedToken
     // console.log('customURL', customURL);
@@ -133,12 +141,14 @@ listsRouter.put('/putCustom', hostNameGuard, restricted, async (req, res) => {
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putCustom(listId, customURL)
             res.status(200).json({message:'Put Custom Successfully', resultant})
-        } else if(sub !==userId && checkedListId[0].listId !==listId && req.body.administrating == true) {
-            // console.log('special condition')
-            const resultantA = await putCustom(listId, customURL)
-            res.status(200).json({message:'admin changed customURL', resultantA})
+        // } else if(sub !==userId && checkedListId[0].listId !==listId && req.body.administrating == true) {
+        //     // console.log('special condition')
+        //     const resultantA = await putCustom(listId, customURL)
+        //     res.status(200).json({message:'admin changed customURL', resultantA})
         } else {
             // console.log('putcustom security verification error')
             res.status(401).json({message:'Error Verifying User Security Permissions'})
@@ -151,7 +161,7 @@ listsRouter.put('/putCustom', hostNameGuard, restricted, async (req, res) => {
 
 
 // change background color
-listsRouter.put('/setBg', hostNameGuard ,restricted, async (req,res) => {
+listsRouter.put('/setBg', hostNameGuard ,restricted, body('backColor').isString(), async (req,res) => {
     const {listId, userId, backColor} = req.body
     const {sub} = req.decodedToken
     // console.log('sub',sub)
@@ -161,6 +171,8 @@ listsRouter.put('/setBg', hostNameGuard ,restricted, async (req,res) => {
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(backColor.indexOf(`<`)!=-1 || backColor.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(backColor.indexOf(`/`)!=-1 || backColor.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putBackground(listId, backColor)
             res.status(200).json({message:'Background Set Successfully', resultant})
         } else {
@@ -177,7 +189,15 @@ listsRouter.put('/setBg', hostNameGuard ,restricted, async (req,res) => {
 
 const fs = require("fs");
 const fileUpload = require('express-fileupload');
-listsRouter.use(fileUpload({limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+listsRouter.use(fileUpload({ safeFileNames:true, abortOnLimit:true, limits:{fileSize: 11*1024*1024}, useTempFiles:true, tempFileDir:'/tmp/'}))
+
+function bufferToStream(myBuuffer) {
+    let tmp = new Duplex();
+    tmp.push(myBuuffer);
+    tmp.push(null);
+    return tmp;
+}
+
 
 var imageshack = require('imageshack')({
     api_key: process.env.SHACK_API_KEY,
@@ -186,14 +206,26 @@ var imageshack = require('imageshack')({
 });
 
 
-listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted, async (req, res) => {
+listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted, body('listId').isNumeric({ no_symbols:true }).notEmpty(), async (req, res) => {
     try {
         const sub = req.decodedToken.sub
         const listId = parseInt(req.params.listId, 10)
         const checkedListId = await getListId(sub)
         if(checkedListId[0].listId == listId){
-            const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-            imageshack.upload(myimage, async function(err, filejson){
+            const formData = new FormData()
+            const girlSecret = process.env.GIRLSECRET
+            formData.append('secret', `${girlSecret}`)
+            formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
+            const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'https://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
+            // console.log('cleanImage.data',cleanImage.data)
+            console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
+            // const cleanedmyimage = Readable.from(cleanImage.data)
+            const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
+            console.log('lengths', mycleanimage.readableLength)
+            const newFilename = Date.now()
+            fs.writeFileSync(`/tmp/${newFilename}.jpg`, cleanImage.data)
+            console.log('rightbefore shackup', mycleanimage)            
+            imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.jpg`), async function(err, filejson){
                 if(err){
                     console.log(err);
                 }else{
@@ -205,6 +237,8 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted,
                     }
                    */
                     console.log(filejson);
+                    fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
+                    fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})                    
                     const listBackgroundURL = `https://${filejson.link}`
                     const listBackgroundImageId = filejson.id
                     console.log('shackImageId bg', listBackgroundImageId, listBackgroundURL)
@@ -234,7 +268,7 @@ listsRouter.put('/uploadListBackgroundPhoto/:listId', hostNameGuard, restricted,
     }
 })
 
-listsRouter.put('/deleteListBackground', hostNameGuard, restricted, async (req, res) => {
+listsRouter.put('/deleteListBackground', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try{
         const sub = req.decodedToken.sub
         const {listId} = req.body
@@ -268,7 +302,7 @@ listsRouter.put('/deleteListBackground', hostNameGuard, restricted, async (req, 
 })
 
 // change text color - lightmode
-listsRouter.put('/setText', hostNameGuard, restricted, async (req,res) => {
+listsRouter.put('/setText', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), body('fontSelection').notEmpty().isString(), async (req,res) => {
     const {listId, userId, fontSelection} = req.body
     const {sub} = req.decodedToken
     // console.log('req.body setFont', req.body)
@@ -277,6 +311,8 @@ listsRouter.put('/setText', hostNameGuard, restricted, async (req,res) => {
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(fontSelection.indexOf(`<`)!=-1 || fontSelection.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(fontSelection.indexOf(`/`)!=-1 || fontSelection.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putFont(listId, fontSelection)
             res.status(200).json({message:'Font Set Successfully', resultant})
         } else {
@@ -290,7 +326,7 @@ listsRouter.put('/setText', hostNameGuard, restricted, async (req,res) => {
 })
 
 // change font selection - lightmode
-listsRouter.put('/setTcolor', hostNameGuard, restricted, async (req,res) => {
+listsRouter.put('/setTcolor', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), body('txtColor').notEmpty().isString(), async (req,res) => {
     const {listId, userId, txtColor} = req.body
     const {sub} = req.decodedToken
     // console.log('sub',req.decodedToken.sub, sub)
@@ -301,6 +337,8 @@ listsRouter.put('/setTcolor', hostNameGuard, restricted, async (req,res) => {
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(txtColor.indexOf(`<`)!=-1 || txtColor.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(txtColor.indexOf(`/`)!=-1 || txtColor.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putTColor(listId, txtColor)
             res.status(200).json({message:'Text Color Set Successfully', resultant})
         } else {
@@ -314,7 +352,7 @@ listsRouter.put('/setTcolor', hostNameGuard, restricted, async (req,res) => {
 })
 
 // return customURL for listId (if present)
-listsRouter.post('/resolveCustom', hostNameGuard, restricted, async (req,res) => {
+listsRouter.post('/resolveCustom', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), async (req,res) => {
     const {listId} = req.body
     // console.log('resolveCustom listId', listId)
     try {
@@ -329,9 +367,13 @@ listsRouter.post('/resolveCustom', hostNameGuard, restricted, async (req,res) =>
 
 
 // change user profilepictureURL
-listsRouter.put('/changeProfilePicture', hostNameGuard, restricted, async (req, res) => {
+listsRouter.put('/changeProfilePicture', hostNameGuard, restricted, body('profilePictureURL').notEmpty().isString(), body('shackImageId').notEmpty().isString(), async (req, res) => {
     try {
         let {profilePictureURL, shackImageId} = req.body
+        if(shackImageId.indexOf(`<`)!=-1 || shackImageId.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+        if(shackImageId.indexOf(`/`)!=-1 || shackImageId.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+        if(profilePictureURL.indexOf(`<`)!=-1 || profilePictureURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+        if(profilePictureURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
         const sub = req.decodedToken.sub
         const userId = parseInt(req.body.userId,10)
         const hasShackAlready = await getPreviousProfileShack(sub)
@@ -362,7 +404,7 @@ listsRouter.put('/changeProfilePicture', hostNameGuard, restricted, async (req, 
     }
 })
 
-listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, async (req, res) => {
+listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
 // listsRouter.put('/uploadProfilePicture/:userId', async (req, res) => {
     try {
         const sub = req.decodedToken.sub
@@ -371,12 +413,22 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, asyn
         console.log(hasShackAlready)
         console.log('sub', sub, typeof sub,'userId', userId, typeof userId)
         if(sub !== userId){
-            res.status(400).json({message:'You may only modify your own list.'})
-            return 
+            return res.status(400).json({message:'You may only modify your own list.'}).end()
         }
+        const formData = new FormData()
+        const girlSecret = process.env.GIRLSECRET
+        formData.append('secret', `${girlSecret}`)
+        formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
+        const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'https://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
+        // console.log('cleanImage.data',cleanImage.data)
+        console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
+        // const cleanedmyimage = Readable.from(cleanImage.data)
+        const mycleanimage = bufferToStream(Buffer.from(cleanImage.data))
+        console.log('lengths', mycleanimage.readableLength)
+        const newFilename = Date.now()
+        fs.writeFileSync(`/tmp/${newFilename}.jpg`, cleanImage.data)
         console.log('req.file', req.files.myImage)
-        const myimage = fs.createReadStream(req.files.myImage.tempFilePath)
-        imageshack.upload(myimage, async function(err, filejson){
+        imageshack.upload(fs.createReadStream(`/tmp/${newFilename}.jpg`), async function(err, filejson){
             if(err){
                 console.log(err);
             }else{
@@ -387,7 +439,9 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, asyn
                     id: 'newtsep'
                 }
                */
+                fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})                
                 console.log(filejson);
+                fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
                 const profilePictureURL = `https://${filejson.link}`
                 const shackImageId = filejson.id
                 console.log('shackImageId', shackImageId, profilePictureURL)
@@ -420,7 +474,7 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, asyn
     }
 })
 
-listsRouter.put('/setDisplayName', hostNameGuard, restricted, async (req, res) => {
+listsRouter.put('/setDisplayName', hostNameGuard, restricted, body('displayName').notEmpty().isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const { displayName, listId, userId } = req.body
     const {sub} = req.decodedToken
 
@@ -429,6 +483,8 @@ listsRouter.put('/setDisplayName', hostNameGuard, restricted, async (req, res) =
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(displayName.indexOf(`<`)!=-1 || displayName.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
+            if(displayName.indexOf(`/`)!=-1 || displayName.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await setDisplayName(listId, displayName)
             res.status(200).json({message:'Set Display Name Successfully', resultant})
         } else {

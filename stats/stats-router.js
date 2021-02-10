@@ -1,5 +1,5 @@
 const statsRouter = require('express').Router();
-const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers, mostPopToday } = require('../database/queries.js');
+const { logAClick, statsRecordsCount, statsForEntry, statsForList, getEntries, getEntries2, getListId, statsRecords, incrementListViews, listViewsGet, pieGraph, getSingleEntry, logPageView, pageViewsGet, countryCounts, provinceCounts, deviceTypes, browserNamesCounts, touchNotTouchCounts, osFamilyCounts, deviceBrandNamesCounts, deviceOwnNamesCounts, logHomepageView, homepageViewsGet, homepagecountryCounts, homepageprovinceCounts, homepagedeviceTypes, homepagebrowserNamesCounts, homepagetouchNotTouchCounts, homepageosFamilyCounts, homepagedeviceBrandNamesCounts, homepagedeviceOwnNamesCounts, mostPop, distinctViewers, mostPopToday, homepageLatLon, latLonForListId } = require('../database/queries.js');
 const restricted = require('../middleware/restricted.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 // const maxMindDb = require('./MaxMindDb/GeoLite2-Country.mmdb')
@@ -7,6 +7,7 @@ const hostNameGuard = require('../middleware/hostNameGuard.js')
 // const fs = require('fs');
 const maxmind = require('maxmind')
 const axios = require('axios')
+const { body, check } = require('express-validator')
 // const Reader = require('@maxmind/geoip2-node').Reader;
 // const dbBuffer = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
 // const dbBufferCountry = fs.readFileSync('./stats/MaxMindDb/GeoLite2-Country.mmdb');
@@ -22,6 +23,7 @@ const axios = require('axios')
 var ip2loc = require("ip2location-nodejs");
 // const Bowser = require("bowser")
 const parser = require("ua-parser-js");
+const { link } = require('fs');
 
 const flagsDict = {
     'AF':'🇦🇫',
@@ -273,9 +275,9 @@ const flagsDict = {
 }
 
 
-statsRouter.get('/', hostNameGuard,async (req, res) => {
+statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), check('eid').notEmpty().isNumeric({ no_symbols:true }), check('red').notEmpty().isString(), async (req, res) => {
     const date = new Date().toISOString();
-    const maxTouch = req.query.mt
+    const maxTouch = escape(req.query.mt)
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
@@ -283,9 +285,9 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
     const mn = date.slice(14, 16)
     const sc = date.slice(17, 19)
     const doNotTrack = !!req.headers.dnt
-    const refURL = req.query.ref
-    const entryId = req.query.eid
-    const redirect = req.query.red
+    const refURL = escape(req.query.ref)
+    const entryId = escape(req.query.eid)
+    const redirect = escape(req.query.red)
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
     // ua-parser-js
@@ -339,6 +341,10 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
     console.log('zone loc', zone[zone.length-1])
     let province = ''
     if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
+    let latitude = ''
+    let longitude = ''
+    if(rawMindData.location.latitude){latitude = rawMindData.location.latitude}
+    if(rawMindData.location.longitude){longitude = rawMindData.location.longitude}
     // const locationValueCountry = await reader.country(`${req.headers['x-forwarded-for']}`)
     // const userAgent = req.headers['user-agent'];
     // const countryOfOrigin = locationValueCountry.country.isoCode
@@ -353,7 +359,7 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
     // const browserName = uaDataScrape.data.browser.name
     // const browserVersionMajor = uaDataScrape.data.browser.version_major
     // const userIP = req.headers['x-forwarded-for'];
-    const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+    const stat = { entryId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
     console.log('stat', stat)
     return logAClick(stat)
     .then(result => {
@@ -366,7 +372,7 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
             res.header('Access-Control-Allow-Methods', 'GET, POST,  PUT, DELETE, OPTIONS')
             res.status(201).json(result)
         } else {
-            return res.redirect(`${refURL}`)
+            return res.redirect(`${unescape(refURL)}`)
         }
     })
     .catch(err => {
@@ -375,9 +381,9 @@ statsRouter.get('/', hostNameGuard,async (req, res) => {
     });
 });
 
-statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
+statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const date = new Date().toISOString();
-    const maxTouch = req.query.mt
+    const maxTouch = escape(req.query.mt)
     const dy = date.slice(8, 10)
     const mo = date.slice(5, 7)
     const yr = date.slice(0, 4)
@@ -429,6 +435,10 @@ statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
     console.log('zone loc', zone[zone.length-1])
     let province = ''
     if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}
+    let latitude = ''
+    let longitude = ''
+    if(rawMindData.location.latitude){latitude = rawMindData.location.latitude}
+    if(rawMindData.location.longitude){longitude = rawMindData.location.longitude}
     // ip2loc:
     // ip2loc.IP2Location_init("./stats/ip2location/IP2LOCATION-LITE-DB3.IPV6.BIN");
     // // const ipLocResult = ip2loc.IP2Location_get_all(userIP)
@@ -453,7 +463,7 @@ statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
     // const browserName = uaDataScrape.data.browser.name
     // const browserVersionMajor = uaDataScrape.data.browser.version_major
     // const userIP = req.headers['x-forwarded-for'];
-    const stat = { dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
+    const stat = { dy, mo, yr, hr, mn, sc, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
     console.log('stat', stat)
     return logHomepageView(stat)
     .then(result => {
@@ -544,7 +554,7 @@ statsRouter.get('/hpA1', hostNameGuard, async (req, res) => {
 // })
 
 // needs to be secured w sub verification - complete
-statsRouter.post('/pieGraph', hostNameGuard, restricted, async (req, res) => {
+statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     const { userId } = req.body
     const {sub} = req.decodedToken
     // const titleAdder = async (data) => {
@@ -566,12 +576,16 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, async (req, res) => {
             const withTitle = pieData.forEach(async value => {
                 const title = await getSingleEntry(value.entryId)
                 // console.log('title ret', title)
-                const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
-                console.log('obp', obp)
-                newArray.push(obp)
-                if(newArray.length==pieData.length){
-                    console.log('criteria met', newArray)
-                    res.status(200).json(newArray)                    
+                // let obp
+                // console.log('obptitle0', title[0])
+                if(title[0]){
+                    const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
+                    console.log('obp', obp)
+                    newArray.push(obp)
+                    if(newArray.length==pieData.length){
+                        console.log('criteria met', newArray)
+                        res.status(200).json(newArray)                    
+                    }
                 }
                 // console.log('newArray Inner', newArray)
             })
@@ -587,7 +601,7 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, async (req, res) => {
 })
 
 // aio stats and links
-statsRouter.get('/aio/:userId', hostNameGuard, restricted, (req, res, next) => {
+statsRouter.get('/aio/:userId', hostNameGuard, restricted, check('userId').notEmpty().isNumeric({ no_symbols:true }), (req, res, next) => {
     const { userId } = req.params;
     const { sub } = req.decodedToken
     // console.log('userId == sub', userId==sub)
@@ -640,7 +654,7 @@ statsRouter.get('/aio/:userId', hostNameGuard, restricted, (req, res, next) => {
 // })
 
 // new increment listViews
-statsRouter.get('/ili/:listId', hostNameGuard, async (req, res) => {
+statsRouter.get('/ili/:listId', hostNameGuard, check('listId').notEmpty().isNumeric({ no_symbols:true }), check('mt').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const { listId } = req.params
         const maxTouch = req.query.mt
@@ -698,9 +712,13 @@ statsRouter.get('/ili/:listId', hostNameGuard, async (req, res) => {
         let zone = rawMindData.location.time_zone.split('/')
         console.log('zone loc', zone[zone.length-1])
         let province = ''
-        if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}        
-        const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor }
-        console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName)
+        if(rawMindData.city){province = rawMindData.city.names.en}else{province = zone[zone.length-1]}  
+        let latitude = ''
+        let longitude = ''
+        if(rawMindData.location.latitude){latitude = rawMindData.location.latitude}
+        if(rawMindData.location.longitude){longitude = rawMindData.location.longitude}
+        const view = { listId, dy, mo, yr, hr, mn, sc, doNotTrack, userIP, userAgent, countryOfOrigin, province, isMobileDevice, deviceType, deviceBrandName, deviceOwnName, osName, osFamily, browserName, browserVersionMajor, latitude, longitude }
+        console.log('listview', view.listId, view.countryOfOrigin, view.province, view.osName, view.browserName, view.deviceBrandName, view.longitude, view.latitude)
         return logPageView(view)
         .then(result => {
             // console.log('add pageview result', result)
@@ -718,7 +736,7 @@ statsRouter.get('/ili/:listId', hostNameGuard, async (req, res) => {
 });
 
 // return listviews for given list
-statsRouter.get('/listViews/:listId', hostNameGuard, restricted, async (req, res) => {
+statsRouter.get('/listViews/:listId', hostNameGuard, restricted, check('listId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const { listId } = req.params
         const {sub} = req.decodedToken
@@ -755,7 +773,7 @@ statsRouter.get('/listViews/:listId', hostNameGuard, restricted, async (req, res
 
 // })
 
-statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
+statsRouter.get('/elv/:listId', hostNameGuard, restricted, check('listId').notEmpty().isNumeric({ no_symbols:true }), async (req,res) => {
     try {
         const {sub} = req.decodedToken
         let { listId } = req.params
@@ -771,11 +789,24 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
             //         distinctViewersArr.push({userIP: })
             //     }
             // })
+            const mapPoints = await latLonForListId(listId)
+            const properMapPoints = []
+            mapPoints.map(x=>{
+                if(x.latitude!=null && x.province.length > 1){
+                    if(Math.random()>=0.498){
+                        properMapPoints.push({markerOffset:-15, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    } else{
+                        properMapPoints.push({markerOffset:25, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    }
+                }
+            })
             const countryListCount = []
+            const mapCountries = []
             const countryList = await countryCounts(listId)
             countryList.map(x => {
                 if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                     countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+                    mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
                 }
             })
             const regions = []
@@ -860,7 +891,7 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, async (req,res) => {
                 timelineArray.push(valobj)
             }
             // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount })
+            res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, distinctViewersCount:distinctViewersCount, mapCountries:mapCountries, mapPoints:properMapPoints })
     } else {
         console.log(`elv security verification error userId : ${sub}`)
         res.status(401).json({message:'No Peeping'})
@@ -880,6 +911,18 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         const yr = date.slice(0, 4)
         const mostPopularToday = await mostPopToday(dy,mo,yr)
         const mostPupular = await mostPop()
+        const mapPoints = await homepageLatLon()
+        const properMapPoints = []
+            mapPoints.map(x=>{
+                if(x.latitude!=null && x.province.length > 1){
+                    if(Math.random()>=0.498){
+                        properMapPoints.push({markerOffset:-15, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    } else{
+                        properMapPoints.push({markerOffset:25, name:x.province, coordinates:[x.longitude, x.latitude]})
+                    }
+                }
+            })
+	    console.log('mapPoints', mapPoints, properMapPoints)
         console.log('mostPupular', mostPupular)
         // mostPupular.map(x => {
         //     if(x.customURL !== null){
@@ -887,10 +930,12 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
         //     }
         // })
         const countryListCount = []
+        const mapCountries = []
         const countryList = await homepagecountryCounts()
         countryList.map(x => {
             if(x.countryOfOrigin !== null && x.countryOfOrigin.indexOf('?') === -1){
                 countryListCount.push({countryOfOrigin:`${x.countryOfOrigin} ${flagsDict[x.countryOfOrigin]}`, count:parseInt(x.count,10)})
+                mapCountries.push({country:`${x.countryOfOrigin}`, value:parseInt(x.count,10)})
             }
         })
         const regions = []
@@ -981,7 +1026,7 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
             timelineArray.push(valobj)
         }
         // const timelineArray = Object.keys(timelineCounts).map((key)=>[new Date(key.slice(0,4), key.slice(4,6), key.slice(6,8)), timelineCounts[key]])
-        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday})
+        res.status(200).json({countries:countryListCount, regions: regions, deviceTypes:deviceTypesListCount, browserNameCounts:browserNameListCount, isTouchDevice: isTouchDevice, osFamilyCount:osFamilyCount, deviceBrandNamesCount: deviceBrandNamesCount, deviceOwnNamesCount:deviceOwnNamesCount, timeline:timelineArray, maxCount:maxCount, mostPopular:mostPupular, mostPopularToday:mostPopularToday, mapCountries:mapCountries, mapPoints:properMapPoints})
     
     }catch (err){
         console.log('elv err',err)
