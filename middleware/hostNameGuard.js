@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
     const hostName = req.headers.origin
     let mySet = {
         //undefined:true,
-	'https://link-in.bio':true,
+	    'https://link-in.bio':true,
         'https://this-links.to':true,
         'https://bio-link.me':true,
         'https://i-am.so':true,
@@ -45,9 +45,10 @@ module.exports = (req, res, next) => {
         'https://this.af':true
     }
     if(hostName in mySet){
-        console.log('valid host')
+        console.log('valid host', hostName)
         next()
     } else {
+        console.log('ban', hostName)
         res.status(400).json({message:'nice try, hackerman'})
     }
 
