@@ -311,13 +311,16 @@ paymentsRouter.post('/finish', hostNameGuard, body('token').notEmpty().isString(
         if(isNotBot===true){
             const emailForToken = await verifyRegistration(tooken)
             console.log('emailfortoken', emailForToken)
-            if(emailForToken[0].email===email){
+            if(emailForToken[0].email===email && emailForToken[0].redeemed===false){
                 const redeemsRegistration = await redeemRegistration(email)
                 console.log('redeemsRegistration', redeemsRegistration)
                 const hash = bcrypt.hashSync(password, 12); // 2 ^ n
                 const updatedPassword = await updatePassword(email, hash)
                 console.log('updatedPassword', updatedPassword)
                 res.sendStatus(200)
+            } else {
+                console.log('tried already registered')
+                return res.sendStatus(400).end()
             }
         } else {
             res.status(401).json({message:'You sound like a robot'})

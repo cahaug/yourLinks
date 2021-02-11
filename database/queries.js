@@ -319,7 +319,7 @@ module.exports = {
     },
 
     verifyRegistration(token){
-        return knex('registration').where('token', token).select('email')
+        return knex('registration').where('token', token).select('email', 'redeemed')
     },
 
     redeemRegistration(email){
