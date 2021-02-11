@@ -783,7 +783,7 @@ statsRouter.get('/elv/:listId', hostNameGuard, restricted, check('listId').notEm
         if(checkedListId[0].listId === listId){
             const distinctViewer = await distinctViewers(listId)
             const distinctViewersCount = distinctViewer.length
-            console.log('dv',distinctViewer)
+            // console.log('dv',distinctViewer)
             // distinctViewer.map(x => {
             //     if(x.userIP !== null){
             //         distinctViewersArr.push({userIP: })
@@ -922,8 +922,8 @@ statsRouter.get('/steakSauce', hostNameGuard, async (req,res) => {
                     }
                 }
             })
-	    console.log('mapPoints', mapPoints, properMapPoints)
-        console.log('mostPupular', mostPupular)
+	    // console.log('mapPoints', mapPoints, properMapPoints)
+        // console.log('mostPupular', mostPupular)
         // mostPupular.map(x => {
         //     if(x.customURL !== null){
         //         mostPopular.push({customURL:x.customURL})
