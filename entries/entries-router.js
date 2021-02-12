@@ -40,7 +40,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             if(shackImageId!=null){if(shackImageId.indexOf(`<`)!= -1 || shackImageId.indexOf(`>`) != -1){return res.sendStatus(400).end()}}
             if(userId.indexOf(`<`)!= -1 || userId.indexOf(`>`) != -1){return res.sendStatus(400).end()}
             if(referencingURL.indexOf(`<`)!= -1 || referencingURL.indexOf(`>`) != -1){return res.sendStatus(400).end()}
-            if(imgURL.indexOf(`<`)!= -1 || imgURL.indexOf(`>`) != -1){return res.sendStatus(400).end()}
+            if(imgURL != null){if(imgURL.indexOf(`<`)!= -1 || imgURL.indexOf(`>`) != -1){return res.sendStatus(400).end()}}
             if(imgURL != null && imgURL.trim().indexOf('http') == -1){return res.sendStatus(400).end()}
             let isURLmalicious = null
             if(referencingURL != null && referencingURL.trim().indexOf('http') == 0){
