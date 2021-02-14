@@ -53,7 +53,7 @@
     "sqlite3": "^5.0.1",
     "stream": "0.0.2",
     "supertest": "^4.0.2",
-    "ua-parser-js": "^0.7.23",
+    "ua-parser-js": "^0.7.24",
     "verify-paddle-webhook": "^1.0.0"
   },
   "snyk": true
