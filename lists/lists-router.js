@@ -113,7 +113,7 @@ listsRouter.post('/checkCHomepage/', hostNameGuard, body('customURL').notEmpty()
 
         if(isNotBot===true){
             if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
-            if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+            if(customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             return checkIfCustomURLAvailable(customURL)
             .then(result => {
                 // console.log(res)
@@ -142,7 +142,7 @@ listsRouter.put('/putCustom', hostNameGuard, body('customURL').notEmpty().bail()
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
             if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
-            if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+            if(customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putCustom(listId, customURL)
             res.status(200).json({message:'Put Custom Successfully', resultant})
         // } else if(sub !==userId && checkedListId[0].listId !==listId && req.body.administrating == true) {
