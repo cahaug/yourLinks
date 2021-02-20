@@ -71,7 +71,7 @@ paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), 
                         // userId, backColor, txtColor, fontSelection, customURL
                     const backColor = '#808080'
                     const txtColor = '#808080'
-                    const fontSelection = 'sigmarOne'
+                    const fontSelection = 'mulish'
                     const generatedCustom = sha512(email)
                     const customURL = `https://link-in.bio/${generatedCustom.slice(92)}`
                     const list = { 'userId':userId, 'creationDate': creationDate, 'backColor':backColor, 'txtColor':txtColor, 'fontSelection':fontSelection, 'customURL':customURL }
