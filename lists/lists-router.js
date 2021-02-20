@@ -88,7 +88,7 @@ listsRouter.post('/checkCustom/', hostNameGuard, body('customURL').notEmpty().ba
     const { customURL } = req.body
     console.log('checked customURL', customURL)
     if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
-    if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+    if(customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
     return checkIfCustomURLAvailable(customURL)
     .then(result => {
         // console.log(res)
