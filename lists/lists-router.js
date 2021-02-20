@@ -370,8 +370,8 @@ listsRouter.post('/resolveCustom', hostNameGuard, restricted, body('listId').not
 listsRouter.put('/changeProfilePicture', hostNameGuard, restricted, body('profilePictureURL').notEmpty().isString(), body('shackImageId').notEmpty().isString(), async (req, res) => {
     try {
         let {profilePictureURL, shackImageId} = req.body
-        if(shackImageId.indexOf(`<`)!=-1 || shackImageId.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
-        if(shackImageId.indexOf(`/`)!=-1 || shackImageId.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+        if(shackImageId!=null){if(shackImageId.indexOf(`<`)!=-1 || shackImageId.indexOf(`>`)!=-1){return res.sendStatus(400).end()}}
+        if(shackImageId!=null){if(shackImageId.indexOf(`/`)!=-1 || shackImageId.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}}
         if(profilePictureURL.indexOf(`<`)!=-1 || profilePictureURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
         if(profilePictureURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
         const sub = req.decodedToken.sub
