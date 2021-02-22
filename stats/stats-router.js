@@ -392,7 +392,7 @@ statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_sy
     const sc = date.slice(17, 19)
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
-    const referer = req.headers['referer']
+    const referer = req.get('Referrer')
     console.log('reefer', referer)
     // ua-parser-js
     const uaData = parser(userAgent)
