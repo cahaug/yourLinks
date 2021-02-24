@@ -392,6 +392,8 @@ statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_sy
     const sc = date.slice(17, 19)
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
+    const referer = req.get('Referrer')
+    console.log('reefer', referer)
     // ua-parser-js
     const uaData = parser(userAgent)
     let isMobileDevice = false
@@ -425,7 +427,7 @@ statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_sy
     const rawMindData = await maxmind.open('./stats/MaxMindDb/GeoLite2-City.mmdb').then((lookup) => {
         // console.log(lookup.get('66.6.44.4'));
         const raw = lookup.get(userIP)
-        console.log('maxmind lookup raw', raw)
+        // console.log('maxmind lookup raw', raw)
         return raw
         // console.log(lookup.getWithPrefixLength('66.6.44.4'));
     });
@@ -580,10 +582,10 @@ statsRouter.post('/pieGraph', hostNameGuard, restricted, body('userId').notEmpty
                 // console.log('obptitle0', title[0])
                 if(title[0]){
                     const obp = {linkTitle:title[0].linkTitle, entryId:value.entryId, count:parseInt(value.count,10)}
-                    console.log('obp', obp)
+                    // console.log('obp', obp)
                     newArray.push(obp)
                     if(newArray.length==pieData.length){
-                        console.log('criteria met', newArray)
+                        // console.log('criteria met', newArray)
                         res.status(200).json(newArray)                    
                     }
                 }

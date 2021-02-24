@@ -88,7 +88,7 @@ listsRouter.post('/checkCustom/', hostNameGuard, body('customURL').notEmpty().ba
     const { customURL } = req.body
     console.log('checked customURL', customURL)
     if(customURL.indexOf(`<`)!=-1 || customURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
-    if(customURL.indexOf(`/`)!=-1 || customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+    if(customURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
     return checkIfCustomURLAvailable(customURL)
     .then(result => {
         // console.log(res)
@@ -370,8 +370,8 @@ listsRouter.post('/resolveCustom', hostNameGuard, restricted, body('listId').not
 listsRouter.put('/changeProfilePicture', hostNameGuard, restricted, body('profilePictureURL').notEmpty().isString(), body('shackImageId').notEmpty().isString(), async (req, res) => {
     try {
         let {profilePictureURL, shackImageId} = req.body
-        if(shackImageId.indexOf(`<`)!=-1 || shackImageId.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
-        if(shackImageId.indexOf(`/`)!=-1 || shackImageId.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
+        if(shackImageId!=null){if(shackImageId.indexOf(`<`)!=-1 || shackImageId.indexOf(`>`)!=-1){return res.sendStatus(400).end()}}
+        if(shackImageId!=null){if(shackImageId.indexOf(`/`)!=-1 || shackImageId.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}}
         if(profilePictureURL.indexOf(`<`)!=-1 || profilePictureURL.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
         if(profilePictureURL.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
         const sub = req.decodedToken.sub
