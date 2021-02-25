@@ -290,6 +290,7 @@ statsRouter.get('/', hostNameGuard, check('mt').notEmpty().isNumeric({ no_symbol
     const redirect = escape(req.query.red)
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
+    if(['47.28.30.85','50.239.10.174','64.60.151.178','67.160.204.236','70.95.74.98','73.189.157.180','75.57.5.112','98.207.183.174','99.145.233.13','104.220.176.23','108.208.26.166','136.24.33.133','172.249.124.162','172.250.23.162','216.7.76.156','2601:647:ca02:d7a0:1ad:35dd:ae10:d8d','2605:e000:150a:d870:907d:669f:3361:3567','2605:e000:150a:d870:c451:f4f9:62ae:d9eb','2606:6000:604c:5700:3007:640a:5ebf:9d5'].includes(userIP)){return res.sendStatus(401).end()}
     // ua-parser-js
     const uaData = parser(userAgent)
     let isMobileDevice = false
@@ -393,7 +394,7 @@ statsRouter.get('/hpA1', hostNameGuard, check('mt').notEmpty().isNumeric({ no_sy
     const userAgent = req.headers['user-agent'];
     const userIP = req.headers['x-forwarded-for'];
     const referer = req.get('Referrer')
-    if(['70.172.102.128','47.28.30.85','50.239.10.174','64.60.151.178','67.160.204.236','70.95.74.98','73.189.157.180','75.57.5.112','98.207.183.174','99.145.233.13','104.220.176.23','108.208.26.166','136.24.33.133','172.249.124.162','172.250.23.162','216.7.76.156','2601:647:ca02:d7a0:1ad:35dd:ae10:d8d','2605:e000:150a:d870:907d:669f:3361:3567','2605:e000:150a:d870:c451:f4f9:62ae:d9eb','2606:6000:604c:5700:3007:640a:5ebf:9d5'].includes(userIP)){return res.sendStatus(400).end()}
+    if(['47.28.30.85','50.239.10.174','64.60.151.178','67.160.204.236','70.95.74.98','73.189.157.180','75.57.5.112','98.207.183.174','99.145.233.13','104.220.176.23','108.208.26.166','136.24.33.133','172.249.124.162','172.250.23.162','216.7.76.156','2601:647:ca02:d7a0:1ad:35dd:ae10:d8d','2605:e000:150a:d870:907d:669f:3361:3567','2605:e000:150a:d870:c451:f4f9:62ae:d9eb','2606:6000:604c:5700:3007:640a:5ebf:9d5'].includes(userIP)){return res.sendStatus(401).end()}
     console.log('reefer', referer)
     // ua-parser-js
     const uaData = parser(userAgent)
@@ -675,6 +676,7 @@ statsRouter.get('/ili/:listId', hostNameGuard, check('listId').notEmpty().isNume
         const doNotTrack = !!req.headers.dnt
         const userAgent = req.headers['user-agent'];
         const userIP = req.headers['x-forwarded-for'];
+        if(['47.28.30.85','50.239.10.174','64.60.151.178','67.160.204.236','70.95.74.98','73.189.157.180','75.57.5.112','98.207.183.174','99.145.233.13','104.220.176.23','108.208.26.166','136.24.33.133','172.249.124.162','172.250.23.162','216.7.76.156','2601:647:ca02:d7a0:1ad:35dd:ae10:d8d','2605:e000:150a:d870:907d:669f:3361:3567','2605:e000:150a:d870:c451:f4f9:62ae:d9eb','2606:6000:604c:5700:3007:640a:5ebf:9d5'].includes(userIP)){return res.sendStatus(401).end()}
         // ua-parser-js
         const uaData = parser(userAgent)
         let isMobileDevice = false
