@@ -33,9 +33,9 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
             if(referencingURL.indexOf('data:') != -1 || (imgURL!=null && imgURL.indexOf('data:') != -1)){return res.sendStatus(400).end()}
             if(referencingURL.trim().indexOf('http') == -1 && referencingURL.trim().length > 0){return res.sendStatus(400).end()}
             if(description.indexOf(`<`)!= -1 || description.indexOf(`>`) != -1){return res.sendStatus(400).end()}
-            if(description.indexOf(`/`)!= -1 || description.indexOf(`\\`) != -1){return res.sendStatus(400).end()}            
+            if(description.indexOf(`javascript:`)!= -1 || description.indexOf(`\\`) != -1){return res.sendStatus(400).end()}            
             if(linkTitle.indexOf(`<`)!= -1 || linkTitle.indexOf(`>`) != -1){return res.sendStatus(400).end()}
-            if(linkTitle.indexOf(`/`)!= -1 || linkTitle.indexOf(`\\`) != -1){return res.sendStatus(400).end()}
+            if(linkTitle.indexOf(`javascript:`)!= -1 || linkTitle.indexOf(`\\`) != -1){return res.sendStatus(400).end()}
             if(listId.indexOf(`<`)!= -1 || listId.indexOf(`>`) != -1){return res.sendStatus(400).end()}
             if(shackImageId!=null){if(shackImageId.indexOf(`<`)!= -1 || shackImageId.indexOf(`>`) != -1){return res.sendStatus(400).end()}}
             if(userId.indexOf(`<`)!= -1 || userId.indexOf(`>`) != -1){return res.sendStatus(400).end()}
@@ -180,9 +180,9 @@ entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').no
             // oh how nice to be just a droplet in the digital ocean *music emoji*
             if(`${entryId}`.indexOf(`<`)!= -1 || `${entryId}`.indexOf(`>`) != -1){return res.sendStatus(400).end()}
             if(description.indexOf(`<`)!= -1 || description.indexOf(`>`) != -1){return res.sendStatus(400).end()}
-            if(description.indexOf(`/`)!= -1 || description.indexOf(`\\`) != -1){return res.sendStatus(400).end()}
+            if(description.indexOf(`javascript:`)!= -1 || description.indexOf(`\\`) != -1){return res.sendStatus(400).end()}
             if(linkTitle.indexOf(`<`)!= -1 || linkTitle.indexOf(`>`) != -1){return res.sendStatus(400).end()}
-            if(linkTitle.indexOf(`/`)!= -1 || linkTitle.indexOf(`\\`) != -1){return res.sendStatus(400).end()}
+            if(linkTitle.indexOf(`javascript:`)!= -1 || linkTitle.indexOf(`\\`) != -1){return res.sendStatus(400).end()}
             if(`${listId}`.indexOf(`<`)!= -1 || `${listId}`.indexOf(`>`) != -1){return res.sendStatus(400).end()}
             if(referencingURL.indexOf(`<`)!= -1 || referencingURL.indexOf(`>`) != -1){return res.sendStatus(400).end()}
             if(imgURL!=null){if(imgURL.indexOf(`<`)!= -1 || imgURL.indexOf(`>`) != -1){return res.sendStatus(400).end()}}
