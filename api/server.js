@@ -68,8 +68,8 @@ var allowedOrigins = [
 server.use(cors({
   origin: function(origin, callback){
     // allow requests with no origin 
-    // (like mobile apps or curl requests)
-    if(!origin) {console.log('CR-NoOrigin',origin, origin.length); return callback(null, true)};
+    // (like mobile apps or curl requests) -> why would we want that, the front end will only ever be talking to the backend
+    // if(!origin) {console.log('CR-NoOrigin',origin, origin.length); return callback(null, true)};
     if(allowedOrigins.indexOf(origin) === -1){
       var msg = 'The CORS policy for this site does not ' +
                 'allow access from the specified Origin.';
