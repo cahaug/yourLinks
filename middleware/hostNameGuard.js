@@ -43,8 +43,8 @@ module.exports = (req, res, next) => {
         'https://7zz.ch':true,
         'https://down.af':true,
         'https://this.af':true,
-        'https://лив.com':true,
-        'https://лив.me':true
+        // 'https://лив.com':true,
+        // 'https://лив.me':true
     }
     if(hostName in mySet){
         console.log('valid host', hostName)
