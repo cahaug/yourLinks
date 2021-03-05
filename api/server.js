@@ -57,8 +57,11 @@ var allowedOrigins = [
                       'https://mw-im.pro',
                       'http://10.116.0.3/h/a',
                       'https://mw-im.pro/i/processThis',
-                      'https://link-in-bio.herokuapp.com/auth/login',
-                      'https://link-in-bio.herokuapp.com/auth/register',];
+                      'https://лив.me',
+                      'https://лив.com',
+                    //   'https://link-in-bio.herokuapp.com/auth/login',
+                    //   'https://link-in-bio.herokuapp.com/auth/register',
+                    ];
 // var allowedOrigins = ['https://link-in.bio',
 //                       'https://link-in-bio.herokuapp.com/auth/login',
 //                       'https://link-in-bio.herokuapp.com/auth/register'];
