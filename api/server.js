@@ -69,12 +69,13 @@ server.use(cors({
   origin: function(origin, callback){
     // allow requests with no origin 
     // (like mobile apps or curl requests)
-    if(!origin) {console.log('CRorigin',origin, origin.length); return callback(null, true)};
+    if(!origin) {console.log('CR-NoOrigin',origin, origin.length); return callback(null, true)};
     if(allowedOrigins.indexOf(origin) === -1){
       var msg = 'The CORS policy for this site does not ' +
                 'allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
+    console.log('CR-W-Origin',origin, origin.length);
     return callback(null, true);
   }
 }));
