@@ -112,7 +112,7 @@ server.get('/:listId', hostNameGuard, check('listId').notEmpty().isString(), (re
     console.log('typeof listId', typeof listId)
     console.log('parsed', parsed)
     console.log('typeof parsed', typeof parsed)
-    if (typeof parsed == 'number' && parsed.toString() !='NaN' && parsed.length < 10){
+    if (typeof parsed == 'number' && parsed.toString() !='NaN' && `${parsed}`.length < 10){
         console.log('listId', listId)
         console.log('parsed is number, acting')
         return listByNumber(listId)
