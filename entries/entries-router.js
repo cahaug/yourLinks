@@ -8,6 +8,7 @@ var FormData = require('form-data')
 const { body, check } = require('express-validator')
 const {Duplex} = require('stream')
 const util = require('util')
+var yescape = require('escape-html');
 
 // entriesRouter.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "https://link-in-bio.netlify.com"); // update to match the domain you will make the request from
@@ -21,7 +22,7 @@ entriesRouter.post('/new', hostNameGuard, restricted, body('userId').notEmpty().
         const creationDate = date;
         const { sub } = req.decodedToken
         const { userId, listId, referencingURL, description, linkTitle, imgURL, shackImageId } = req.body;
-        const entry = { userId, listId, referencingURL, description, linkTitle, creationDate, imgURL, shackImageId };
+        const entry = { userId, listId, referencingURL, description:yescape(description), linkTitle:yescape(linkTitle), creationDate, imgURL, shackImageId };
         const parsedUserId = parseInt(userId, 10)
         const checkedListId = await getListId(sub)
         if(sub === parsedUserId && checkedListId[0].listId == listId){
@@ -169,8 +170,10 @@ entriesRouter.post('/editEntry/:entryId', hostNameGuard, restricted, body('listI
 entriesRouter.put('/replaceEntry', hostNameGuard, restricted, body('entryId').notEmpty().isNumeric({ no_symbols:true }), body('referencingURL').isString().isLength({ min:1 }), body('description').isString().isLength({ min:1 }), body('linkTitle').isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
     try {
         const {sub} = req.decodedToken
-        const { entryId, referencingURL, description, linkTitle, imgURL, listId } = req.body;
-        
+        const { entryId, referencingURL, imgURL, listId } = req.body;
+        let {linkTitle, description} = req.body
+        linkTitle = yescape(linkTitle)
+        description = yescape(description)
         const checkedListId = await getListId(sub)
         if(checkedListId[0].listId == listId){
             // const safeURLCheck = await axios.post('http://10.116.0.3/h/', { referencingURL:referencingURL, secret:process.env.BOYSECRET })

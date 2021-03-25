@@ -7,6 +7,7 @@ require('dotenv').config();
 const { body, check } = require('express-validator')
 const {Duplex} = require('stream')
 var FormData = require('form-data')
+var yescape = require('escape-html');
 
 
 
@@ -441,7 +442,7 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, chec
                */
                 fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})                
                 console.log(filejson);
-                fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
+                fs.unlink(`/tmp/${newFilename}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
                 const profilePictureURL = `https://${filejson.link}`
                 const shackImageId = filejson.id
                 console.log('shackImageId', shackImageId, profilePictureURL)
@@ -475,9 +476,10 @@ listsRouter.put('/uploadProfilePicture/:userId', hostNameGuard, restricted, chec
 })
 
 listsRouter.put('/setDisplayName', hostNameGuard, restricted, body('displayName').notEmpty().isString().isLength({ min:1 }), body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), async (req, res) => {
-    const { displayName, listId, userId } = req.body
+    const { listId, userId } = req.body
+    let { displayName } = req.body
     const {sub} = req.decodedToken
-
+    displayName = yescape(displayName)
     try{
         const checkedListId = await getListId(sub)
         // console.log('checkedListId', checkedListId)

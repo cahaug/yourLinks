@@ -17,6 +17,8 @@ const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
 const { body } = require('express-validator')
+var yescape = require('escape-html');
+
 
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
 const {paddlePublicKey} = require('./publicKey')
@@ -52,6 +54,8 @@ paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), 
                     const profilePictureURL = 'https://imagizer.imageshack.com/img924/128/aacWe9.jpg'
                     const creationDate = new Date()
                     user = {...user, email, password, creationDate, cancelURL, updateURL, profilePictureURL, stripeCustomerId}
+                    user.firstName = yescape(user.firstName)
+                    user.lastName = yescape(user.lastName)
                     console.log('verify user correct', user)
                     // create user account
                         // email, password, firstName, lastName, profilePictureURL, referredBy
