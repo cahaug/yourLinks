@@ -80,6 +80,8 @@ server.use(cors({
   }
 }));
 server.use(express.json());
+var hpp = require('hpp');
+server.use(hpp());
 const { listByNumber, listByCustomURL, } = require('../database/queries.js');
 const hostNameGuard = require('../middleware/hostNameGuard.js');
 const { check } = require('express-validator');
