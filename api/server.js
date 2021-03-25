@@ -79,7 +79,7 @@ server.use(cors({
     return callback(null, true);
   }
 }));
-server.use(express.json());
+server.use(express.json({ limit: "11mb" }));
 var hpp = require('hpp');
 server.use(hpp());
 const { listByNumber, listByCustomURL, } = require('../database/queries.js');
