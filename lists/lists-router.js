@@ -307,7 +307,7 @@ listsRouter.put('/deleteListBackground', hostNameGuard, restricted, body('listId
 
 // change text color - lightmode
 listsRouter.put('/setText', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), body('fontSelection').notEmpty().isString(), async (req,res) => {
-    const { userId, fontSelection} = req.body
+    const { listId , userId } = req.body
     const {sub} = req.decodedToken
     let {fontSelection} = req.body
     fontSelection = yescape(fontSelection)
