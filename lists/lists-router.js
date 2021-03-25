@@ -172,6 +172,9 @@ listsRouter.put('/setBg', hostNameGuard ,restricted, body('backColor').isString(
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(backColor == undefined){return res.sendStatus(400).end()}
+            if(backColor == null || backColor.length < 4){return res.sendStatus(400).end()}
+            if(backColor.indexOf(`#`)!=0 ||backColor.length>=8){return res.sendStatus(400).end()}
             if(backColor.indexOf(`<`)!=-1 || backColor.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
             if(backColor.indexOf(`/`)!=-1 || backColor.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putBackground(listId, backColor)
@@ -304,8 +307,10 @@ listsRouter.put('/deleteListBackground', hostNameGuard, restricted, body('listId
 
 // change text color - lightmode
 listsRouter.put('/setText', hostNameGuard, restricted, body('listId').notEmpty().isNumeric({ no_symbols:true }), body('userId').notEmpty().isNumeric({ no_symbols:true }), body('fontSelection').notEmpty().isString(), async (req,res) => {
-    const {listId, userId, fontSelection} = req.body
+    const { userId, fontSelection} = req.body
     const {sub} = req.decodedToken
+    let {fontSelection} = req.body
+    fontSelection = yescape(fontSelection)
     // console.log('req.body setFont', req.body)
     try{
         const checkedListId = await getListId(sub)
@@ -338,6 +343,9 @@ listsRouter.put('/setTcolor', hostNameGuard, restricted, body('listId').notEmpty
         // console.log('checkedListId', checkedListId)
         if(sub == userId && checkedListId[0].listId == listId){
             // console.log('sub equals user')
+            if(txtColor == undefined){return res.sendStatus(400).end()}
+            if(txtColor == null || txtColor.length < 4){return res.sendStatus(400).end()}
+            if(txtColor.indexOf(`#`)!=0 || txtColor.length>=8){return res.sendStatus(400).end()}
             if(txtColor.indexOf(`<`)!=-1 || txtColor.indexOf(`>`)!=-1){return res.sendStatus(400).end()}
             if(txtColor.indexOf(`/`)!=-1 || txtColor.indexOf(`\\`)!=-1){return res.sendStatus(400).end()}
             const resultant = await putTColor(listId, txtColor)
