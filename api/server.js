@@ -128,7 +128,7 @@ server.get('/:listId', hostNameGuard, check('listId').notEmpty().isString(), (re
     else {
         console.log('parsed is string, acting')
         console.log('yo', listId)
-        const customURL = fakeCustom
+        const customURL = fakeCustom + ""
         console.log('yo custom', fakeCustom)
         return listByCustomURL(customURL)
         .then(entries => {
