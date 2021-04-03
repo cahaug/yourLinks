@@ -23,7 +23,7 @@ var yescape = require('escape-html');
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
 const {paddlePublicKey} = require('./publicKey')
 
-paymentsRouter.post('/in', body('email').notEmpty().isEmail().normalizeEmail(), body('p_signature').notEmpty().isString().isLength({ min:12 }), async (req, res) => {
+paymentsRouter.post('/in', async (req, res) => {
     try {
         var transporter = nodemailer.createTransport({
             service:process.env.LIBSERVICE,
