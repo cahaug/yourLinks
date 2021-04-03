@@ -32,6 +32,7 @@ paymentsRouter.post('/in', async (req, res) => {
                 pass: process.env.LIBPASSWORD
             }
         })
+        console.log('payments req body', req.body)
         console.log('req.headers.origin', req.headers.origin, PUBLIC_KEY)
         console.log('length of publickey', process.env.PAD_PUB_KEY.len)
         // - NOT DONE - verify webhook signature  && req.method.toLowerCase() === 'post' && req.host == paddle.com or whatever
