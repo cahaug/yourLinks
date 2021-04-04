@@ -169,10 +169,10 @@ server.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.json({ 
         message: {},
-        error: err
-        // change this back before final deployment!!! -unchanged-
+        // error: err
+        // change this back before final deployment!!! -changed-
         // error: req.server.get('env') === 'development' ? 
-        // err : {}
+        err : {}
         
     });
 });

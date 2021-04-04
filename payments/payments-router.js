@@ -33,7 +33,7 @@ paymentsRouter.post('/in', paddleGuard, async (req, res) => {
                 pass: process.env.LIBPASSWORD
             }
         })
-        console.log('payments req body', req.body)
+        // console.log('payments req body', req.body)
         console.log('req.headers.origin', req.headers.origin, PUBLIC_KEY)
         console.log('length of publickey', process.env.PAD_PUB_KEY.len)
         // - NOT DONE - verify webhook signature  && req.method.toLowerCase() === 'post' && req.host == paddle.com or whatever
@@ -56,8 +56,8 @@ paymentsRouter.post('/in', paddleGuard, async (req, res) => {
                     const profilePictureURL = 'https://imagizer.imageshack.com/img924/128/aacWe9.jpg'
                     const creationDate = new Date()
                     user = {...user, email, password, creationDate, cancelURL, updateURL, profilePictureURL, stripeCustomerId}
-                    // user.firstName = yescape(user.firstName)
-                    // user.lastName = yescape(user.lastName)
+                    user.firstName = yescape(user.firstName)
+                    user.lastName = yescape(user.lastName)
                     console.log('verify user correct', user)
                     // create user account
                         // email, password, firstName, lastName, profilePictureURL, referredBy
