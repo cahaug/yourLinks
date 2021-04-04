@@ -16,6 +16,7 @@ var imageshack = require('imageshack')({
 const bcrypt = require('bcryptjs');
 const generateToken = require('../middleware/generateToken.js')
 const hostNameGuard = require('../middleware/hostNameGuard.js')
+const paddleGuard = require('../middleware/paddleGuard.js')
 const { body } = require('express-validator')
 var yescape = require('escape-html');
 
@@ -23,7 +24,7 @@ var yescape = require('escape-html');
 const PUBLIC_KEY = process.env.PAD_PUB_KEY
 const {paddlePublicKey} = require('./publicKey')
 
-paymentsRouter.post('/in', async (req, res) => {
+paymentsRouter.post('/in', paddleGuard, async (req, res) => {
     try {
         var transporter = nodemailer.createTransport({
             service:process.env.LIBSERVICE,
