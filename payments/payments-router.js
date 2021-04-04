@@ -254,7 +254,7 @@ paymentsRouter.post('/in', async (req, res) => {
                 if(req.body.alert_name === 'subscription_payment_succeeded'){
                     console.log('recurring payment success webhook')
                     console.log('thanks foo')
-                    res.sendStatus(200)
+                    res.status(200).end()
                 }
                 if(req.body.alert_name === 'subscription_payment_failed'){
                     console.log('recurring payment failed webhook')

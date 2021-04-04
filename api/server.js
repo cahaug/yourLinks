@@ -65,20 +65,33 @@ var allowedOrigins = [
 // var allowedOrigins = ['https://link-in.bio',
 //                       'https://link-in-bio.herokuapp.com/auth/login',
 //                       'https://link-in-bio.herokuapp.com/auth/register'];
+// server.use(cors({
+//   origin: function(origin, callback){
+//     // allow requests with no origin 
+//     // (like mobile apps or curl requests) -> why would we want that, the front end will only ever be talking to the backend
+//     if(!origin) {console.log('CR-NoOrigin',origin, origin.length); return callback(null, true)};
+//     if(allowedOrigins.indexOf(origin) === -1){
+//       var msg = 'The CORS policy for this site does not ' +
+//                 'allow access from the specified Origin.';
+//       return callback(new Error(msg), false);
+//     }
+//     console.log('CR-W-Origin',origin, origin.length);
+//     return callback(null, true);
+//   }
+// }));
 server.use(cors({
-  origin: function(origin, callback){
-    // allow requests with no origin 
-    // (like mobile apps or curl requests) -> why would we want that, the front end will only ever be talking to the backend
-    if(!origin) {console.log('CR-NoOrigin',origin, origin.length); return callback(null, true)};
-    if(allowedOrigins.indexOf(origin) === -1){
-      var msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    origin: function(origin, callback){
+      // allow requests with no origin 
+      // (like mobile apps or curl requests)
+      if(!origin) {return callback(null, true)};
+      if(allowedOrigins.indexOf(origin) === -1){
+        var msg = 'The CORS policy for this site does not ' +
+                  'allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
     }
-    console.log('CR-W-Origin',origin, origin.length);
-    return callback(null, true);
-  }
-}));
+  }));
 server.use(express.json({ limit: "11mb" }));
 var hpp = require('hpp');
 server.use(hpp());
