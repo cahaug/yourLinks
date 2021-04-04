@@ -55,8 +55,8 @@ paymentsRouter.post('/in', async (req, res) => {
                     const profilePictureURL = 'https://imagizer.imageshack.com/img924/128/aacWe9.jpg'
                     const creationDate = new Date()
                     user = {...user, email, password, creationDate, cancelURL, updateURL, profilePictureURL, stripeCustomerId}
-                    user.firstName = yescape(user.firstName)
-                    user.lastName = yescape(user.lastName)
+                    // user.firstName = yescape(user.firstName)
+                    // user.lastName = yescape(user.lastName)
                     console.log('verify user correct', user)
                     // create user account
                         // email, password, firstName, lastName, profilePictureURL, referredBy
