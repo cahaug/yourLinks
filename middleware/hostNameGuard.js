@@ -51,7 +51,9 @@ module.exports = (req, res, next) => {
         next()
     } else {
         console.log('ban', hostName)
-        res.status(400).json({message:'nice try, hackerman'})
+        // res.status(400).json({message:'nice try, hackerman'})
+        res.set('Content-Type', 'text/html');
+        res.send(Buffer.from('<img src="https://i.kym-cdn.com/photos/images/newsfeed/001/176/251/4d7.png" alt="nice try, hackerman" />'));
     }
 
 }
