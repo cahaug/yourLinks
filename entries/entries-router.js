@@ -351,7 +351,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
                    const pictureURL = `https://${filejson.link}`
                    const shackImageId = filejson.id
                    console.log('shackImageId', shackImageId, pictureURL)
-                   fs.unlink(`/tmp/${newFilename}.png`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
+                   fs.unlink(`/tmp/${newFilename}.jpg`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted second image')}})
                     fs.unlink(`${req.files.myImage.tempFilePath}`, (err)=>{if(err){console.log('delete failed',err)}else{console.log('successfully deleted uploaded image')}})
                     res.status(201).json({message:'Successfully Uploaded Picture', shackImageId:shackImageId, pictureURL:pictureURL})             
                 }
