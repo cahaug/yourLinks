@@ -307,7 +307,7 @@ entriesRouter.post('/uploadPhoto/:userId', hostNameGuard, restricted, check('use
             formData.append('secret', `${girlSecret}`)
             formData.append('myImage', fs.createReadStream(req.files.myImage.tempFilePath), `${req.files.myImage.name}`)
             
-            const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:'https://mw-im.pro/i/processThis', data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
+            const cleanImage = await axios({method:'post', responseType:'arraybuffer', url:`http://${process.env.MWIMIP}/i/processThis`, data:formData, headers:{'Content-Type':`multipart/form-data; boundary=${formData._boundary}`}})
             // console.log('cleanImage.data',cleanImage.data)
             console.log('cleanImage data length', cleanImage.length, cleanImage.data.length, typeof cleanImage.data)
             // const cleanedmyimage = Readable.from(cleanImage.data)
