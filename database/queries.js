@@ -189,7 +189,7 @@ module.exports = {
     },
 
     homepageViewsGet(){
-        return knex('homepageViews')
+        return knex('homepageViews').limit(10000)
     },
 
     homepagecountryCounts(){
@@ -225,11 +225,11 @@ module.exports = {
     },
 
     homepageLatLon(){
-        return knex('homepageViews').groupBy('homepageViews.homepageViewId').orderBy('homepageViews.homepageViewId', 'desc').limit(100).select('homepageViews.province','homepageViews.latitude', 'homepageViews.longitude')
+        return knex('homepageViews').groupBy('homepageViews.homepageViewId').orderBy('homepageViews.homepageViewId', 'desc').limit(250).select('homepageViews.province','homepageViews.latitude', 'homepageViews.longitude')
     },
 
     latLonForListId(listId){
-        return knex('pageViews').where('listId', listId).groupBy('pageViews.pageViewId').orderBy('pageViews.pageViewId', 'desc').limit(100).select('pageViews.province','pageViews.latitude', 'pageViews.longitude')
+        return knex('pageViews').where('listId', listId).groupBy('pageViews.pageViewId').orderBy('pageViews.pageViewId', 'desc').limit(500).select('pageViews.province','pageViews.latitude', 'pageViews.longitude')
     },
 
     mostPop(){
